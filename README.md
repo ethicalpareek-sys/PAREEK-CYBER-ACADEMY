@@ -1,44 +1,97 @@
-<!-- ══════════════════════════════════════════════════
+<!-- ══════════════════════════════════════════════════════════════
      PAREEK CYBER ACADEMY — README.md
-     ══════════════════════════════════════════════════ -->
-
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:22d3ee,50:a855f7,100:ec4899&height=200&section=header&text=PAREEK%20CYBER%20ACADEMY&fontSize=45&fontColor=ffffff&fontAlignY=38&desc=LEARN%20·%20BUILD%20·%20BREAK%20·%20DEFEND&descAlignY=60&descSize=16&animation=fadeIn" width="100%"/>
+     Modern · Cyber-tech · Unique visual identity
+     ══════════════════════════════════════════════════════════════ -->
 
 <div align="center">
 
-**A browser-native cybersecurity academy** — futuristic cyber interface, 33-level roadmap, 250+ topics, interactive labs, and an original in-browser CTF engine.
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0a1628,50:0891b2,100:a855f7&height=180&section=header&text=PAREEK&fontSize=80&fontColor=22d3ee&fontAlignY=45&animation=twinkling&stroke=22d3ee&strokeWidth=2" width="100%" />
 
-**One file. No backend. No build step. No tracking.**
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=800&size=42&duration=3000&pause=800&color=A855F7&center=true&vCenter=true&width=900&height=70&lines=CYBER+ACADEMY;LEARN+%E2%80%A2+BUILD+%E2%80%A2+BREAK+%E2%80%A2+DEFEND" alt="Cyber Academy" />
+
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=500&size=15&duration=2500&pause=500&color=22D3EE&center=true&vCenter=true&width=800&height=40&lines=%3E+SYSTEM+INITIALIZING...;%3E+CYBER+LEARNING+ENVIRONMENT+ONLINE;%3E+33+LEVELS+%C2%B7+250%2B+TOPICS+%C2%B7+100%2B+CTF+CHALLENGES;%3E+WELCOME%2C+RECRUIT." alt="Boot Sequence" />
+
+<br/><br/>
+
+<img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="100%" height="3" />
+
+<br/><br/>
+
+<table>
+<tr>
+<td align="center" width="25%">
+
+### 🎨
+**3D INTERFACE**
+Futuristic cyber UI
+
+</td>
+<td align="center" width="25%">
+
+### 🧭
+**33 LEVELS**
+Ordered roadmap
+
+</td>
+<td align="center" width="25%">
+
+### 🧪
+**32 LABS**
+Hands-on practice
+
+</td>
+<td align="center" width="25%">
+
+### ⚡
+**100+ CTF**
+Original challenges
+
+</td>
+</tr>
+</table>
 
 <br/>
 
-[![Live Academy](https://img.shields.io/badge/🚀_LIVE_ACADEMY-ENTER_THE_CYBER_WORLD-22d3ee?style=for-the-badge&labelColor=0a1628)](https://github.com)
-[![Roadmap](https://img.shields.io/badge/🧭_ROADMAP-33_LEVELS-a855f7?style=for-the-badge&labelColor=0a1628)](#-roadmap)
-[![CTF Arena](https://img.shields.io/badge/⚡_CTF-100+_CHALLENGES-22c55e?style=for-the-badge&labelColor=0a1628)](#-ctf-arena)
+<img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="100%" height="3" />
+
+<br/><br/>
+
+[![ENTER ACADEMY](https://img.shields.io/badge/⚡_ENTER_THE_ACADEMY-22d3ee?style=for-the-badge&labelColor=0a1628&logo=shield&logoColor=22d3ee)](https://github.com)
+[![ROADMAP](https://img.shields.io/badge/🧭_EXPLORE_ROADMAP-a855f7?style=for-the-badge&labelColor=0a1628&logo=map&logoColor=a855f7)](#-the-roadmap)
+[![CTF](https://img.shields.io/badge/🚩_CTF_ARENA-ec4899?style=for-the-badge&labelColor=0a1628&logo=flag&logoColor=ec4899)](#-ctf-arena)
 
 <br/>
 
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-
-![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-181717?style=for-the-badge&logo=github&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-ACTIVE-22d3ee?style=for-the-badge)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![Canvas](https://img.shields.io/badge/Canvas_2D-22d3ee?style=flat-square&logo=html5&logoColor=white)
+![localStorage](https://img.shields.io/badge/localStorage-22c55e?style=flat-square&logo=databricks&logoColor=white)
+![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-181717?style=flat-square&logo=github&logoColor=white)
+![MIT](https://img.shields.io/badge/License-MIT-a855f7?style=flat-square&logo=opensourceinitiative&logoColor=white)
+![Status](https://img.shields.io/badge/Status-ACTIVE-22d3ee?style=flat-square&logo=statuspage&logoColor=white)
 
 <br/>
 
-![Ethical Use Only](https://img.shields.io/badge/⚠️_Ethical_Use_Only-Authorized_Labs-ef4444?style=for-the-badge&labelColor=0a1628)
+<img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="100%" height="3" />
 
 </div>
 
----
+<br/>
 
-## ⚡ What Is PAREEK CYBER ACADEMY?
+## ⚡ `> what_is_this`
 
-A complete, browser-native cybersecurity learning environment — shipped as **one self-contained `index.html` file** that runs entirely on static hosting.
+```bash
+$ cat about.txt
 
-The 3D cyber interface, 33-level roadmap, 250+ topics, interactive labs, terminal simulator, and original CTF engine all live inside a single file.
+  A browser-native cybersecurity academy — one HTML file.
+  No backend. No database. No build step. No tracking.
+
+  3D cyber interface · 33-level roadmap · 250+ topics
+  32 hands-on labs · 100+ CTF challenges · terminal simulator
+  network simulator · SOC console · forensics labs · AI security
+
+  Runs entirely inside the learner's browser.
 
 <div align="center">
 
