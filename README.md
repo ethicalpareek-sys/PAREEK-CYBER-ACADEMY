@@ -57,3 +57,37 @@ The 3D cyber interface, 33-level roadmap, 250+ topics, interactive labs, termina
 
 **From "what is a CPU" to "how a CISO defends an enterprise."**
 
+
+<details>
+<summary><b>▸ Full Level Table (click to expand)</b></summary>
+
+| Level | Topic | Level | Topic |
+|:---:|:---|:---:|:---|
+| **00** | Computer Fundamentals | **17** | Incident Response |
+| **01** | Linux | **18** | Digital Forensics |
+| **02** | Networking | **19** | Malware Analysis |
+| **03** | Python for Security | **20** | Reverse Engineering |
+| **04** | Web Technologies | **21** | Mobile Security |
+| **05** | Cyber Fundamentals | **22** | Wireless Security |
+| **06** | Cryptography | **23** | Container Security |
+| **07** | Web Security | **24** | Kubernetes Security |
+| **08** | API Security | **25** | AI Security |
+| **09** | OS Security | **26** | Red Team |
+| **10** | Active Directory | **27** | Blue Team |
+| **11** | Cloud Computing | **28** | Purple Team |
+| **12** | Cloud Security | **29** | Security Engineering |
+| **13** | DevSecOps | **30** | Security Architecture |
+| **14** | SOC Operations | **31** | GRC |
+| **15** | SIEM & Detection | **32** | CISO Track |
+| **16** | Threat Intelligence | | |
+
+</details>
+
+---
+
+## ⚡ CTF Arena
+
+An **original browser-based CTF engine** — built from scratch. Every flag, hint, and dataset is original. Nothing copied from any proprietary platform.
+
+<div align="center">
+
