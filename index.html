@@ -7212,6 +7212,1021 @@ function initTerminalTyping(){
 </script>
 <!-- ============================================================
      END PAREEK CYBER CTF ENGINE
-     ============================================================ -->  
+============================================================ -->  
+<!-- ═══════════════════════════════════════════════════════════════
+     PAREEK CYBER ACADEMY — DEEP LEARNING MODULE (ADD-ON)
+     This is a self-contained overlay that adds a 30-module deep
+     cybersecurity academy on top of the existing website.
+     Namespace: pcaAC_ / pca-ac- / window.PareekCyberAcademy
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+'use strict';
+if (window.PareekCyberAcademy) return;
+
+/* ═════════════════════════════════════════════
+   NAMESPACE + CONSTANTS
+   ═════════════════════════════════════════════ */
+var NS = 'pcaAC_';
+var CLS = 'pca-ac-';
+var STORAGE_KEY = 'pareek_academy_overlay_v1';
+var THEME_KEY = 'pareek_academy_theme_v1';
+var OVERLAY_ID = 'pareek-academy-overlay';
+var STYLE_ID = 'pareek-academy-style';
+var LAUNCH_ID = 'pareek-academy-launcher';
+
+/* ═════════════════════════════════════════════
+   UTILITIES
+   ═════════════════════════════════════════════ */
+function esc(s){
+  return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function stripTags(s){ return String(s).replace(/<[^>]*>/g,''); }
+function toast(msg, kind){
+  var t = document.createElement('div');
+  t.className = CLS + 'toast';
+  if (kind === 'ok') t.style.borderLeftColor = '#22c55e';
+  if (kind === 'err') t.style.borderLeftColor = '#ef4444';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){
+    t.style.transition = 'opacity .3s, transform .3s';
+    t.style.opacity = '0'; t.style.transform = 'translateX(30px)';
+    setTimeout(function(){ t.remove(); }, 320);
+  }, 2400);
+}
+
+/* ═════════════════════════════════════════════
+   ROADMAP — 30 MODULES
+   ═════════════════════════════════════════════ */
+var ROADMAP = [
+  {id:'computer-fundamentals', num:'01', title:'Computer Fundamentals', icon:'🖥️', level:'Beginner', desc:'Hardware, CPU, memory, storage, OS internals, boot chain.'},
+  {id:'linux', num:'02', title:'Linux', icon:'🐧', level:'Beginner', desc:'Shell, filesystem, permissions, processes, services, logs, hardening.'},
+  {id:'networking', num:'03', title:'Networking', icon:'🌐', level:'Beginner', desc:'OSI, TCP/IP, Ethernet, MAC, IP, subnetting, VLAN, TCP, UDP, DNS, DHCP, HTTP, TLS.'},
+  {id:'python', num:'04', title:'Python for Security', icon:'🐍', level:'Beginner', desc:'Automation, parsing, sockets, HTTP, regex, hashing, CLI tools.'},
+  {id:'cyber-fundamentals', num:'05', title:'Cybersecurity Fundamentals', icon:'🛡️', level:'Beginner', desc:'CIA, risk, threats, controls, defence in depth, zero trust.'},
+  {id:'cryptography', num:'06', title:'Cryptography', icon:'🔐', level:'Intermediate', desc:'Hashing, symmetric, asymmetric, PKI, TLS, key management.'},
+  {id:'web-security', num:'07', title:'Web Security', icon:'🕸️', level:'Intermediate', desc:'OWASP Top 10, injection, XSS, CSRF, SSRF, access control, headers.'},
+  {id:'digital-forensics', num:'08', title:'Digital Forensics', icon:'🔬', level:'Intermediate', desc:'Evidence, disk, memory, timeline, artefacts, chain of custody.'},
+  {id:'soc-blue-team', num:'09', title:'SOC / Blue Team', icon:'🛡️', level:'Intermediate', desc:'Triage, SIEM, log analysis, detection engineering, threat hunting, IR.'},
+  {id:'threat-intelligence', num:'10', title:'Threat Intelligence', icon:'🕵️', level:'Intermediate', desc:'IOC/IOA, MITRE ATT&CK, kill chain, Diamond Model.'},
+  {id:'vulnerability-mgmt', num:'11', title:'Vulnerability Management', icon:'🔍', level:'Intermediate', desc:'Discovery, CVSS, prioritisation, remediation SLAs, metrics.'},
+  {id:'red-teaming', num:'12', title:'Red Teaming', icon:'🎯', level:'Advanced', desc:'Adversary simulation, RoE, ATT&CK, kill chain, C2, reporting.'},
+  {id:'penetration-testing', num:'13', title:'Penetration Testing', icon:'⚔️', level:'Advanced', desc:'Scoping, recon, enumeration, validation, documentation, reporting.'},
+  {id:'cloud', num:'14', title:'Cloud', icon:'☁️', level:'Intermediate', desc:'AWS, Azure, GCP primitives, networking, identity, IaC.'},
+  {id:'cloud-security', num:'15', title:'Cloud Security', icon:'🔒', level:'Advanced', desc:'IAM, posture, logging, secrets, shared responsibility, cloud IR.'},
+  {id:'devsecops', num:'16', title:'DevSecOps', icon:'⚙️', level:'Advanced', desc:'CI/CD, SAST, DAST, SCA, secrets scanning, IaC, SBOM.'},
+  {id:'malware-analysis', num:'17', title:'Malware Analysis', icon:'🧬', level:'Advanced', desc:'Static, dynamic, sandboxes, IOCs, YARA, family concepts.'},
+  {id:'reverse-engineering', num:'18', title:'Reverse Engineering', icon:'🔧', level:'Advanced', desc:'Assembly, PE/ELF, debuggers, decompilers, calling conventions.'},
+  {id:'iam', num:'19', title:'Identity & Access Security', icon:'🆔', level:'Advanced', desc:'AuthN, AuthZ, MFA, RBAC/ABAC, SSO, Kerberos, AD.'},
+  {id:'container-security', num:'20', title:'Container Security', icon:'📦', level:'Advanced', desc:'Docker, images, capabilities, seccomp, runtime detection, K8s.'},
+  {id:'mobile-security', num:'21', title:'Mobile Security', icon:'📱', level:'Intermediate', desc:'Android/iOS architecture, APK analysis, insecure storage, API.'},
+  {id:'api-security', num:'22', title:'API Security', icon:'🔌', level:'Intermediate', desc:'REST, GraphQL, JWT, OAuth, BOLA, rate limiting, mass assignment.'},
+  {id:'ai-ml-fundamentals', num:'23', title:'AI / ML Fundamentals', icon:'🧠', level:'Intermediate', desc:'Neural networks, training, inference, LLMs, RAG, agents.'},
+  {id:'ai-security', num:'24', title:'AI Security', icon:'🤖', level:'Advanced', desc:'Prompt injection, RAG poisoning, model supply chain, guardrails.'},
+  {id:'security-engineering', num:'25', title:'Security Engineering', icon:'⚙️', level:'Advanced', desc:'Secure design, cryptography engineering, identity, network security.'},
+  {id:'incident-response', num:'26', title:'Incident Response', icon:'🚨', level:'Advanced', desc:'PICERL, containment, eradication, recovery, crisis communication.'},
+  {id:'security-architecture', num:'27', title:'Security Architecture', icon:'🏛️', level:'Professional', desc:'Zero trust, segmentation, reference architectures, threat modelling.'},
+  {id:'grc', num:'28', title:'Governance, Risk & Compliance', icon:'📋', level:'Professional', desc:'ISO 27001, NIST CSF, SOC 2, GDPR, DPDP, risk registers.'},
+  {id:'security-automation', num:'29', title:'Security Automation', icon:'🔁', level:'Advanced', desc:'SOAR, scripts, APIs, orchestration, guardrails, idempotency.'},
+  {id:'advanced-projects', num:'30', title:'Advanced Security Projects', icon:'🚀', level:'Professional', desc:'Capstone projects: SOC build, cloud posture, pipeline, purple team.'}
+];
+
+/* ═════════════════════════════════════════════
+   CONTENT — Deep modules
+   ═════════════════════════════════════════════ */
+var CONTENT = {};
+
+/* ===== NETWORKING ===== */
+CONTENT['networking'] = {
+  intro:'Networking is the nervous system of every attack and every defence. This module goes from OSI to TCP state machines, from MAC addressing to DNS resolution and TLS.',
+  sections:[
+    {id:'fundamentals', title:'Networking Fundamentals', html:'<h2>What is a network?</h2><p>A <strong>network</strong> is any set of devices connected so they can exchange data. Every network follows the same layered principles.</p><h3>Scope</h3><table><thead><tr><th>Type</th><th>Scope</th><th>Example</th></tr></thead><tbody><tr><td><strong>PAN</strong></td><td>Personal, few metres</td><td>Bluetooth earbuds</td></tr><tr><td><strong>LAN</strong></td><td>Building/campus</td><td>Office Ethernet, home Wi-Fi</td></tr><tr><td><strong>MAN</strong></td><td>City-scale</td><td>ISP metro fibre</td></tr><tr><td><strong>WAN</strong></td><td>Country/global</td><td>MPLS, internet backbone</td></tr><tr><td><strong>Internet</strong></td><td>Interconnected WANs</td><td>The public internet</td></tr><tr><td><strong>Intranet</strong></td><td>Private internal</td><td>Company-only services</td></tr><tr><td><strong>Extranet</strong></td><td>Controlled external</td><td>Partner portal</td></tr></tbody></table><h3>Roles</h3><ul><li><strong>Client</strong> — initiates requests.</li><li><strong>Server</strong> — listens and responds.</li><li><strong>Peer-to-peer</strong> — both ends act as client and server.</li></ul><h3>Core vocabulary</h3><ul><li><strong>Packet</strong> — Layer 3 unit (IP header + payload).</li><li><strong>Frame</strong> — Layer 2 unit (MAC addressing + CRC).</li><li><strong>Segment</strong> — TCP Layer 4 unit.</li><li><strong>Datagram</strong> — UDP unit or generic IP packet.</li><li><strong>Bandwidth</strong> — theoretical capacity.</li><li><strong>Throughput</strong> — actual achieved rate.</li><li><strong>Latency</strong> — round-trip time (ms).</li><li><strong>Jitter</strong> — variance in latency.</li><li><strong>MTU</strong> — max transmission unit (Ethernet 1500).</li><li><strong>Encapsulation</strong> — wrapping data at each layer.</li></ul><blockquote>Encapsulation is the single most important mental model in networking.</blockquote>'},
+    {id:'osi', title:'OSI Model — 7 Layers', html:'<h2>The OSI model</h2><p>Describes how data moves between two systems. A language for describing where things happen.</p><div class="pca-ac-net-diagram">L7  APPLICATION    HTTP · DNS · SMTP · SSH        ← Data\nL6  PRESENTATION   TLS · JPEG · UTF-8           ← Data\nL5  SESSION        Session mgmt · RPC          ← Data\nL4  TRANSPORT      TCP · UDP · ports           ← Segment\nL3  NETWORK        IP · ICMP · routing         ← Packet\nL2  DATA LINK      Ethernet · MAC · ARP        ← Frame\nL1  PHYSICAL       Cables · radio              ← Bits</div><h3>Layer-by-layer</h3><h4>L7 — Application</h4><p><strong>Purpose:</strong> network services consumed by user applications.<br><strong>Protocols:</strong> HTTP, HTTPS, DNS, SMTP, SSH, FTP, LDAP.<br><strong>Security:</strong> most attacks happen here — injection, auth bypass.</p><h4>L6 — Presentation</h4><p><strong>Purpose:</strong> format translation, compression, encryption.<br><strong>Protocols:</strong> TLS (conceptually), JPEG, UTF-8.<br><strong>Security:</strong> encryption choice, cert validation, deserialisation bugs.</p><h4>L5 — Session</h4><p><strong>Purpose:</strong> establishing, managing, terminating sessions.<br><strong>Protocols:</strong> NetBIOS, RPC.<br><strong>Security:</strong> session fixation, hijacking.</p><h4>L4 — Transport</h4><p><strong>Purpose:</strong> end-to-end delivery, ports.<br><strong>Protocols:</strong> TCP, UDP, QUIC.<br><strong>Security:</strong> SYN floods, port scans.</p><h4>L3 — Network</h4><p><strong>Purpose:</strong> logical addressing and routing.<br><strong>Protocols:</strong> IPv4, IPv6, ICMP, OSPF, BGP.<br><strong>Security:</strong> spoofing, route hijacking.</p><h4>L2 — Data Link</h4><p><strong>Purpose:</strong> physical addressing, framing, error detection.<br><strong>Protocols:</strong> Ethernet, ARP, 802.1Q, STP.<br><strong>Security:</strong> ARP spoofing, MAC flooding.</p><h4>L1 — Physical</h4><p><strong>Purpose:</strong> transmit raw bits.<br><strong>Security:</strong> physical tampering, cable taps.</p><h3>OSI vs TCP/IP</h3><p>TCP/IP collapses OSI into 4 layers: Application (5–7), Transport (4), Internet (3), Network Access (1–2).</p>'},
+    {id:'ethernet', title:'Ethernet & MAC', html:'<h2>Ethernet — Layer 2</h2><p>Defines frames, addressing, transmission on a local segment.</p><h3>Frame structure</h3><div class="pca-ac-net-diagram">PREAMBLE │ DEST MAC │ SRC MAC │ ETHERTYPE │ PAYLOAD │ PAD │ FCS\n7 bytes  │ 6 bytes  │ 6 bytes │ 2 bytes   │ 46-1500 │ var │ 4</div><ul><li><strong>Preamble</strong> — clock sync, then SFD.</li><li><strong>Destination MAC</strong> — 6 bytes, receiver.</li><li><strong>Source MAC</strong> — 6 bytes, sender.</li><li><strong>EtherType</strong> — 0x0800 IPv4, 0x0806 ARP, 0x86DD IPv6, 0x8100 VLAN.</li><li><strong>FCS</strong> — CRC32 error detection.</li></ul><h3>MAC addresses</h3><p>48 bits: <code>00:1A:2B:3C:4D:5E</code>.</p><ul><li><strong>First 3 bytes</strong> — OUI (vendor).</li><li><strong>Last 3 bytes</strong> — NIC-specific.</li><li><strong>Broadcast</strong> — FF:FF:FF:FF:FF:FF.</li></ul><h3>Unicast / multicast / broadcast</h3><table><thead><tr><th>Type</th><th>Meaning</th></tr></thead><tbody><tr><td>Unicast</td><td>One → one</td></tr><tr><td>Multicast</td><td>One → group</td></tr><tr><td>Broadcast</td><td>One → everyone on segment</td></tr></tbody></table><div class="pca-ac-callout"><b>Security note.</b> Ethernet has no authentication. MAC spoofing and flooding are historical attacks. Port security, 802.1X, and DHCP snooping are the controls.</div>'},
+    {id:'switching', title:'Switching & VLANs', html:'<h2>Switches</h2><p>Forward frames by MAC address. Learn which MAC is on which port.</p><h3>Learning process</h3><ol><li>Frame arrives on port with source MAC.</li><li>Switch records MAC → port.</li><li>Lookup destination MAC.</li><li>Found → forward only to that port.</li><li>Not found → flood to all ports (unknown unicast).</li><li>Entries age out (300 s default).</li></ol><h2>VLANs</h2><p>Logical partitions of a switch into isolated broadcast domains.</p><ul><li><strong>Access port</strong> — one VLAN, untagged.</li><li><strong>Trunk port</strong> — multiple VLANs, 802.1Q tagged.</li><li><strong>Native VLAN</strong> — untagged trunk traffic (best practice: change).</li><li><strong>Inter-VLAN routing</strong> — router or L3 switch routes subnets.</li></ul><h3>802.1Q tag</h3><div class="pca-ac-net-diagram">DEST MAC │ SRC MAC │ 802.1Q TAG │ ETHERTYPE │ PAYLOAD\n                    ┌──────┬──────────┬──────┐\n                    │ TPID │ PRIORITY │ VID  │\n                    │0x8100│  3 bits  │12 bit│\n                    └──────┴──────────┴──────┘</div><div class="pca-ac-callout pca-ac-good"><b>Defensive VLAN use.</b> Put IoT, guest Wi-Fi, servers, printers, and management in separate VLANs. Enforce inter-VLAN policy at the firewall.</div>'},
+    {id:'ip-subnet', title:'IP Addressing & Subnetting', html:'<h2>IPv4</h2><p>32 bits, four decimal octets: <code>192.168.1.10</code>.</p><h3>Common masks</h3><table><thead><tr><th>CIDR</th><th>Mask</th><th>Hosts</th></tr></thead><tbody><tr><td>/8</td><td>255.0.0.0</td><td>16.7M</td></tr><tr><td>/16</td><td>255.255.0.0</td><td>65,534</td></tr><tr><td>/24</td><td>255.255.255.0</td><td>254</td></tr><tr><td>/25</td><td>255.255.255.128</td><td>126</td></tr><tr><td>/26</td><td>255.255.255.192</td><td>62</td></tr><tr><td>/30</td><td>255.255.255.252</td><td>2</td></tr></tbody></table><h3>Private ranges</h3><ul><li>10.0.0.0/8</li><li>172.16.0.0/12</li><li>192.168.0.0/16</li><li>127.0.0.0/8 — loopback</li><li>169.254.0.0/16 — link-local</li></ul><h3>Subnetting</h3><p>Split <code>192.168.1.0/24</code> into four /26:</p><div class="pca-ac-net-diagram">Subnet 1: 192.168.1.0/26   hosts .1-.62    broadcast .63\nSubnet 2: 192.168.1.64/26  hosts .65-.126  broadcast .127\nSubnet 3: 192.168.1.128/26 hosts .129-.190 broadcast .191\nSubnet 4: 192.168.1.192/26 hosts .193-.254 broadcast .255</div><p>Formula: usable = 2^(32-cidr) − 2</p><h3>IPv6</h3><ul><li>128 bits, eight groups of 4 hex digits.</li><li>Compression with :: for one run of zeros.</li><li>Global unicast: 2000::/3</li><li>Link-local: fe80::/10</li><li>Multicast: ff00::/8</li><li>No broadcast — uses multicast.</li></ul>'},
+    {id:'arp-icmp', title:'ARP & ICMP', html:'<h2>ARP</h2><p>Maps IPv4 → MAC on the local segment.</p><ol><li>Broadcast: "Who has 192.168.1.20?"</li><li>Owner replies unicast with MAC.</li><li>Both cache mapping.</li></ol><pre class="pca-ac-code">ip neigh show        # Linux\narp -a               # Linux/Windows\nip -s neigh flush all  # clear</pre><h3>Security</h3><ul><li><strong>ARP spoofing</strong> — forged replies redirect traffic. Defence: DAI.</li><li><strong>ARP flooding</strong> — overwhelm cache. Rate limit, port security.</li></ul><h2>ICMP</h2><table><thead><tr><th>Type</th><th>Name</th><th>Purpose</th></tr></thead><tbody><tr><td>0</td><td>Echo Reply</td><td>Ping response</td></tr><tr><td>3</td><td>Destination Unreachable</td><td>No route/port</td></tr><tr><td>8</td><td>Echo Request</td><td>Ping</td></tr><tr><td>11</td><td>Time Exceeded</td><td>traceroute</td></tr></tbody></table><pre class="pca-ac-code">ping -c 4 8.8.8.8\ntraceroute 1.1.1.1</pre><div class="pca-ac-callout pca-ac-bad"><b>Common mistake.</b> Blocking all ICMP breaks PMTUD, traceroute, and IPv6.</div>'},
+    {id:'tcp', title:'TCP Deep Dive', html:'<h2>TCP</h2><p>Reliable, ordered, connection-oriented byte-stream delivery.</p><h3>What TCP solves</h3><ul><li>Lost packets → retransmission</li><li>Out-of-order → sequencing</li><li>Slow receiver → flow control</li><li>Congested network → congestion control</li></ul><h3>Flags</h3><ul><li>SYN, ACK, FIN, RST, PSH, URG</li></ul><h3>Three-way handshake</h3><div class="pca-ac-net-diagram">CLIENT                       SERVER\n  │  SYN (seq=x)              │\n  ├──────────────────────────►│\n  │  ◄── SYN+ACK (y, x+1)     │\n  │  ACK (y+1)                │\n  ├──────────────────────────►│\n  │  ESTABLISHED              │</div><h3>Data transfer</h3><ul><li>Every byte has a sequence number.</li><li>Receiver ACKs highest contiguous byte.</li><li><strong>Sliding window</strong> — receiver advertises buffer size.</li><li><strong>Retransmission</strong> — RTO expiry triggers resend.</li><li><strong>Fast retransmit</strong> — 3 duplicate ACKs trigger immediate resend.</li><li><strong>Congestion control</strong> — slow start, congestion avoidance (Reno, Cubic, BBR).</li></ul><h3>Termination</h3><div class="pca-ac-net-diagram">CLIENT                          SERVER\n  │  FIN          ────────────────►│\n  │  ◄─────────── ACK              │\n  │  ◄─────────── FIN              │\n  │  ACK          ────────────────►│\n  │  TIME_WAIT (2×MSL, ~60s)       │</div><h3>Attacks (concepts)</h3><ul><li><strong>SYN flood</strong> — exhaust SYN backlog. Mitigation: SYN cookies.</li><li><strong>TCP reset injection</strong> — forged RST. Mitigation: TLS, sequence randomisation.</li></ul>'},
+    {id:'udp', title:'UDP Deep Dive', html:'<h2>UDP</h2><p>Connectionless, best-effort, low-overhead. Reliability is the app\'s job.</p><h3>Header — 8 bytes</h3><div class="pca-ac-net-diagram">SRC PORT │ DST PORT\nLENGTH   │ CHECKSUM\npayload...</div><h3>Uses</h3><ul><li>DNS, DHCP, VoIP, video, gaming, SNMP, NTP, TFTP, Syslog, QUIC.</li></ul><h3>QUIC</h3><p>Built on UDP — adds reliability, ordering, congestion control, TLS 1.3 encryption, multiplexing. Powers HTTP/3.</p><h3>TCP vs UDP</h3><table><thead><tr><th>Feature</th><th>TCP</th><th>UDP</th></tr></thead><tbody><tr><td>Connection</td><td>Handshake</td><td>None</td></tr><tr><td>Reliability</td><td>Guaranteed</td><td>Best-effort</td></tr><tr><td>Ordering</td><td>Yes</td><td>No</td></tr><tr><td>Header</td><td>20–60 B</td><td>8 B</td></tr><tr><td>Speed</td><td>Slower</td><td>Faster</td></tr><tr><td>Uses</td><td>HTTP, SSH, SMTP</td><td>DNS, DHCP, VoIP, gaming</td></tr></tbody></table><h3>Security</h3><ul><li><strong>Amplification</strong> — small spoofed request, large reply. Mitigation: response-rate limits.</li><li><strong>Easier spoofing</strong> — no handshake.</li></ul>'},
+    {id:'ports', title:'Ports & Sockets', html:'<h2>Ports and sockets</h2><p>A <strong>port</strong> is 16 bits (0-65535). With IP + protocol it forms a <strong>socket</strong>.</p><p>Connection identified by 4-tuple: (source IP, source port, destination IP, destination port).</p><h3>Ranges</h3><table><thead><tr><th>Range</th><th>Name</th></tr></thead><tbody><tr><td>0–1023</td><td>Well-known</td></tr><tr><td>1024–49151</td><td>Registered</td></tr><tr><td>49152–65535</td><td>Ephemeral</td></tr></tbody></table><h3>Common ports</h3><table><thead><tr><th>Port</th><th>Service</th><th>Transport</th></tr></thead><tbody><tr><td>22</td><td>SSH</td><td>TCP</td></tr><tr><td>25</td><td>SMTP</td><td>TCP</td></tr><tr><td>53</td><td>DNS</td><td>UDP/TCP</td></tr><tr><td>80</td><td>HTTP</td><td>TCP</td></tr><tr><td>443</td><td>HTTPS</td><td>TCP</td></tr><tr><td>3389</td><td>RDP</td><td>TCP/UDP</td></tr><tr><td>3306</td><td>MySQL</td><td>TCP</td></tr><tr><td>6379</td><td>Redis</td><td>TCP</td></tr></tbody></table><pre class="pca-ac-code">ss -tulpn              # Linux listening\nnetstat -ano | findstr LISTENING  # Windows</pre><div class="pca-ac-callout pca-ac-bad"><b>Number one cloud incident.</b> DB on default port bound to 0.0.0.0/0 gets scanned and exploited within hours.</div>'},
+    {id:'dns', title:'DNS Deep Dive', html:'<h2>DNS</h2><p>Distributed hierarchical database.</p><div class="pca-ac-net-diagram">.  (root)\n├── .com  .org  .in   ← TLDs\n│     └── example.com\n│            ├── www  mail  api</div><h3>Records</h3><table><thead><tr><th>Record</th><th>Purpose</th></tr></thead><tbody><tr><td><strong>A</strong></td><td>Name → IPv4</td></tr><tr><td><strong>AAAA</strong></td><td>Name → IPv6</td></tr><tr><td><strong>CNAME</strong></td><td>Alias</td></tr><tr><td><strong>MX</strong></td><td>Mail exchanger</td></tr><tr><td><strong>NS</strong></td><td>Authoritative servers</td></tr><tr><td><strong>TXT</strong></td><td>SPF, DKIM, DMARC</td></tr><tr><td><strong>PTR</strong></td><td>Reverse lookup</td></tr><tr><td><strong>SOA</strong></td><td>Zone metadata</td></tr><tr><td><strong>CAA</strong></td><td>Cert issuance policy</td></tr></tbody></table><h3>Resolution path</h3><div class="pca-ac-net-diagram">USER\n  │\n  ▼\nLOCAL CACHE (browser, OS, router)\n  │  miss\n  ▼\nRECURSIVE RESOLVER\n  │\n  ▼\nROOT  →  TLD  →  AUTHORITATIVE\n  │\n  ▼\nIP + cached for TTL</div><h3>Commands</h3><pre class="pca-ac-code">dig example.com A\ndig +trace example.com\ndig -x 93.184.216.34\ndig MX example.com</pre><h3>Security</h3><ul><li><strong>Spoofing</strong> — DNSSEC mitigates.</li><li><strong>Tunnelling</strong> — exfil via queries. Detect by entropy/volume.</li><li><strong>Typosquatting</strong> — monitor CT logs.</li><li><strong>DoT / DoH</strong> — encrypted DNS, port 853/443.</li></ul>'},
+    {id:'dhcp', title:'DHCP', html:'<h2>DHCP — DORA</h2><div class="pca-ac-net-diagram">CLIENT                              SERVER\n  │  DISCOVER (broadcast)             │\n  ├──────────────────────────────────►│\n  │  ◄── OFFER (proposed lease)       │\n  │  REQUEST                          │\n  ├──────────────────────────────────►│\n  │  ◄── ACK                          │\n  │  LEASE ACTIVE                     │</div><h3>Lease lifecycle</h3><ul><li>T1 (50%) — renew with original server.</li><li>T2 (87.5%) — rebind broadcast.</li><li>100% — must stop using address.</li></ul><h3>Concepts</h3><ul><li><strong>Scope</strong> — pool of addresses.</li><li><strong>Reservation</strong> — fixed IP bound to MAC.</li><li><strong>Options</strong> — DNS, NTP, PXE, WPAD.</li><li><strong>Relay agent</strong> — forwards across subnets.</li></ul><div class="pca-ac-callout pca-ac-bad"><b>Rogue DHCP server.</b> Attacker hands out itself as gateway/DNS. Defence: DHCP snooping, port security, 802.1X, DAI.</div>'},
+    {id:'http-tls', title:'HTTP & TLS', html:'<h2>HTTP</h2><p>Request/response, stateless.</p><h3>Request</h3><pre class="pca-ac-code">GET /api/users/42 HTTP/1.1\nHost: api.example.com\nAuthorization: Bearer eyJ...\nCookie: session=abc</pre><h3>Methods</h3><table><thead><tr><th>Method</th><th>Meaning</th><th>Idempotent</th></tr></thead><tbody><tr><td>GET</td><td>Read</td><td>Yes</td></tr><tr><td>POST</td><td>Create/action</td><td>No</td></tr><tr><td>PUT</td><td>Replace</td><td>Yes</td></tr><tr><td>PATCH</td><td>Partial update</td><td>No</td></tr><tr><td>DELETE</td><td>Remove</td><td>Yes</td></tr></tbody></table><h3>Status codes</h3><ul><li>1xx informational</li><li>2xx success</li><li>3xx redirect</li><li>4xx client error</li><li>5xx server error</li></ul><h3>Security headers</h3><pre class="pca-ac-code">Content-Security-Policy: default-src \'self\'\nStrict-Transport-Security: max-age=31536000\nX-Content-Type-Options: nosniff\nReferrer-Policy: strict-origin-when-cross-origin</pre><h3>Cookies</h3><ul><li><strong>Secure</strong> — HTTPS only.</li><li><strong>HttpOnly</strong> — no JS access.</li><li><strong>SameSite</strong> — Lax / Strict / None.</li></ul><h2>TLS</h2><div class="pca-ac-net-diagram">CLIENT                              SERVER\n  │  ClientHello                       │\n  ├──────────────────────────────────►│\n  │  ◄── ServerHello + Cert + Finished│\n  │  Finished                          │\n  ├──────────────────────────────────►│\n  │  ← encrypted app data →           │</div><p>TLS 1.3 completes in one RTT. Forward secrecy mandatory.</p><pre class="pca-ac-code">openssl s_client -connect example.com:443 -servername example.com </dev/null\nopenssl x509 -in cert.pem -noout -text</pre>'},
+    {id:'netsec', title:'Network Security', html:'<h2>Controls</h2><h3>Firewalls</h3><ul><li><strong>Stateless</strong> — packet filter (5-tuple).</li><li><strong>Stateful</strong> — tracks connections.</li><li><strong>NGFW</strong> — app/user-aware.</li><li><strong>Cloud</strong> — Security Groups (stateful), NACLs (stateless).</li></ul><h3>IDS / IPS</h3><ul><li>IDS — passive, alerts.</li><li>IPS — inline, blocks.</li><li>Signatures — Suricata, Snort.</li></ul><h3>VPN</h3><ul><li>Site-to-site — IPsec.</li><li>Remote access — SSL VPN, WireGuard.</li><li>Split vs full tunnel.</li></ul><h3>WAF</h3><p>Inspects HTTP for attack patterns.</p><h3>Segmentation</h3><ul><li>Zones: DMZ, user, server, management, OT.</li><li>Microsegmentation — per-workload policy.</li><li>Zero trust — no implicit trust from network location.</li></ul><h3>Monitoring</h3><ul><li>Flow data — NetFlow, IPFIX.</li><li>Full capture — PCAP.</li><li>TLS metadata — JA3/JA4.</li><li>Zeek, Suricata.</li></ul><div class="pca-ac-callout pca-ac-good"><b>Practise.</b> Open Wireshark, capture your own traffic. Find DNS, handshake, TLS ClientHello, cert, HTTP request. Do it 5 times and this becomes real.</div>'}
+  ],
+  quiz:[
+    {q:'Which OSI layer handles logical (IP) addressing?', opts:['Layer 1','Layer 2','Layer 3','Layer 4'], a:2, exp:'Layer 3 handles logical addressing. Layer 2 uses MAC.'},
+    {q:'What does the TCP three-way handshake establish?', opts:['Encryption','ISN sync + reachability','DNS','IP assignment'], a:1, exp:'Synchronises sequence numbers and confirms communication.'},
+    {q:'EtherType field identifies?', opts:['Preamble','Protocol in payload','MAC vendor','CRC'], a:1, exp:'0x0800 IPv4, 0x0806 ARP, 0x86DD IPv6.'},
+    {q:'/26 subnet usable hosts?', opts:['32','62','126','254'], a:1, exp:'2^(32-26) − 2 = 62.'},
+    {q:'Maps IP to MAC on LAN?', opts:['DHCP','DNS','ARP','ICMP'], a:2, exp:'ARP resolves IPv4 to MAC.'},
+    {q:'SameSite=Lax mitigates?', opts:['XSS','CSRF','SQLi','SSRF'], a:1, exp:'Blocks cookie on most cross-site requests.'},
+    {q:'SYN flood exhausts?', opts:['Bandwidth','SYN backlog','DNS cache','RAM'], a:1, exp:'Many SYNs without completing handshake.'},
+    {q:'DNS uses TCP for?', opts:['Encryption','Large responses and zone transfers','Caching','Everything'], a:1, exp:'Large answers exceed UDP limits.'}
+  ]
+};
+
+/* ===== RED TEAMING ===== */
+CONTENT['red-teaming'] = {
+  intro:'Red teaming is authorised adversary simulation. All practical work happens in labs, CTFs, or systems you own.',
+  sections:[
+    {id:'fundamentals', title:'Red Team Fundamentals', html:'<h2>What is a red team?</h2><p>A group emulating adversary behaviour to test detection, response, resilience.</p><h3>Red Team vs Pentest</h3><table><thead><tr><th>Aspect</th><th>Pentest</th><th>Red Team</th></tr></thead><tbody><tr><td>Objective</td><td>Find vulns</td><td>Emulate actor, test detection</td></tr><tr><td>Scope</td><td>Technical</td><td>Organisation-wide</td></tr><tr><td>Duration</td><td>Days</td><td>Weeks-months</td></tr><tr><td>Metrics</td><td>Findings</td><td>MTTD, MTTR, gaps</td></tr></tbody></table><h3>Philosophy</h3><ul><li>Emulate, don\'t improvise.</li><li>Measurable outcomes > flashy findings.</li><li>Blue team is the customer.</li><li>RoE is absolute.</li></ul><blockquote>Red teaming without RoE is unauthorised access.</blockquote>'},
+    {id:'roe', title:'Rules of Engagement', html:'<h2>RoE</h2><p>Written contract making engagement legal and safe.</p><ol><li>Scope — CIDRs, domains, cloud IDs, physical.</li><li>Authorisation — signed by authority.</li><li>Testers — named individuals.</li><li>Timing — dates, blackout windows.</li><li>Permitted techniques.</li><li>Escalation contacts — 24/7 number.</li><li>Data handling — storage, destruction.</li><li>Stop conditions.</li></ol><div class="pca-ac-callout pca-ac-bad"><b>Common mistakes.</b> "Corporate network" without CIDRs. Authorisation signed by wrong person. No after-hours contact.</div>'},
+    {id:'attack', title:'MITRE ATT&CK', html:'<h2>MITRE ATT&CK</h2><p>Knowledge base of adversary behaviour: tactics + techniques.</p><h3>14 Enterprise tactics</h3><ol><li>Reconnaissance</li><li>Resource Development</li><li>Initial Access</li><li>Execution</li><li>Persistence</li><li>Privilege Escalation</li><li>Defense Evasion</li><li>Credential Access</li><li>Discovery</li><li>Lateral Movement</li><li>Collection</li><li>Command and Control</li><li>Exfiltration</li><li>Impact</li></ol>'},
+    {id:'killchain', title:'Kill Chain & Diamond', html:'<h2>Cyber Kill Chain</h2><ol><li>Reconnaissance</li><li>Weaponisation</li><li>Delivery</li><li>Exploitation</li><li>Installation</li><li>Command & Control</li><li>Actions on Objectives</li></ol><h2>Diamond Model</h2><ul><li><strong>Adversary</strong> — who.</li><li><strong>Capability</strong> — tools.</li><li><strong>Infrastructure</strong> — C2, staging.</li><li><strong>Victim</strong> — target.</li></ul>'},
+    {id:'recon', title:'Recon & Initial Access', html:'<h2>Reconnaissance</h2><ul><li><strong>Passive</strong> — CT logs, WHOIS, search engines, public repos.</li><li><strong>Active</strong> — DNS queries, port scans (authorised).</li></ul><h3>Sources</h3><ul><li>Certificate Transparency</li><li>Search operators</li><li>WHOIS / RDAP</li><li>DNS records</li><li>Shodan / Censys</li><li>Job postings</li><li>Public repos</li></ul><h2>Initial Access (concepts)</h2><ul><li>Phishing / smishing / vishing</li><li>Exposed services</li><li>Valid accounts</li><li>Supply chain</li><li>Public-facing apps</li><li>Physical</li></ul><div class="pca-ac-callout pca-ac-bad"><b>Never without authorisation.</b></div>'},
+    {id:'lateral', title:'Lateral Movement & C2', html:'<h2>Lateral movement</h2><p>ATT&CK TA0008.</p><ul><li>Reusing stolen credentials.</li><li>Abusing trust relationships.</li><li>Remote management (WinRM, PSExec, WMI, SSH, RDP).</li><li>Cloud APIs.</li></ul><h2>C2</h2><p>ATT&CK TA0011.</p><ul><li>HTTPS to plausible domains.</li><li>DNS tunnelling.</li><li>Cloud dead drops.</li><li>Beaconing with jitter.</li></ul><h3>Detection</h3><ul><li>Beacon timing analysis.</li><li>JA3/JA4 fingerprints.</li><li>Newly registered domains.</li><li>Data volume asymmetry.</li></ul><div class="pca-ac-callout pca-ac-good"><b>Highest ROI.</b> Egress filtering.</div>'},
+    {id:'report', title:'Reporting & Purple Team', html:'<h2>Report structure</h2><ol><li>Executive summary</li><li>Scope and RoE</li><li>Attack narrative</li><li>Findings</li><li>Detection gaps</li><li>Recommendations</li></ol><h2>Purple team</h2><ul><li>Validate detection of emulated TTPs.</li><li>Measure MTTD/MTTR per technique.</li><li>Improve detections.</li><li>Retest after remediation.</li></ul>'}
+  ],
+  quiz:[
+    {q:'Red team vs pentest?', opts:['Same','Red emulates actor and tests detection','Red is faster','No difference'], a:1, exp:'Red teaming measures detection against a threat model.'},
+    {q:'What authorises the engagement?', opts:['Report','Rules of Engagement','Kill Chain','NIST CSF'], a:1, exp:'RoE is the written authorisation.'},
+    {q:'TA0001 is?', opts:['Exfiltration','Initial Access','Persistence','Lateral Movement'], a:1, exp:'Initial Access.'},
+    {q:'Most reduces lateral movement?', opts:['AV','Segmentation and least privilege','Encrypted disks','Long passwords'], a:1, exp:'Structural controls limit blast radius.'},
+    {q:'Beaconing is?', opts:['Malware type','Periodic C2 communication','Firewall rule','Phishing'], a:1, exp:'Periodic check-in from compromised host.'},
+    {q:'Why egress filtering?', opts:['Encrypts','Blocks C2 to non-permitted destinations','Speeds','Free'], a:1, exp:'Allow-list prevents C2 and exfil.'},
+    {q:'Purple team does?', opts:['Attacks','Defends','Coordinates to close gaps','HR'], a:2, exp:'Coordinates emulation and defence.'},
+    {q:'MTTD measures?', opts:['Detection time','Tool count','Report length','Logo'], a:0, exp:'Mean Time To Detect per technique.'}
+  ]
+};
+
+/* ===== SOC / BLUE TEAM ===== */
+CONTENT['soc-blue-team'] = {
+  intro:'Blue team defends. SOC analysts detect, triage, respond. Detection engineers build signals. Hunters find what detection misses.',
+  sections:[
+    {id:'soc-fundamentals', title:'SOC Fundamentals', html:'<h2>What is a SOC?</h2><p>Security Operations Centre — team, process, technology monitoring events.</p><h3>Tiers</h3><ul><li>Tier 1 — triage.</li><li>Tier 2 — investigation, containment.</li><li>Tier 3 — hunting, IR, forensics.</li><li>Detection Engineering — builds rules.</li><li>SOAR — automation.</li></ul><h3>Metrics</h3><ul><li><strong>MTTD</strong> — Mean Time To Detect.</li><li><strong>MTTR</strong> — Mean Time To Respond.</li><li><strong>FP rate</strong>.</li><li><strong>Coverage</strong> — % ATT&CK techniques.</li></ul>'},
+    {id:'logs', title:'Log Analysis', html:'<h2>Reading logs</h2><table><thead><tr><th>Source</th><th>Fields</th></tr></thead><tbody><tr><td>Windows Security</td><td>User, SID, LogonType, IP</td></tr><tr><td>Sysmon</td><td>Parent, hashes, cmdline</td></tr><tr><td>Linux auth</td><td>User, IP, result</td></tr><tr><td>Web</td><td>IP, method, path, UA</td></tr><tr><td>Cloud</td><td>Principal, action, resource</td></tr></tbody></table><h3>Fields to check</h3><ul><li>Timestamp (UTC)</li><li>Actor</li><li>Action</li><li>Target</li><li>Result</li><li>Context</li></ul><h3>Example</h3><pre class="pca-ac-code">192.0.2.45 - - [12/Mar/2024:14:22:11] "GET /admin.php?id=1\' OR \'1\'=\'1 HTTP/1.1" 500 234 "-" "sqlmap/1.7"</pre><ul><li>Automated SQLi attempt.</li><li>User-Agent identifies sqlmap.</li><li>500 suggests unhandled exception.</li></ul>'},
+    {id:'siem', title:'SIEM & Detection', html:'<h2>SIEM</h2><p>Aggregates, normalises, correlates, alerts.</p><div class="pca-ac-net-diagram">SOURCES → COLLECTORS → PARSERS → NORMALISER → INDEXER → DETECTION → ALERT → SOAR</div><h3>Schemas</h3><ul><li>ECS — Elastic Common Schema</li><li>OCSF — Open Cybersecurity Schema Framework</li></ul><h3>Detection lifecycle</h3><ol><li>Requirement</li><li>Data</li><li>Logic</li><li>Test</li><li>Deploy</li><li>Tune</li><li>Retire</li></ol><h3>Sigma example</h3><pre class="pca-ac-code">title: Suspicious PowerShell EncodedCommand\nlogsource:\n  product: windows\n  category: process_creation\ndetection:\n  selection:\n    Image|endswith: \'\\powershell.exe\'\n    CommandLine|contains: \'-enc\'\n  condition: selection\nlevel: medium</pre>'},
+    {id:'ir', title:'Incident Response', html:'<h2>PICERL</h2><ol><li>Preparation</li><li>Identification</li><li>Containment</li><li>Eradication</li><li>Recovery</li><li>Lessons Learned</li></ol><h3>Severity</h3><table><thead><tr><th>Severity</th><th>Example</th></tr></thead><tbody><tr><td>Critical</td><td>Ransomware</td></tr><tr><td>High</td><td>Exfiltration</td></tr><tr><td>Medium</td><td>Single host</td></tr><tr><td>Low</td><td>Blocked attempt</td></tr></tbody></table><h3>Evidence</h3><ul><li>Order of volatility: memory → network → processes → disk.</li><li>Chain of custody.</li><li>SHA-256 before analysis.</li><li>Isolate, do not shut down.</li></ul>'},
+    {id:'hunt', title:'Threat Hunting', html:'<h2>Hunting</h2><p>Proactive, hypothesis-driven.</p><h3>Loop</h3><ol><li>Hypothesis</li><li>Data</li><li>Query</li><li>Analysis</li><li>Output</li><li>Documentation</li></ol><h3>Sources</h3><ul><li>Threat intelligence</li><li>ATT&CK gaps</li><li>Anomalies</li><li>Business context</li></ul><div class="pca-ac-callout pca-ac-good"><b>Rule.</b> If you cannot articulate the hypothesis in one sentence, the hunt is not ready.</div>'}
+  ],
+  quiz:[
+    {q:'MTTD measures?', opts:['Detection time','Debug time','Delete time','Data time'], a:0, exp:'Mean Time To Detect.'},
+    {q:'Windows event ID for process creation?', opts:['4624','4625','4688','4720'], a:2, exp:'4688 (or Sysmon Event 1).'},
+    {q:'First PICERL phase?', opts:['Identification','Preparation','Containment','Recovery'], a:1, exp:'Preparation comes first.'},
+    {q:'Why not power off compromised host?', opts:['Hardware damage','Destroys memory evidence','Warranty','Slow boot'], a:1, exp:'Memory holds volatile evidence.'},
+    {q:'Normalisation in SIEM?', opts:['Slow queries','Common schema','Encrypt logs','Dedup'], a:1, exp:'Maps diverse logs to a shared schema.'},
+    {q:'First evidence to preserve?', opts:['Backups','Disk image','Memory','Prints'], a:2, exp:'Order of volatility — memory first.'},
+    {q:'Good hunt hypothesis?', opts:['Vague','Testable and tied to threat model','Copied','Expensive'], a:1, exp:'Must be testable and tied to a model.'}
+  ]
+};
+
+/* ===== AI SECURITY ===== */
+CONTENT['ai-security'] = {
+  intro:'AI introduces new trust boundaries: prompts are untrusted input, models are supply chain, agents are privilege.',
+  sections:[
+    {id:'fundamentals', title:'AI Security Fundamentals', html:'<h2>Why AI security is different</h2><ul><li>Natural-language input mixes instructions and data.</li><li>Training/inference pipelines pull from multiple sources.</li><li>Agents call tools, read data, act.</li></ul><h3>OWASP LLM Top 10</h3><ol><li>Prompt Injection</li><li>Insecure Output Handling</li><li>Training Data Poisoning</li><li>Model Denial of Service</li><li>Supply Chain Vulnerabilities</li><li>Sensitive Information Disclosure</li><li>Insecure Plugin Design</li><li>Excessive Agency</li><li>Overreliance</li><li>Model Theft</li></ol>'},
+    {id:'prompt', title:'Prompt Injection', html:'<h2>Prompt injection</h2><p>Attacker input changes model behaviour. Prompts mix instructions and data — no reliable boundary.</p><h3>Direct vs Indirect</h3><ul><li><strong>Direct</strong> — user types "ignore previous instructions".</li><li><strong>Indirect</strong> — payload in PDF, web page, email, retrieved doc.</li></ul><h3>Impacts</h3><ul><li>Data exfiltration from context/tools.</li><li>Unauthorised tool actions.</li><li>Bypassed guardrails.</li></ul><h3>Defences</h3><ul><li>Input filtering</li><li>Prompt hardening, delimiters, role separation</li><li>Output validation</li><li>Least-privilege tools</li><li>Human approval for high-impact</li><li>Sandboxing agents</li><li>Full monitoring</li><li><strong>Enforce security in code, not prompts.</strong></li></ul>'},
+    {id:'rag', title:'RAG & Agent Security', html:'<h2>RAG risks</h2><ul><li>Document poisoning</li><li>Tenant isolation failure</li><li>Sensitive data leakage</li></ul><h3>Controls</h3><ul><li>Authorise retrieval per user/tenant.</li><li>Scan docs for injection patterns.</li><li>Redact sensitive data before ingest.</li><li>Isolate retrieval contexts.</li><li>Track provenance.</li></ul><h2>Agent risks</h2><ul><li>Indirect injection via tools.</li><li>Excessive agency.</li><li>Tool chaining amplifies impact.</li><li>Credential exposure.</li><li>Silent actions.</li></ul><h3>Controls</h3><ul><li>Per-tool least privilege.</li><li>Approval gates.</li><li>Sandboxing.</li><li>Rate limits.</li><li>Deterministic validators.</li><li>Full audit logging.</li></ul>'}
+  ],
+  quiz:[
+    {q:'Why prompt injection is hard to prevent?', opts:['Slow models','Instructions and data are same stream','No TLS','Firewalls'], a:1, exp:'No structural boundary exists.'},
+    {q:'Indirect injection needs?', opts:['API access','Planted content in docs/pages/emails','Physical','Break TLS'], a:1, exp:'Payloads planted where model will consume them.'},
+    {q:'Defence against excessive agency?', opts:['Longer prompts','Per-tool least privilege and approval gates','Bigger models','Higher temp'], a:1, exp:'Limit tool capabilities and require approval.'},
+    {q:'RAG tenant isolation failure?', opts:['Hallucination','Cross-tenant document leak','Slow DB','Refusal'], a:1, exp:'Improper filtering leaks documents.'},
+    {q:'Safest place to enforce AI security?', opts:['System prompt','Model reasoning','Deterministic code','User training'], a:2, exp:'Code enforces policy reliably.'}
+  ]
+};
+
+/* ===== WEB SECURITY ===== */
+CONTENT['web-security'] = {
+  intro:'Web apps are the largest attack surface. This module covers OWASP Top 10 and the defensive controls that stop them.',
+  sections:[
+    {id:'owasp', title:'OWASP Top 10', html:'<h2>The OWASP Top 10</h2><ol><li><strong>Broken Access Control</strong> — missing authorisation.</li><li><strong>Cryptographic Failures</strong>.</li><li><strong>Injection</strong> — SQL, NoSQL, command.</li><li><strong>Insecure Design</strong>.</li><li><strong>Security Misconfiguration</strong>.</li><li><strong>Vulnerable Components</strong>.</li><li><strong>Auth Failures</strong>.</li><li><strong>Integrity Failures</strong>.</li><li><strong>Logging Failures</strong>.</li><li><strong>SSRF</strong>.</li></ol>'},
+    {id:'injection', title:'Injection', html:'<h2>Injection</h2><h3>SQL injection</h3><pre class="pca-ac-code"># VULNERABLE\nquery = "SELECT * FROM users WHERE email = \'" + email + "\'"\n\n# SAFE\ncursor.execute("SELECT * FROM users WHERE email = ?", (email,))</pre><h3>NoSQL</h3><pre class="pca-ac-code">// Attacker: { "password": { "$ne": null } }</pre><h3>Command</h3><pre class="pca-ac-code"># Vulnerable: os.system("ping " + user_input)\n# Fix: subprocess.run(["ping", "-c", "1", user_input])</pre><h3>Defences</h3><ul><li>Parameterise/escape for the exact context.</li><li>Allow-list input.</li><li>Least-privilege DB accounts.</li><li>SAST + DAST in pipeline.</li></ul>'},
+    {id:'xss', title:'XSS, CSRF, SSRF', html:'<h2>XSS</h2><ul><li>Stored — persisted (most severe).</li><li>Reflected — reflected in response.</li><li>DOM-based — client JS writes source to sink.</li></ul><h3>Defence</h3><ul><li>Output encoding (primary).</li><li>CSP.</li><li>HttpOnly cookies.</li><li>Avoid innerHTML.</li></ul><h2>CSRF</h2><h3>Defence</h3><ul><li>SameSite=Lax/Strict.</li><li>CSRF tokens.</li><li>Custom header requirement.</li></ul><h2>SSRF</h2><h3>Defence</h3><ul><li>Allow-list destinations (only robust).</li><li>Block RFC1918 + metadata IPs.</li><li>Disable unused schemes.</li><li>Require IMDSv2.</li></ul>'},
+    {id:'access', title:'Access Control & Auth', html:'<h2>Access control</h2><h3>IDOR / BOLA</h3><pre class="pca-ac-code">GET /api/orders/1042\nAuthorization: Bearer <user A token>\n→ 200 OK  { order belongs to user B }</pre><h3>Fix</h3><ul><li>Enforce ownership centrally.</li><li>Never trust client IDs.</li><li>Log authz failures (recon).</li></ul><h2>Authentication</h2><ul><li>bcrypt, scrypt, Argon2.</li><li>Rate limiting.</li><li>Generic errors.</li><li>MFA — prefer FIDO2.</li><li>Regenerate session ID on login.</li></ul>'}
+  ],
+  quiz:[
+    {q:'Top OWASP?', opts:['Injection','Broken Access Control','XSS','CSRF'], a:1, exp:'Broken Access Control.'},
+    {q:'SQLi fix?', opts:['Length limit','Parameterised queries','HTTPS','WAF'], a:1, exp:'Parameterisation separates code from data.'},
+    {q:'Cookie attr blocking JS?', opts:['Secure','HttpOnly','SameSite','Domain'], a:1, exp:'HttpOnly.'},
+    {q:'CSRF mitigation cookie attr?', opts:['Secure','HttpOnly','SameSite=Lax','Expires'], a:2, exp:'SameSite=Lax.'},
+    {q:'SSRF target in cloud?', opts:['Kernel','IMDS metadata','DNS','Backups'], a:1, exp:'Metadata endpoints yield credentials.'},
+    {q:'Robust SSRF defence?', opts:['Block bad IPs','Allow-list destinations','UA filter','Rate limit'], a:1, exp:'Allow-list is the only robust control.'},
+    {q:'Phishing-resistant factor?', opts:['SMS','Email','FIDO2','Security question'], a:2, exp:'FIDO2/WebAuthn.'},
+    {q:'CSP mitigates?', opts:['SQLi','XSS','CSRF','SSRF'], a:1, exp:'Restricts script sources.'}
+  ]
+};
+
+/* ===== CRYPTOGRAPHY ===== */
+CONTENT['cryptography'] = {
+  intro:'Cryptography is the toolkit of trust. Cover primitives, key management, and the mistakes that cause breaches.',
+  sections:[
+    {id:'primitives', title:'Core Primitives', html:'<h2>Encoding vs Encryption vs Hashing</h2><table><thead><tr><th>Concept</th><th>Reversible</th><th>Purpose</th></tr></thead><tbody><tr><td>Encoding</td><td>Yes</td><td>Representation</td></tr><tr><td>Encryption</td><td>With key</td><td>Confidentiality</td></tr><tr><td>Hashing</td><td>No</td><td>Integrity</td></tr></tbody></table><div class="pca-ac-callout pca-ac-bad"><b>Common mistake.</b> Treating Base64 as encryption.</div><h3>Hashes</h3><ul><li>MD5, SHA-1 — broken for security.</li><li>SHA-256, SHA-3 — recommended.</li><li>bcrypt, scrypt, Argon2 — passwords.</li></ul><h3>Encryption</h3><ul><li><strong>AES</strong> — 128/192/256.</li><li><strong>Modes</strong> — CBC, CTR, GCM. Use AEAD (GCM, ChaCha20-Poly1305).</li><li><strong>Nonce reuse</strong> in CTR/GCM is catastrophic.</li></ul><h3>Asymmetric</h3><ul><li>RSA 2048+.</li><li>ECC 256 ≈ RSA 3072.</li><li>Diffie-Hellman (ephemeral = forward secrecy).</li></ul><h3>PKI</h3><ul><li>X.509 certificates.</li><li>CA signs certs.</li><li>Chain: leaf → intermediate → root.</li><li>Revocation: CRL, OCSP.</li></ul>'},
+    {id:'bugs', title:'Common Mistakes', html:'<h2>Crypto failures</h2><ol><li>Rolling your own crypto.</li><li>ECB mode.</li><li>Nonce reuse.</li><li>Weak random.</li><li>Fast hashes for passwords.</li><li>Cert validation disabled.</li><li>Hardcoded keys.</li><li>Padding oracle.</li><li>Timing side channels.</li><li>No key rotation.</li></ol><div class="pca-ac-callout pca-ac-good"><b>Rule.</b> Encrypt with AEAD. Hash with SHA-256+. Passwords with Argon2/bcrypt. Keys with ECDHE.</div>'}
+  ],
+  quiz:[
+    {q:'Password storage algorithm?', opts:['MD5','SHA-1','bcrypt','Base64'], a:2, exp:'bcrypt is slow and salted.'},
+    {q:'Salting prevents?', opts:['Length extension','Rainbow tables','Key theft','Collisions'], a:1, exp:'Per-user salt.'},
+    {q:'AES mode for confidentiality+integrity?', opts:['ECB','CBC','GCM','CTR'], a:2, exp:'GCM is AEAD.'},
+    {q:'Hash property?', opts:['Reversibility','Collision resistance','Key','Salt'], a:1, exp:'Collision resistant.'},
+    {q:'Base64 is?', opts:['Encryption','Hashing','Encoding','Signing'], a:2, exp:'Reversible without key.'},
+    {q:'ECDHE provides?', opts:['Longer keys','Forward secrecy','Smaller certs','Faster hashing'], a:1, exp:'Ephemeral DH.'},
+    {q:'Safe random for tokens?', opts:['random.random','random.randint','secrets.token_hex','time.time'], a:2, exp:'secrets uses OS CSPRNG.'}
+  ]
+};
+
+/* ===== CLOUD SECURITY ===== */
+CONTENT['cloud-security'] = {
+  intro:'Cloud breaches are usually misconfigurations and over-permissive identities.',
+  sections:[
+    {id:'shared', title:'Shared Responsibility', html:'<h2>Shared responsibility</h2><table><thead><tr><th>Model</th><th>Provider</th><th>Customer</th></tr></thead><tbody><tr><td>IaaS</td><td>Physical, hypervisor</td><td>OS, runtime, apps, data, IAM</td></tr><tr><td>PaaS</td><td>Platform, runtime, OS</td><td>Apps, data, IAM</td></tr><tr><td>SaaS</td><td>Everything except data+access</td><td>Data, users, access</td></tr><tr><td>FaaS</td><td>Runtime, orchestration</td><td>Function code, IAM</td></tr></tbody></table><h3>Misunderstandings</h3><ul><li>"Cloud is secure" — provider is; your config is yours.</li><li>"Encrypted at rest" — does not stop authenticated attacker.</li><li>"Managed service = no IAM" — still needs least privilege.</li></ul>'},
+    {id:'iam', title:'IAM & Least Privilege', html:'<h2>IAM</h2><ul><li><strong>Principal</strong> — identity making request.</li><li><strong>Policy</strong> — JSON grants/denies.</li><li><strong>Role</strong> — temporary identity.</li><li><strong>Permission boundary</strong> — max permissions.</li><li><strong>SCP</strong> — org-level guardrail.</li></ul><h3>Least privilege</h3><ul><li>Specific actions on specific resources.</li><li>Roles over long-lived keys.</li><li>Short session durations.</li><li>MFA for sensitive operations.</li><li>Monitor wildcards.</li></ul><h3>Common mistakes</h3><ul><li>Keys committed to Git.</li><li>Root account for daily work.</li><li>No MFA on privileged.</li><li>Over-permissive trust.</li><li>Unused roles never cleaned.</li></ul>'},
+    {id:'posture', title:'Posture & Logging', html:'<h2>CSPM</h2><ul><li>Public storage buckets.</li><li>Security groups 0.0.0.0/0.</li><li>Unencrypted volumes.</li><li>MFA not enforced.</li><li>CloudTrail disabled.</li><li>Over-permissive IAM.</li></ul><h3>Logging</h3><ul><li>CloudTrail (AWS), Activity Log (Azure), Cloud Audit Logs (GCP).</li><li>Data plane — S3 access, VPC flow, DNS.</li><li>Security — GuardDuty, Defender.</li></ul><h3>Cloud IR</h3><ul><li>Isolate workload.</li><li>Revoke credentials.</li><li>Snapshot disks.</li><li>Preserve logs.</li><li>Determine blast radius.</li><li>Rebuild from known-good.</li></ul>'}
+  ],
+  quiz:[
+    {q:'IaaS who secures guest OS?', opts:['Provider','Customer','Both','Nobody'], a:1, exp:'Customer.'},
+    {q:'Most dangerous IAM?', opts:['Roles','Wildcard actions','Short sessions','MFA'], a:1, exp:'Wildcards grant far more than needed.'},
+    {q:'CloudTrail provides?', opts:['Metrics','Control-plane API logs','App logs','Flow data'], a:1, exp:'Audit logs.'},
+    {q:'Common misconfig?', opts:['Encrypted volumes','Public bucket','MFA','Least privilege'], a:1, exp:'Public buckets.'},
+    {q:'Why centralise logs separately?', opts:['Cheaper','Prevent erasure','Faster','Dashboards'], a:1, exp:'Protects audit trail.'}
+  ]
+};
+
+/* ===== COMPUTER FUNDAMENTALS ===== */
+CONTENT['computer-fundamentals'] = {
+  intro:'Every cyber skill rests on a correct mental model of the machine.',
+  sections:[
+    {id:'hardware', title:'Hardware & CPU', html:'<h2>CPU</h2><p>Executes instructions. Multiple cores; each may run threads.</p><h3>Instruction cycle</h3><div class="pca-ac-net-diagram">FETCH → DECODE → EXECUTE → WRITE BACK (repeat)</div><h3>Registers (x86-64)</h3><p>RAX, RBX, RCX, RDX (general), RSP (stack), RBP (base), RIP (instruction pointer), RFLAGS.</p><h3>Cache hierarchy</h3><ul><li><strong>L1</strong> — smallest, fastest, per core.</li><li><strong>L2</strong> — larger, per core.</li><li><strong>L3</strong> — shared across cores.</li><li><strong>RAM</strong> — main memory.</li></ul><h3>Security implications</h3><ul><li>Speculative execution side channels (Spectre, Meltdown concepts).</li><li>Firmware attacks (BIOS/UEFI implants) — defence: Secure Boot.</li><li>Hardware supply chain.</li></ul>'},
+    {id:'memory', title:'Memory & Storage', html:'<h2>RAM</h2><ul><li><strong>Stack</strong> — function frames, locals, return addresses.</li><li><strong>Heap</strong> — dynamic allocations.</li><li><strong>Text</strong> — code.</li><li><strong>Data</strong> — globals.</li></ul><h3>Virtual memory</h3><p>Each process sees its own virtual address space. Isolates processes, allows more memory than physical.</p><h2>Storage</h2><table><thead><tr><th></th><th>HDD</th><th>SSD</th></tr></thead><tbody><tr><td>Technology</td><td>Magnetic platters</td><td>NAND flash</td></tr><tr><td>Speed</td><td>100–200 MB/s</td><td>500 MB/s–GB/s</td></tr><tr><td>Latency</td><td>5–10 ms</td><td>0.05–0.1 ms</td></tr><tr><td>Forensics</td><td>Recoverable</td><td>TRIM complicates</td></tr></tbody></table><h3>Filesystems</h3><ul><li>NTFS, ext4, APFS, XFS, Btrfs, ZFS.</li></ul><h3>Forensic concepts</h3><ul><li><strong>Inode</strong> — metadata.</li><li><strong>Journaling</strong> — records metadata.</li><li><strong>Slack space</strong> — leftover bytes.</li><li><strong>Deleted files</strong> — inode unlinked, data remains.</li></ul>'},
+    {id:'boot', title:'Boot Process', html:'<h2>Boot chain</h2><div class="pca-ac-net-diagram">POWER ON\n   ▼\nUEFI/BIOS firmware\n   ▼\nBoot loader (GRUB, Windows Boot Manager)\n   ▼\nKernel\n   ▼\ninit / systemd\n   ▼\nLogin</div><h3>BIOS vs UEFI</h3><ul><li>BIOS — 16-bit, MBR, 2 TB limit.</li><li>UEFI — 64-bit, GPT, Secure Boot.</li></ul><h3>Secure Boot</h3><p>Verifies signatures of bootloaders and drivers. Prevents bootkits.</p><h3>TPM</h3><p>Records hashes into PCRs. Enables remote attestation.</p>'}
+  ],
+  quiz:[
+    {q:'Shared cache?', opts:['L1','L2','L3','RAM'], a:2, exp:'L3.'},
+    {q:'Virtual memory purpose?', opts:['Speed CPU','Isolate processes','Encrypt','Increase cache'], a:1, exp:'Isolation.'},
+    {q:'Why SSD deleted data harder?', opts:['Encrypted','TRIM and reallocation','No FS','NTFS'], a:1, exp:'TRIM.'},
+    {q:'Secure Boot verifies?', opts:['Traffic','Boot signatures','Disk keys','Passwords'], a:1, exp:'Boot components.'},
+    {q:'TPM is used for?', opts:['Storage','Crypto + measured boot','Networking','Rendering'], a:1, exp:'Keys and attestation.'}
+  ]
+};
+
+/* ===== LINUX ===== */
+CONTENT['linux'] = {
+  intro:'Linux runs most of the internet. Shell fluency multiplies every security skill.',
+  sections:[
+    {id:'fs', title:'Filesystem & Permissions', html:'<h2>Hierarchy</h2><table><thead><tr><th>Path</th><th>Purpose</th></tr></thead><tbody><tr><td>/etc</td><td>Configuration</td></tr><tr><td>/var</td><td>Logs, spools</td></tr><tr><td>/home</td><td>User homes</td></tr><tr><td>/tmp</td><td>World-writable</td></tr><tr><td>/proc</td><td>Process info</td></tr><tr><td>/sys</td><td>Device info</td></tr></tbody></table><h2>Permissions</h2><table><thead><tr><th>Symbolic</th><th>Octal</th></tr></thead><tbody><tr><td>rwx</td><td>7</td></tr><tr><td>rw-</td><td>6</td></tr><tr><td>r-x</td><td>5</td></tr><tr><td>r--</td><td>4</td></tr><tr><td>--x</td><td>1</td></tr><tr><td>---</td><td>0</td></tr></tbody></table><pre class="pca-ac-code">chmod 644 file.txt\nchmod 755 script.sh\nchown alice:dev file</pre><h3>Special bits</h3><ul><li>SUID (4xxx) — runs as owner.</li><li>SGID (2xxx) — runs as group.</li><li>Sticky (1xxx) — only owner can delete.</li></ul><pre class="pca-ac-code">find / -perm -4000 -type f 2>/dev/null  # SUID\nfind / -perm -0002 -type f 2>/dev/null  # world-writable</pre>'},
+    {id:'proc', title:'Processes & Services', html:'<h2>Processes</h2><pre class="pca-ac-code">ps aux\nps -ef --forest\ntop / htop\npgrep -af python\nkill -15 <pid>\nkill -9 <pid></pre><h3>Signals</h3><table><thead><tr><th>#</th><th>Name</th><th>Meaning</th></tr></thead><tbody><tr><td>1</td><td>SIGHUP</td><td>Reload config</td></tr><tr><td>2</td><td>SIGINT</td><td>Ctrl+C</td></tr><tr><td>9</td><td>SIGKILL</td><td>Force, uncatchable</td></tr><tr><td>15</td><td>SIGTERM</td><td>Graceful</td></tr><tr><td>19</td><td>SIGSTOP</td><td>Pause</td></tr></tbody></table><h2>systemd</h2><pre class="pca-ac-code">systemctl status sshd\nsystemctl enable --now myservice\njournalctl -u sshd --since "1 hour ago"</pre>'},
+    {id:'shell', title:'Shell & Text Tools', html:'<h2>Pipes and redirection</h2><pre class="pca-ac-code">cmd1 | cmd2\ncmd > file\ncmd >> file\ncmd 2> errors.log\ncmd &> combined.log</pre><h3>Text processing</h3><pre class="pca-ac-code">awk \'{print $1}\' access.log | sort | uniq -c | sort -rn | head\ngrep "Failed password" /var/log/auth.log | awk \'{print $11}\' | sort | uniq -c\ngrep " 404 " access.log | wc -l\nsed -i.bak \'s/old/new/g\' file.txt\nfind /var/log -type f -mtime -1</pre>'},
+    {id:'hardening', title:'Linux Hardening', html:'<h2>Checklist</h2><ol><li>Patch promptly.</li><li>Remove unused accounts.</li><li>SSH: key-only, no root, AllowUsers, fail2ban.</li><li>Firewall: deny inbound by default.</li><li>Disable unnecessary services.</li><li>auditd for critical files.</li><li>Kernel hardening via sysctl.</li><li>SELinux/AppArmor enforcing.</li><li>File integrity (AIDE).</li><li>Centralise logs off-box.</li></ol><h3>sysctl</h3><pre class="pca-ac-code">net.ipv4.conf.all.rp_filter = 1\nnet.ipv4.tcp_syncookies = 1\nkernel.randomize_va_space = 2\nkernel.kptr_restrict = 2</pre>'}
+  ],
+  quiz:[
+    {q:'chmod 600 grants?', opts:['rwx owner','rw- owner','rw everyone','execute all'], a:1, exp:'Owner read+write.'},
+    {q:'Which bit runs as owner?', opts:['SGID','Sticky','SUID','Both'], a:2, exp:'SUID (4xxx).'},
+    {q:'Signal uncatchable?', opts:['SIGTERM','SIGINT','SIGKILL','SIGHUP'], a:2, exp:'SIGKILL.'},
+    {q:'| does?', opts:['Redirects stderr','Pipes stdout to stdin','Deletes','Appends'], a:1, exp:'Pipes.'},
+    {q:'Find SUID?', opts:['find / -perm -4000','find / -perm 777','ls -l /bin','grep suid /'], a:0, exp:'-perm -4000.'},
+    {q:'journalctl -u sshd does?', opts:['SSH unit logs','Restarts','Enables','Blocks'], a:0, exp:'Filters to unit.'}
+  ]
+};
+
+/* ===== PYTHON ===== */
+CONTENT['python'] = {
+  intro:'Python is the default language of security tooling.',
+  sections:[
+    {id:'basics', title:'Python Basics', html:'<h2>Core</h2><pre class="pca-ac-code">name = "alice"\ncount = 42\nips = ["10.0.0.1", "10.0.0.2"]\nstats = {"failed": 12, "success": 340}\n\nfor ip in ips:\n    if ip.startswith("10."):\n        print(ip)</pre><h3>JSON</h3><pre class="pca-ac-code">import json\nwith open("data.json") as f:\n    data = json.load(f)</pre><h3>Exceptions</h3><pre class="pca-ac-code">import logging\nlogging.basicConfig(level=logging.INFO)\ntry:\n    with open("missing.txt") as f:\n        print(f.read())\nexcept FileNotFoundError:\n    logging.warning("File not found")</pre>'},
+    {id:'tools', title:'Security Tooling', html:'<h2>HTTP</h2><pre class="pca-ac-code">import requests\nr = requests.get("https://example.com", timeout=10)\nprint(r.status_code)</pre><h3>Regex</h3><pre class="pca-ac-code">import re\ntext = "IPs: 10.0.0.1 and 10.0.0.2"\nfound = re.findall(r"\\b\\d+\\.\\d+\\.\\d+\\.\\d+\\b", text)</pre><h3>Hashing</h3><pre class="pca-ac-code">import hashlib\nsha256 = hashlib.sha256(b"hello").hexdigest()\nimport secrets\ntoken = secrets.token_hex(32)</pre><h3>Sockets (localhost only)</h3><pre class="pca-ac-code">import socket\nfor port in [22, 80, 443]:\n    s = socket.socket()\n    s.settimeout(1)\n    try:\n        s.connect(("127.0.0.1", port))\n        print(f"open: {port}")\n    except: pass\n    finally: s.close()</pre><div class="pca-ac-callout pca-ac-bad"><b>Only scan 127.0.0.1 or systems you own.</b></div>'}
+  ],
+  quiz:[
+    {q:'Safest token generation?', opts:['random.random','random.randint','secrets.token_hex','time.time'], a:2, exp:'secrets uses OS CSPRNG.'},
+    {q:'re.findall returns?', opts:['First match','All as list','Boolean','Iterator'], a:1, exp:'List of all matches.'},
+    {q:'File read mode?', opts:['w','r','a','x'], a:1, exp:'r.'},
+    {q:'Safest file close?', opts:['f.close','with open() as f','Del f','gc.collect'], a:1, exp:'with statement.'},
+    {q:'HTTP library?', opts:['http','requests','socketio','fastapi'], a:1, exp:'requests.'}
+  ]
+};
+
+/* ===== CYBER FUNDAMENTALS ===== */
+CONTENT['cyber-fundamentals'] = {
+  intro:'The vocabulary and mental models of the profession.',
+  sections:[
+    {id:'cia', title:'CIA Triad & Risk', html:'<h2>CIA Triad</h2><ul><li><strong>Confidentiality</strong> — only authorised access.</li><li><strong>Integrity</strong> — data not altered.</li><li><strong>Availability</strong> — accessible.</li></ul><h2>Risk</h2><p>Risk = likelihood × impact.</p><h3>Treatment</h3><ul><li>Avoid — stop activity.</li><li>Mitigate — add controls.</li><li>Transfer — insurance.</li><li>Accept — documented decision.</li></ul><h2>Controls</h2><ul><li>Preventive, Detective, Corrective, Compensating.</li></ul><h2>Defence in Depth</h2><p>Layered controls so no single failure is fatal.</p><h2>Zero Trust</h2><p>Never trust, always verify. Least privilege. Assume breach.</p>'},
+    {id:'threat', title:'Threat Modelling', html:'<h2>Threat modelling</h2><h3>STRIDE</h3><table><thead><tr><th>Letter</th><th>Threat</th><th>Property</th></tr></thead><tbody><tr><td>S</td><td>Spoofing</td><td>Authentication</td></tr><tr><td>T</td><td>Tampering</td><td>Integrity</td></tr><tr><td>R</td><td>Repudiation</td><td>Non-repudiation</td></tr><tr><td>I</td><td>Information disclosure</td><td>Confidentiality</td></tr><tr><td>D</td><td>Denial of service</td><td>Availability</td></tr><tr><td>E</td><td>Elevation of privilege</td><td>Authorisation</td></tr></tbody></table><h3>Process</h3><ol><li>Draw architecture + trust boundaries.</li><li>Enumerate assets.</li><li>Apply STRIDE per boundary.</li><li>Prioritise by risk.</li><li>Track mitigations.</li></ol>'}
+  ],
+  quiz:[
+    {q:'CIA?', opts:['Central Intelligence Agency','Confidentiality, Integrity, Availability','Control, Inspect, Audit','Crypto, Identity, Access'], a:1, exp:'Confidentiality, Integrity, Availability.'},
+    {q:'Risk?', opts:['Just impact','Likelihood × impact','Only likelihood','Threat count'], a:1, exp:'Likelihood × impact.'},
+    {q:'STRIDE "I" is?', opts:['Integrity','Information disclosure','Injection','Identity'], a:1, exp:'Information disclosure.'},
+    {q:'Defence in depth means?', opts:['One strong control','Layered independent controls','More tools','Encrypt'], a:1, exp:'Layered.'},
+    {q:'Zero trust means?', opts:['Trust internal','Never trust, always verify','Trust employees','Trust VPN'], a:1, exp:'Verify every request.'}
+  ]
+};
+
+/* ===== DIGITAL FORENSICS ===== */
+CONTENT['digital-forensics'] = {
+  intro:'Forensics answers "what happened" with defensible evidence.',
+  sections:[
+    {id:'evidence', title:'Evidence Handling', html:'<h2>Principles</h2><ul><li><strong>Order of volatility</strong> — memory, network, processes, disk, backups.</li><li><strong>Chain of custody</strong> — who, when, where, how.</li><li><strong>Hashing</strong> — SHA-256 before analysis.</li><li><strong>Write blockers</strong> — never modify original.</li></ul><h3>Tools</h3><ul><li>Disk — dd, dcfldd, FTK Imager.</li><li>Memory — WinPmem, LiME, AVML.</li><li>Network — tcpdump, Wireshark.</li></ul><h3>Documentation</h3><p>Every action reproducible. Timestamps UTC. Tool versions. Hash verification.</p>'},
+    {id:'analysis', title:'Analysis Techniques', html:'<h2>Disk</h2><ul><li>Partition tables (MBR, GPT).</li><li>Filesystems (NTFS, ext4, APFS).</li><li>Deleted file recovery.</li><li>Slack space.</li><li>MACB timestamps.</li></ul><h2>Memory</h2><ul><li>Process lists (incl. hidden).</li><li>Network connections.</li><li>Loaded DLLs.</li><li>Command history.</li><li>Injected code.</li></ul><p>Tool: Volatility 3.</p><h2>Timeline</h2><p>Super-timelines combine MACB, event logs, browser, network. Tools: plaso / log2timeline.</p><h2>Browser artefacts</h2><ul><li>History, downloads, cache.</li><li>Cookies, sessions.</li><li>Autofill.</li></ul><h2>Reporting</h2><p>Findings supported by evidence. Reproducible. Limitations stated.</p>'}
+  ],
+  quiz:[
+    {q:'Order of volatility?', opts:['Disk acquisition order','Capture most volatile first','Alphabetical','Seize order'], a:1, exp:'Memory first.'},
+    {q:'Chain of custody?', opts:['Hash type','Documented handling','Tool','Protocol'], a:1, exp:'Documents handling.'},
+    {q:'Windows memory forensics tool?', opts:['Autopsy','Volatility','Wireshark','Nmap'], a:1, exp:'Volatility.'},
+    {q:'Write blocker?', opts:['Speed','Prevents writes','Encrypt','Compress'], a:1, exp:'Prevents modification.'},
+    {q:'Hash of evidence?', opts:['Encrypt','Prove integrity','Compress','Identify vendor'], a:1, exp:'Proves integrity.'}
+  ]
+};
+
+/* Fallback for remaining modules */
+['threat-intelligence','vulnerability-mgmt','penetration-testing','cloud','devsecops',
+ 'malware-analysis','reverse-engineering','iam','container-security','mobile-security',
+ 'api-security','ai-ml-fundamentals','security-engineering','incident-response',
+ 'security-architecture','grc','security-automation','advanced-projects'].forEach(function(id){
+  if (CONTENT[id]) return;
+  var t = ROADMAP.find(function(r){ return r.id === id; });
+  CONTENT[id] = {
+    intro: t.desc + ' Full deep content is planned. The outline below shows the structure.',
+    sections: [
+      {id:'overview', title:'Module Overview', html:'<h2>'+t.title+'</h2><p>'+t.desc+'</p><div class="pca-ac-callout"><b>Status:</b> Core vocabulary and related concepts are covered in other modules — see Cybersecurity Fundamentals, Red Teaming, SOC/Blue Team, Cloud Security, AI Security.</div><h3>Planned sections</h3><ul><li>Fundamentals and terminology</li><li>Architecture and internals</li><li>Common configurations and mistakes</li><li>Security implications and defences</li><li>Practical examples and safe labs</li><li>Knowledge check</li><li>Interview questions</li><li>Project idea</li></ul><h3>Where to start now</h3><ul><li>Read <b>Cybersecurity Fundamentals</b> for base vocabulary.</li><li>Read <b>SOC / Blue Team</b> and <b>Red Teaming</b> for operational context.</li><li>Read <b>Cloud Security</b> and <b>AI Security</b> for modern coverage.</li></ul>'}
+    ],
+    quiz: [
+      {q:'Base vocabulary module?', opts:['Networking','Cybersecurity Fundamentals','Python','Cloud'], a:1, exp:'Covers CIA, risk, controls, defence in depth.'},
+      {q:'Defensive operations modules?', opts:['Python + Linux','SOC/Blue Team + Incident Response','Networking + Cloud','Web + Mobile'], a:1, exp:'Cover defensive operations.'}
+    ]
+  };
+});
+
+/* ═════════════════════════════════════════════
+   GLOSSARY (compact)
+   ═════════════════════════════════════════════ */
+var GLOSSARY = [
+  {t:'TCP', d:'Connection-oriented, reliable transport protocol using handshake, sequence numbers, ACKs.', c:'Networking'},
+  {t:'UDP', d:'Connectionless transport. Low overhead, no delivery guarantee.', c:'Networking'},
+  {t:'IP', d:'Internet Protocol. Layer 3 addressing and routing (IPv4, IPv6).', c:'Networking'},
+  {t:'DNS', d:'Domain Name System — translates names to IPs and other records.', c:'Networking'},
+  {t:'ARP', d:'Address Resolution Protocol — maps IPv4 to MAC within a broadcast domain.', c:'Networking'},
+  {t:'DHCP', d:'Dynamic Host Configuration Protocol — automatic IP configuration (DORA).', c:'Networking'},
+  {t:'VLAN', d:'Virtual LAN — logical segmentation of a switch into isolated broadcast domains.', c:'Networking'},
+  {t:'MAC Address', d:'48-bit link-layer address; first 3 bytes OUI, last 3 NIC-specific.', c:'Networking'},
+  {t:'Ethernet', d:'Dominant LAN technology defining frames, MAC addressing, physical layer.', c:'Networking'},
+  {t:'Subnet', d:'Logical subdivision of an IP network defined by a mask or CIDR prefix.', c:'Networking'},
+  {t:'CIDR', d:'Classless Inter-Domain Routing — notation like /24 for prefix length.', c:'Networking'},
+  {t:'MTU', d:'Maximum Transmission Unit — largest packet size (Ethernet 1500).', c:'Networking'},
+  {t:'ICMP', d:'Internet Control Message Protocol — Layer 3 signalling for errors and diagnostics.', c:'Networking'},
+  {t:'TLS', d:'Transport Layer Security — cryptographic protocol for confidentiality, integrity, authentication.', c:'Cryptography'},
+  {t:'HTTP', d:'HyperText Transfer Protocol — the application protocol of the web.', c:'Web'},
+  {t:'HTTPS', d:'HTTP over TLS — encrypted and authenticated web traffic.', c:'Web'},
+  {t:'Certificate', d:'X.509 document binding a public key to an identity, signed by a CA.', c:'Cryptography'},
+  {t:'PKI', d:'Public Key Infrastructure — CAs, certificates, and the trust that connects them.', c:'Cryptography'},
+  {t:'AEAD', d:'Authenticated Encryption with Associated Data — encryption modes providing confidentiality and integrity.', c:'Cryptography'},
+  {t:'CSPRNG', d:'Cryptographically Secure Pseudo-Random Number Generator.', c:'Cryptography'},
+  {t:'Hashing', d:'One-way transformation producing a fixed-size digest for integrity.', c:'Cryptography'},
+  {t:'Salting', d:'Adding unique random data before hashing to defeat precomputation.', c:'Cryptography'},
+  {t:'Forward Secrecy', d:'Compromise of long-term keys does not compromise past sessions.', c:'Cryptography'},
+  {t:'SIEM', d:'Security Information and Event Management — platform aggregating and correlating logs.', c:'Blue Team'},
+  {t:'SOC', d:'Security Operations Centre — team monitoring and responding to incidents.', c:'Blue Team'},
+  {t:'EDR', d:'Endpoint Detection and Response — agent-based endpoint monitoring.', c:'Blue Team'},
+  {t:'XDR', d:'Extended Detection and Response — unified detection across endpoints, network, cloud.', c:'Blue Team'},
+  {t:'SOAR', d:'Security Orchestration, Automation and Response.', c:'Blue Team'},
+  {t:'MTTD', d:'Mean Time To Detect.', c:'Blue Team'},
+  {t:'MTTR', d:'Mean Time To Respond/Resolve.', c:'Blue Team'},
+  {t:'PICERL', d:'Preparation, Identification, Containment, Eradication, Recovery, Lessons learned.', c:'Blue Team'},
+  {t:'IOC', d:'Indicator of Compromise — artefact indicating potential intrusion.', c:'Blue Team'},
+  {t:'IOA', d:'Indicator of Attack — behavioural evidence of intent.', c:'Blue Team'},
+  {t:'Sigma', d:'Vendor-neutral detection rule format usable across SIEMs.', c:'Blue Team'},
+  {t:'Sysmon', d:'Windows system monitor producing rich security telemetry.', c:'Blue Team'},
+  {t:'Zeek', d:'Network security monitor producing structured protocol logs.', c:'Blue Team'},
+  {t:'Suricata', d:'High-performance signature and anomaly NIDS/IPS.', c:'Blue Team'},
+  {t:'YARA', d:'Pattern-matching rule language used to identify malware samples.', c:'Blue Team'},
+  {t:'Beaconing', d:'Periodic communication from a compromised host to C2.', c:'Blue Team'},
+  {t:'IAM', d:'Identity and Access Management — policies and technology managing identities.', c:'Identity'},
+  {t:'MFA', d:'Multi-Factor Authentication — two or more factors from different categories.', c:'Identity'},
+  {t:'RBAC', d:'Role-Based Access Control — permissions assigned to roles.', c:'Identity'},
+  {t:'ABAC', d:'Attribute-Based Access Control — decisions based on attributes.', c:'Identity'},
+  {t:'SSO', d:'Single Sign-On.', c:'Identity'},
+  {t:'Kerberos', d:'Ticket-based network authentication protocol, foundation of AD auth.', c:'Identity'},
+  {t:'OIDC', d:'OpenID Connect — authentication layer on top of OAuth 2.0.', c:'Identity'},
+  {t:'OAuth 2.0', d:'Authorisation framework for delegated access.', c:'Identity'},
+  {t:'JWT', d:'JSON Web Token — compact, signed token used for stateless authentication.', c:'API'},
+  {t:'API', d:'Application Programming Interface — a contract for software to interact.', c:'API'},
+  {t:'BOLA', d:'Broken Object Level Authorisation — OWASP API #1 risk.', c:'API'},
+  {t:'IDOR', d:'Insecure Direct Object Reference — accessing another user\'s object without authorisation.', c:'Web'},
+  {t:'SSRF', d:'Server-Side Request Forgery — server fetches an attacker-controlled URL.', c:'Web'},
+  {t:'XSS', d:'Cross-Site Scripting — attacker JavaScript runs in a victim\'s browser.', c:'Web'},
+  {t:'CSRF', d:'Cross-Site Request Forgery — malicious site forces authenticated request.', c:'Web'},
+  {t:'SQLi', d:'SQL Injection — untrusted data executed as SQL.', c:'Web'},
+  {t:'CSP', d:'Content Security Policy — HTTP header restricting sources of scripts.', c:'Web'},
+  {t:'OWASP', d:'Open Worldwide Application Security Project — publishes Top 10.', c:'Web'},
+  {t:'OWASP Top 10', d:'List of the most critical web application security risks.', c:'Web'},
+  {t:'CIA Triad', d:'Confidentiality, Integrity, Availability.', c:'Fundamentals'},
+  {t:'Defence in Depth', d:'Multiple layered controls so a single failure does not cause compromise.', c:'Fundamentals'},
+  {t:'Zero Trust', d:'Security model verifying every request and removing implicit network trust.', c:'Architecture'},
+  {t:'Least Privilege', d:'Granting only the permissions necessary for a task.', c:'Fundamentals'},
+  {t:'Attack Surface', d:'The sum of all entry points and exposures an attacker could target.', c:'Fundamentals'},
+  {t:'Threat Model', d:'Structured analysis of assets, actors, threats to prioritise defences.', c:'Fundamentals'},
+  {t:'Risk', d:'Likelihood × impact of a threat event.', c:'GRC'},
+  {t:'CVE', d:'Common Vulnerabilities and Exposures — public identifier.', c:'GRC'},
+  {t:'CVSS', d:'Common Vulnerability Scoring System.', c:'GRC'},
+  {t:'CWE', d:'Common Weakness Enumeration — categorised weakness types.', c:'GRC'},
+  {t:'SBOM', d:'Software Bill of Materials — inventory of components.', c:'DevSecOps'},
+  {t:'SLSA', d:'Supply-chain Levels for Software Artefacts — build integrity framework.', c:'DevSecOps'},
+  {t:'SAST', d:'Static Application Security Testing.', c:'DevSecOps'},
+  {t:'DAST', d:'Dynamic Application Security Testing.', c:'DevSecOps'},
+  {t:'SCA', d:'Software Composition Analysis.', c:'DevSecOps'},
+  {t:'CI/CD', d:'Continuous Integration / Continuous Delivery.', c:'DevSecOps'},
+  {t:'IaC', d:'Infrastructure as Code.', c:'DevSecOps'},
+  {t:'MITRE ATT&CK', d:'Knowledge base of adversary tactics and techniques.', c:'Threat Intel'},
+  {t:'Kill Chain', d:'Model describing phases of an intrusion from recon to impact.', c:'Threat Intel'},
+  {t:'Diamond Model', d:'Analytic framework with Adversary, Capability, Infrastructure, Victim.', c:'Threat Intel'},
+  {t:'TTP', d:'Tactics, Techniques and Procedures — adversary behaviour patterns.', c:'Threat Intel'},
+  {t:'Ransomware', d:'Malware that encrypts victim data and demands payment.', c:'Malware'},
+  {t:'Rootkit', d:'Malware that hides its presence on a compromised host.', c:'Malware'},
+  {t:'RAT', d:'Remote Access Trojan.', c:'Malware'},
+  {t:'Persistence', d:'Mechanism to maintain access across reboots.', c:'Malware'},
+  {t:'Lateral Movement', d:'Movement from one compromised host to another.', c:'Malware'},
+  {t:'Privilege Escalation', d:'Gaining higher-level permissions on a system.', c:'Malware'},
+  {t:'C2', d:'Command and Control — infrastructure used by an adversary.', c:'Malware'},
+  {t:'Exfiltration', d:'Unauthorised transfer of data out of an environment.', c:'Malware'},
+  {t:'Container', d:'OS-level virtualisation unit sharing the host kernel.', c:'Containers'},
+  {t:'Docker', d:'Popular container platform.', c:'Containers'},
+  {t:'Kubernetes', d:'Container orchestration platform.', c:'Containers'},
+  {t:'Falco', d:'Runtime security detection for containers and Kubernetes.', c:'Containers'},
+  {t:'Trivy', d:'Scanner for container images, filesystems, IaC, and SBOMs.', c:'Containers'},
+  {t:'CSPM', d:'Cloud Security Posture Management.', c:'Cloud'},
+  {t:'Shared Responsibility', d:'Cloud security is shared between provider and customer.', c:'Cloud'},
+  {t:'Prompt Injection', d:'Attacker input that changes LLM behaviour — direct or indirect.', c:'AI'},
+  {t:'RAG', d:'Retrieval-Augmented Generation — supplies retrieved documents as context.', c:'AI'},
+  {t:'LLM', d:'Large Language Model — neural network trained on large text corpora.', c:'AI'},
+  {t:'Guardrails', d:'Input and output controls around AI systems.', c:'AI'},
+  {t:'Red Team', d:'Adversary simulation team improving detection and response.', c:'Red Team'},
+  {t:'Blue Team', d:'Defensive team monitoring, detecting, responding.', c:'Blue Team'},
+  {t:'Purple Team', d:'Coordination between red and blue to close detection gaps.', c:'Blue Team'},
+  {t:'CTF', d:'Capture The Flag — competitive security challenges.', c:'Fundamentals'},
+  {t:'Forensics', d:'Investigation of digital evidence in a legally defensible manner.', c:'Forensics'},
+  {t:'Chain of Custody', d:'Documented record of evidence handling.', c:'Forensics'},
+  {t:'Order of Volatility', d:'Most volatile evidence should be captured first.', c:'Forensics'},
+  {t:'ISO 27001', d:'International standard for information security management systems.', c:'GRC'},
+  {t:'NIST CSF', d:'US framework organising security outcomes into 6 functions.', c:'GRC'},
+  {t:'GDPR', d:'EU General Data Protection Regulation.', c:'GRC'},
+  {t:'DPDP', d:'India\'s Digital Personal Data Protection Act.', c:'GRC'}
+];
+
+/* ═════════════════════════════════════════════
+   STATE
+   ═════════════════════════════════════════════ */
+function defaultState(){
+  return { completedSections:{}, quizScores:{}, xp:0, theme:'dark', route:'home', topicId:null, tab:'overview', sectionId:null };
+}
+function loadState(){
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState();
+    return Object.assign(defaultState(), JSON.parse(raw));
+  } catch(e){ return defaultState(); }
+}
+function saveState(){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); } catch(e){}
+}
+var STATE = loadState();
+var quizState = {};
+
+/* ═════════════════════════════════════════════
+   STYLES (injected once, all prefixed)
+   ═════════════════════════════════════════════ */
+var CSS = [
+  '.' + CLS + 'launcher{position:fixed;right:18px;bottom:80px;z-index:2147482000;background:linear-gradient(135deg,#22d3ee,#a855f7);color:#03121a;border:0;border-radius:12px;padding:11px 16px;font-family:Orbitron,system-ui,sans-serif;font-weight:800;letter-spacing:1.2px;font-size:.72rem;cursor:pointer;box-shadow:0 10px 30px -8px rgba(34,211,238,.7);transition:transform .18s;}',
+  '.' + CLS + 'launcher:hover{transform:translateY(-2px);}',
+  '.' + CLS + 'overlay{position:fixed;inset:0;z-index:2147482500;background:rgba(3,6,12,.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow-y:auto;display:none;color:#dfe9f5;font-family:Rajdhani,system-ui,sans-serif;}',
+  '.' + CLS + 'overlay.' + CLS + 'open{display:block;}',
+  '.' + CLS + 'wrap{max-width:1200px;margin:0 auto;padding:16px 16px 60px;}',
+  '.' + CLS + 'topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;background:rgba(12,18,32,.8);border:1px solid rgba(80,140,200,.2);border-radius:14px;margin-bottom:16px;flex-wrap:wrap;position:sticky;top:12px;backdrop-filter:blur(12px);z-index:10;}',
+  '.' + CLS + 'brand{font-family:Orbitron,sans-serif;font-weight:900;letter-spacing:2px;background:linear-gradient(120deg,#22d3ee,#a855f7);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:1rem;}',
+  '.' + CLS + 'brand small{display:block;font-family:JetBrains Mono,monospace;font-weight:500;font-size:.58rem;letter-spacing:3px;color:#8ea3bd;margin-top:3px;-webkit-text-fill-color:#8ea3bd;}',
+  '.' + CLS + 'btn{background:rgba(255,255,255,.05);border:1px solid rgba(80,140,200,.25);color:#dfe9f5;border-radius:9px;padding:7px 12px;font-family:inherit;font-weight:700;font-size:.76rem;letter-spacing:.5px;cursor:pointer;transition:.18s;}',
+  '.' + CLS + 'btn:hover{border-color:rgba(34,211,238,.5);color:#22d3ee;background:rgba(34,211,238,.08);}',
+  '.' + CLS + 'btn.' + CLS + 'primary{background:linear-gradient(135deg,#22d3ee,#a855f7);color:#03121a;border:0;}',
+  '.' + CLS + 'btn.' + CLS + 'sm{padding:5px 10px;font-size:.7rem;}',
+  '.' + CLS + 'card{background:rgba(12,18,32,.72);border:1px solid rgba(80,140,200,.2);border-radius:14px;padding:15px;transition:.2s;}',
+  '.' + CLS + 'card.' + CLS + 'click{cursor:pointer;}',
+  '.' + CLS + 'card.' + CLS + 'click:hover{transform:translateY(-2px);border-color:rgba(34,211,238,.5);box-shadow:0 12px 28px -14px rgba(34,211,238,.4);}',
+  '.' + CLS + 'card h3{margin:6px 0;font-family:Orbitron,sans-serif;font-size:.94rem;}',
+  '.' + CLS + 'card p{color:#8ea3bd;font-size:.85rem;line-height:1.5;margin:0;}',
+  '.' + CLS + 'grid{display:grid;gap:13px;}',
+  '.' + CLS + 'g-auto{grid-template-columns:repeat(auto-fill,minmax(250px,1fr));}',
+  '.' + CLS + 'g-4{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));}',
+  '.' + CLS + 'chip{display:inline-flex;align-items:center;font-family:JetBrains Mono,monospace;font-size:.58rem;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid rgba(80,140,200,.3);background:rgba(255,255,255,.035);color:#8ea3bd;}',
+  '.' + CLS + 'chip.' + CLS + 'cy{color:#22d3ee;border-color:rgba(34,211,238,.5);background:rgba(34,211,238,.1);}',
+  '.' + CLS + 'chip.' + CLS + 'gr{color:#22c55e;border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.1);}',
+  '.' + CLS + 'chip.' + CLS + 'am{color:#f59e0b;border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.1);}',
+  '.' + CLS + 'chip.' + CLS + 'vi{color:#a855f7;border-color:rgba(168,85,247,.5);background:rgba(168,85,247,.1);}',
+  '.' + CLS + 'bar{height:7px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden;}',
+  '.' + CLS + 'bar>i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#22d3ee,#a855f7);transition:width .5s;}',
+  '.' + CLS + 'bar.' + CLS + 'gr>i{background:linear-gradient(90deg,#22c55e,#22d3ee);}',
+  '.' + CLS + 'stat{text-align:center;padding:12px 8px;}',
+  '.' + CLS + 'stat b{display:block;font-family:Orbitron,sans-serif;font-size:1.4rem;color:#22d3ee;line-height:1.1;}',
+  '.' + CLS + 'stat span{font-family:JetBrains Mono,monospace;font-size:.58rem;letter-spacing:1.5px;color:#8ea3bd;text-transform:uppercase;}',
+  '.' + CLS + 'tabs{display:flex;gap:5px;flex-wrap:wrap;margin:14px 0;padding-bottom:6px;border-bottom:1px solid rgba(80,140,200,.2);}',
+  '.' + CLS + 'tab{background:transparent;border:1px solid transparent;color:#8ea3bd;font-family:inherit;font-weight:600;font-size:.8rem;padding:6px 11px;border-radius:8px;cursor:pointer;transition:.15s;}',
+  '.' + CLS + 'tab:hover{color:#dfe9f5;background:rgba(34,211,238,.07);}',
+  '.' + CLS + 'tab.' + CLS + 'active{color:#22d3ee;background:rgba(34,211,238,.13);border-color:rgba(34,211,238,.5);}',
+  '.' + CLS + 'acc{border:1px solid rgba(80,140,200,.2);border-radius:11px;margin-bottom:8px;background:rgba(12,18,32,.72);overflow:hidden;}',
+  '.' + CLS + 'acc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;cursor:pointer;font-weight:700;font-size:.9rem;color:#dfe9f5;width:100%;background:none;border:0;text-align:left;font-family:inherit;}',
+  '.' + CLS + 'acc-head:hover{background:rgba(34,211,238,.05);}',
+  '.' + CLS + 'acc-head .' + CLS + 'arrow{transition:.25s;color:#22d3ee;}',
+  '.' + CLS + 'acc.' + CLS + 'open .' + CLS + 'acc-head .' + CLS + 'arrow{transform:rotate(90deg);}',
+  '.' + CLS + 'acc-body{display:none;padding:6px 16px 16px;color:#8ea3bd;font-size:.9rem;}',
+  '.' + CLS + 'acc.' + CLS + 'open .' + CLS + 'acc-body{display:block;}',
+  '.' + CLS + 'prose h2{margin:20px 0 10px;color:#22d3ee;font-size:1.15rem;padding-bottom:6px;border-bottom:1px solid rgba(80,140,200,.2);}',
+  '.' + CLS + 'prose h3{margin:16px 0 8px;font-size:.98rem;color:#dfe9f5;}',
+  '.' + CLS + 'prose h4{margin:12px 0 6px;font-size:.9rem;color:#a855f7;font-weight:700;}',
+  '.' + CLS + 'prose p{margin:8px 0;color:#8ea3bd;font-size:.92rem;line-height:1.6;}',
+  '.' + CLS + 'prose ul,.' + CLS + 'prose ol{margin:8px 0 8px 20px;color:#8ea3bd;font-size:.92rem;}',
+  '.' + CLS + 'prose li{margin-bottom:5px;}',
+  '.' + CLS + 'prose strong{color:#dfe9f5;}',
+  '.' + CLS + 'prose blockquote{border-left:3px solid #22d3ee;padding:8px 14px;background:rgba(34,211,238,.06);border-radius:0 8px 8px 0;margin:12px 0;color:#8ea3bd;font-size:.9rem;}',
+  '.' + CLS + 'prose table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.84rem;}',
+  '.' + CLS + 'prose th,.' + CLS + 'prose td{padding:7px 10px;text-align:left;border-bottom:1px solid rgba(80,140,200,.15);color:#8ea3bd;}',
+  '.' + CLS + 'prose th{color:#22d3ee;font-family:JetBrains Mono,monospace;font-size:.64rem;letter-spacing:1px;text-transform:uppercase;}',
+  '.' + CLS + 'prose code{font-family:JetBrains Mono,monospace;font-size:.8em;background:rgba(34,211,238,.1);color:#22d3ee;padding:1px 5px;border-radius:4px;border:1px solid rgba(34,211,238,.18);}',
+  '.' + CLS + 'code,pre.' + CLS + 'code{background:rgba(2,6,14,.75);border:1px solid rgba(80,140,200,.2);border-radius:10px;padding:12px 14px;font-family:JetBrains Mono,monospace;font-size:.76rem;color:#9fe8ff;overflow-x:auto;line-height:1.7;margin:10px 0;display:block;white-space:pre;}',
+  '.' + CLS + 'net-diagram{background:rgba(2,6,14,.6);border:1px solid rgba(80,140,200,.2);border-radius:10px;padding:14px;font-family:JetBrains Mono,monospace;font-size:.72rem;color:#9fe8ff;overflow-x:auto;line-height:1.6;margin:12px 0;white-space:pre;}',
+  '.' + CLS + 'callout{border:1px solid rgba(80,140,200,.2);border-left:3px solid #f59e0b;background:rgba(245,158,11,.06);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:.88rem;color:#8ea3bd;}',
+  '.' + CLS + 'callout.' + CLS + 'good{border-left-color:#22c55e;background:rgba(34,197,94,.06);}',
+  '.' + CLS + 'callout.' + CLS + 'bad{border-left-color:#ef4444;background:rgba(239,68,68,.06);}',
+  '.' + CLS + 'callout b{color:#dfe9f5;}',
+  '.' + CLS + 'quiz-q{border:1px solid rgba(80,140,200,.2);border-radius:11px;padding:14px;margin-bottom:10px;background:rgba(12,18,32,.72);}',
+  '.' + CLS + 'qtext{font-weight:700;margin-bottom:9px;color:#dfe9f5;font-size:.92rem;}',
+  '.' + CLS + 'quiz-opt{display:block;width:100%;padding:9px 13px;margin-bottom:5px;text-align:left;background:rgba(255,255,255,.03);border:1px solid rgba(80,140,200,.2);border-radius:8px;color:#8ea3bd;cursor:pointer;font-family:inherit;font-size:.86rem;transition:.15s;}',
+  '.' + CLS + 'quiz-opt:hover{border-color:rgba(34,211,238,.5);color:#dfe9f5;}',
+  '.' + CLS + 'quiz-opt.' + CLS + 'correct{background:rgba(34,197,94,.15);border-color:#22c55e;color:#22c55e;}',
+  '.' + CLS + 'quiz-opt.' + CLS + 'wrong{background:rgba(239,68,68,.15);border-color:#ef4444;color:#ef4444;}',
+  '.' + CLS + 'quiz-opt:disabled{cursor:default;}',
+  '.' + CLS + 'toast{position:fixed;bottom:20px;right:16px;z-index:2147483000;background:rgba(16,24,42,.95);border:1px solid rgba(34,211,238,.5);border-left:3px solid #22d3ee;border-radius:10px;padding:9px 15px;font-size:.84rem;font-weight:600;color:#dfe9f5;max-width:300px;backdrop-filter:blur(14px);animation:' + NS + 'fadeIn .3s;}',
+  '@keyframes ' + NS + 'fadeIn{from{opacity:0;transform:translateX(30px);}}',
+  '.' + CLS + 'input{width:100%;padding:10px 13px;background:rgba(12,18,32,.75);border:1px solid rgba(80,140,200,.25);border-radius:10px;color:#dfe9f5;font-family:inherit;font-size:.9rem;outline:none;}',
+  '.' + CLS + 'input:focus{border-color:rgba(34,211,238,.5);box-shadow:0 0 18px rgba(34,211,238,.2);}',
+  '@media(max-width:640px){.' + CLS + 'wrap{padding:12px 12px 40px;}.' + CLS + 'launcher{right:12px;bottom:76px;padding:10px 14px;font-size:.68rem;}.' + CLS + 'topbar{padding:10px 12px;}.' + CLS + 'brand{font-size:.86rem;}.' + CLS + 'prose th,.' + CLS + 'prose td{padding:6px 8px;font-size:.76rem;}}',
+  '@media (prefers-reduced-motion: reduce){.' + CLS + 'card.' + CLS + 'click{transition:none!important;}.' + CLS + 'card.' + CLS + 'click:hover{transform:none!important;}.' + CLS + 'toast{animation:none!important;}}'
+].join('\n');
+
+function injectStyles(){
+  if (document.getElementById(STYLE_ID)) return;
+  var s = document.createElement('style');
+  s.id = STYLE_ID;
+  s.type = 'text/css';
+  s.appendChild(document.createTextNode(CSS));
+  (document.head || document.documentElement).appendChild(s);
+}
+
+/* ═════════════════════════════════════════════
+   HELPERS
+   ═════════════════════════════════════════════ */
+function isTopicDone(id){
+  var t = CONTENT[id];
+  if (!t || !t.sections.length) return false;
+  return t.sections.every(function(s){ return STATE.completedSections[id + ':' + s.id]; });
+}
+function topicProgress(id){
+  var t = CONTENT[id];
+  if (!t || !t.sections.length) return 0;
+  var done = 0;
+  t.sections.forEach(function(s){ if (STATE.completedSections[id + ':' + s.id]) done++; });
+  return Math.round(done / t.sections.length * 100);
+}
+function getQuiz(id){
+  var t = CONTENT[id];
+  if (t && t.quiz && t.quiz.length) return t.quiz;
+  return [
+    {q:'Primary purpose of this module?', opts:['Entertainment','Build a specific security capability','Replace all controls','Hide problems'], a:1, exp:'Each module targets a specific capability.'},
+    {q:'Common failure mode?', opts:['Following best practices','Applying defaults without context','Documenting decisions','Testing regularly'], a:1, exp:'Blindly applied defaults are a common failure.'}
+  ];
+}
+
+/* ═════════════════════════════════════════════
+   RENDERERS
+   ═════════════════════════════════════════════ */
+function renderHome(){
+  var total = ROADMAP.length;
+  var done = ROADMAP.filter(function(t){ return isTopicDone(t.id); }).length;
+  var pct = total ? Math.round(done / total * 100) : 0;
+  var html = '<section style="text-align:center;padding:20px 0">';
+  html += '<div style="font-family:JetBrains Mono,monospace;font-size:.66rem;letter-spacing:3px;color:#22d3ee;text-transform:uppercase;margin-bottom:10px">◆ Deep Learning Academy ◆</div>';
+  html += '<h1 style="font-family:Orbitron,sans-serif;font-size:1.8rem;background:linear-gradient(120deg,#22d3ee,#a855f7);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:10px">PAREEK CYBER ACADEMY</h1>';
+  html += '<p style="max-width:60ch;margin:0 auto;color:#94a8c2;font-size:.94rem">30 deep-learning modules with full content — networking, red teaming, blue team, AI security, cloud, forensics, and more. All offline.</p>';
+  html += '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:18px">';
+  html += '<button class="' + CLS + 'btn ' + CLS + 'primary" onclick="' + NS + 'openTopic(\'networking\')">⚡ Start with Networking</button>';
+  html += '<button class="' + CLS + 'btn" onclick="' + NS + 'showView(\'dashboard\')">Dashboard</button>';
+  html += '<button class="' + CLS + 'btn" onclick="' + NS + 'showView(\'quiz\')">Quiz Arena</button>';
+  html += '<button class="' + CLS + 'btn" onclick="' + NS + 'showView(\'glossary\')">Glossary</button>';
+  html += '</div></section>';
+
+  html += '<div class="' + CLS + 'card" style="margin-top:22px;padding:18px">';
+  html += '<div class="' + CLS + 'grid ' + CLS + 'g-4">';
+  html += '<div class="' + CLS + 'stat"><b>' + total + '</b><span>Modules</span></div>';
+  html += '<div class="' + CLS + 'stat"><b>' + done + '</b><span>Completed</span></div>';
+  html += '<div class="' + CLS + 'stat"><b>' + STATE.xp + '</b><span>Total XP</span></div>';
+  html += '<div class="' + CLS + 'stat"><b>' + GLOSSARY.length + '</b><span>Terms</span></div>';
+  html += '</div><div style="margin-top:14px">';
+  html += '<div style="display:flex;justify-content:space-between;font-family:JetBrains Mono,monospace;font-size:.64rem;color:#8ea3bd;margin-bottom:6px"><span>OVERALL</span><span>' + pct + '%</span></div>';
+  html += '<div class="' + CLS + 'bar ' + CLS + 'gr"><i style="width:' + pct + '%"></i></div>';
+  html += '</div></div>';
+
+  html += '<h2 style="font-family:Orbitron,sans-serif;font-size:1.1rem;margin:24px 0 12px">Featured modules</h2>';
+  html += '<div class="' + CLS + 'grid ' + CLS + 'g-auto">';
+  [
+    ['networking','🌐','Networking','OSI, TCP/IP, Ethernet, MAC, VLAN, subnetting, ARP, ICMP, TCP, UDP, DNS, DHCP, HTTP, TLS.'],
+    ['red-teaming','🎯','Red Teaming','Adversary simulation, MITRE ATT&CK, RoE, kill chain, C2, reporting.'],
+    ['soc-blue-team','🛡️','SOC / Blue Team','Triage, SIEM, detection engineering, threat hunting, IR.'],
+    ['ai-security','🤖','AI Security','Prompt injection, RAG poisoning, agent abuse, guardrails.'],
+    ['cloud-security','☁️','Cloud Security','IAM, posture, logging, shared responsibility, cloud IR.'],
+    ['web-security','🕸️','Web Security','OWASP Top 10 deep dives with defences.']
+  ].forEach(function(item){
+    html += '<div class="' + CLS + 'card ' + CLS + 'click" onclick="' + NS + 'openTopic(\'' + item[0] + '\')">';
+    html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:1.5rem">' + item[1] + '</span><h3 style="margin:0;font-size:.92rem">' + item[2] + '</h3></div>';
+    html += '<p>' + item[3] + '</p>';
+    html += '<div style="margin-top:8px"><span class="' + CLS + 'chip ' + CLS + 'cy" style="font-size:.56rem">Open →</span></div></div>';
+  });
+  html += '</div>';
+
+  html += '<h2 style="font-family:Orbitron,sans-serif;font-size:1.1rem;margin:24px 0 12px">Full roadmap</h2>';
+  html += '<div class="' + CLS + 'grid ' + CLS + 'g-auto">';
+  ROADMAP.forEach(function(t){
+    var p = topicProgress(t.id);
+    html += '<div class="' + CLS + 'card ' + CLS + 'click" onclick="' + NS + 'openTopic(\'' + t.id + '\')">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:5px">';
+    html += '<span class="' + CLS + 'chip ' + CLS + 'cy" style="font-size:.56rem">' + t.num + '</span>';
+    html += '<span class="' + CLS + 'chip ' + (p === 100 ? CLS + 'gr' : '') + '" style="font-size:.56rem">' + p + '%</span></div>';
+    html += '<h3 style="font-size:.9rem;margin:4px 0">' + t.icon + ' ' + esc(t.title) + '</h3>';
+    html += '<p style="font-size:.8rem">' + esc(t.desc) + '</p>';
+    html += '<div class="' + CLS + 'bar" style="margin-top:8px"><i style="width:' + p + '%"></i></div>';
+    html += '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderDashboard(){
+  var done = ROADMAP.filter(function(t){ return isTopicDone(t.id); }).length;
+  var quizCount = Object.keys(STATE.quizScores).length;
+  var html = '<h1 style="font-family:Orbitron,sans-serif;font-size:1.5rem;margin-bottom:6px">Dashboard</h1>';
+  html += '<p style="color:#94a8c2;margin-bottom:16px">Your learning progress across every module.</p>';
+  html += '<div class="' + CLS + 'card" style="padding:18px;margin-bottom:16px">';
+  html += '<div class="' + CLS + 'grid ' + CLS + 'g-4">';
+  html += '<div class="' + CLS + 'stat"><b>' + done + '</b><span>Modules Done</span></div>';
+  html += '<div class="' + CLS + 'stat"><b>' + STATE.xp + '</b><span>Total XP</span></div>';
+  html += '<div class="' + CLS + 'stat"><b>' + quizCount + '</b><span>Quizzes</span></div>';
+  html += '<div class="' + CLS + 'stat"><b>' + ROADMAP.length + '</b><span>Total Modules</span></div>';
+  html += '</div></div>';
+  html += '<h2 style="font-family:Orbitron,sans-serif;font-size:1.05rem;margin-bottom:12px">Progress by module</h2>';
+  html += '<div class="' + CLS + 'grid ' + CLS + 'g-auto">';
+  ROADMAP.forEach(function(t){
+    var p = topicProgress(t.id);
+    html += '<div class="' + CLS + 'card">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:6px">';
+    html += '<span class="' + CLS + 'chip ' + CLS + 'cy" style="font-size:.56rem">' + t.num + '</span>';
+    html += '<span style="font-family:JetBrains Mono,monospace;font-size:.7rem;color:#8ea3bd">' + p + '%</span></div>';
+    html += '<h3 style="font-size:.88rem;margin-bottom:6px">' + esc(t.title) + '</h3>';
+    html += '<div class="' + CLS + 'bar ' + (p === 100 ? CLS + 'gr' : '') + '"><i style="width:' + p + '%"></i></div>';
+    html += '<button class="' + CLS + 'btn ' + CLS + 'sm" style="margin-top:8px;width:100%" onclick="' + NS + 'openTopic(\'' + t.id + '\')">Open →</button>';
+    html += '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderTopic(id){
+  var t = ROADMAP.find(function(r){ return r.id === id; });
+  var content = CONTENT[id];
+  if (!t || !content) return '<div class="' + CLS + 'card">Content coming soon.</div>';
+  var prog = topicProgress(id);
+  var html = '<div style="margin-bottom:12px"><button class="' + CLS + 'btn ' + CLS + 'sm" onclick="' + NS + 'showView(\'home\')">← All modules</button></div>';
+  html += '<div class="' + CLS + 'card" style="padding:18px;margin-bottom:14px">';
+  html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">';
+  html += '<span class="' + CLS + 'chip ' + CLS + 'cy" style="font-size:.56rem">Module ' + t.num + '</span>';
+  html += '<span class="' + CLS + 'chip ' + (t.level === 'Advanced' ? CLS + 'am' : t.level === 'Professional' ? 'pca-ac-bad' : CLS + 'gr') + '" style="font-size:.56rem">' + t.level + '</span>';
+  html += '<span class="' + CLS + 'chip" style="font-size:.56rem">' + content.sections.length + ' sections</span></div>';
+  html += '<h1 style="font-family:Orbitron,sans-serif;font-size:1.4rem;margin-bottom:8px">' + t.icon + ' ' + esc(t.title) + '</h1>';
+  html += '<div style="display:flex;justify-content:space-between;font-family:JetBrains Mono,monospace;font-size:.64rem;color:#8ea3bd;margin:10px 0 6px"><span>PROGRESS</span><span>' + prog + '%</span></div>';
+  html += '<div class="' + CLS + 'bar ' + CLS + 'gr"><i style="width:' + prog + '%"></i></div>';
+  html += '<div class="' + CLS + 'tabs" style="margin-top:14px">';
+  html += '<button class="' + CLS + 'tab ' + (STATE.tab === 'overview' ? CLS + 'active' : '') + '" onclick="' + NS + 'setTab(\'overview\')">Overview</button>';
+  html += '<button class="' + CLS + 'tab ' + (STATE.tab === 'study' ? CLS + 'active' : '') + '" onclick="' + NS + 'setTab(\'study\')">Study</button>';
+  html += '<button class="' + CLS + 'tab ' + (STATE.tab === 'quiz' ? CLS + 'active' : '') + '" onclick="' + NS + 'setTab(\'quiz\')">Quiz</button>';
+  html += '</div></div>';
+  if (STATE.tab === 'quiz'){
+    html += renderQuiz(id);
+  } else if (STATE.tab === 'study'){
+    if (STATE.sectionId){
+      var s = content.sections.find(function(x){ return x.id === STATE.sectionId; });
+      if (s){
+        var key = id + ':' + s.id;
+        var isDone = STATE.completedSections[key];
+        html += '<div class="' + CLS + 'prose">' + s.html + '</div>';
+        html += '<div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(80,140,200,.2);display:flex;gap:8px;flex-wrap:wrap">';
+        html += '<button class="' + CLS + 'btn ' + (isDone ? '' : CLS + 'primary') + '" onclick="' + NS + 'toggleDone(\'' + id + '\',\'' + s.id + '\')">' + (isDone ? '✓ Complete — undo' : 'Mark complete (+10 XP)') + '</button>';
+        html += '<button class="' + CLS + 'btn" onclick="' + NS + 'setTab(\'overview\')">← Back to overview</button>';
+        html += '</div>';
+      }
+    } else {
+      html += '<div class="' + CLS + 'prose">';
+      content.sections.forEach(function(s){
+        html += '<div class="' + CLS + 'acc">';
+        html += '<button class="' + CLS + 'acc-head">' + esc(s.title) + ' <span class="' + CLS + 'arrow">▶</span></button>';
+        html += '<div class="' + CLS + 'acc-body">' + s.html + '<div style="margin-top:12px"><button class="' + CLS + 'btn ' + CLS + 'primary ' + CLS + 'sm" onclick="' + NS + 'openSection(\'' + id + '\',\'' + s.id + '\')">Open full page →</button></div></div>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+  } else {
+    html += '<div class="' + CLS + 'prose">';
+    html += '<p style="font-size:.96rem;color:#dfe9f5">' + esc(content.intro) + '</p>';
+    html += '<h3 style="margin-top:16px">Sections in this module</h3>';
+    html += '<div class="' + CLS + 'grid ' + CLS + 'g-auto" style="margin-top:10px">';
+    content.sections.forEach(function(s){
+      var isDone = STATE.completedSections[id + ':' + s.id];
+      html += '<div class="' + CLS + 'card ' + CLS + 'click" onclick="' + NS + 'openSection(\'' + id + '\',\'' + s.id + '\')">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:5px">';
+      html += '<span class="' + CLS + 'chip ' + CLS + 'cy" style="font-size:.56rem">Section</span>';
+      html += isDone ? '<span class="' + CLS + 'chip ' + CLS + 'gr" style="font-size:.56rem">✓ Done</span>' : '<span class="' + CLS + 'chip" style="font-size:.56rem">Not started</span>';
+      html += '</div><h3 style="font-size:.88rem;margin:4px 0">' + esc(s.title) + '</h3>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+  }
+  return html;
+}
+
+function renderQuiz(id){
+  var qs = getQuiz(id);
+  var prior = STATE.quizScores[id];
+  var html = '';
+  if (prior) html += '<p style="color:#94a8c2;margin-bottom:12px">Previous: <b style="color:#22d3ee">' + prior.score + '/' + prior.total + '</b></p>';
+  html += '<div id="' + NS + 'quizBox">';
+  qs.forEach(function(q, i){
+    html += '<div class="' + CLS + 'quiz-q" data-q="' + i + '">';
+    html += '<div class="' + CLS + 'qtext">' + (i + 1) + '. ' + esc(q.q) + '</div>';
+    q.opts.forEach(function(o, j){
+      html += '<button class="' + CLS + 'quiz-opt" onclick="' + NS + 'answer(' + i + ',' + j + ')">' + esc(o) + '</button>';
+    });
+    html += '<div class="' + NS + 'exp" style="display:none;margin-top:8px;padding:9px 13px;border-radius:8px;background:rgba(34,211,238,.08);border-left:3px solid #22d3ee;font-size:.85rem;color:#8ea3bd"></div>';
+    html += '</div>';
+  });
+  html += '<div style="display:flex;gap:8px;margin-top:12px">';
+  html += '<button class="' + CLS + 'btn ' + CLS + 'primary" onclick="' + NS + 'submitQuiz(\'' + id + '\')">Submit</button>';
+  html += '<button class="' + CLS + 'btn" onclick="' + NS + 'resetQuiz(\'' + id + '\')">Retry</button>';
+  html += '</div></div>';
+  return html;
+}
+
+function renderQuizLanding(){
+  var topics = ROADMAP.filter(function(t){ return CONTENT[t.id] && CONTENT[t.id].quiz; });
+  var html = '<h1 style="font-family:Orbitron,sans-serif;font-size:1.5rem;margin-bottom:6px">Quiz Arena</h1>';
+  html += '<p style="color:#94a8c2;margin-bottom:16px">Test your knowledge. Every question has an explanation.</p>';
+  html += '<div class="' + CLS + 'grid ' + CLS + 'g-auto">';
+  topics.forEach(function(t){
+    var prior = STATE.quizScores[t.id];
+    html += '<div class="' + CLS + 'card ' + CLS + 'click" onclick="' + NS + 'openTopic(\'' + t.id + '\',\'quiz\')">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:5px">';
+    html += '<span class="' + CLS + 'chip ' + CLS + 'cy" style="font-size:.56rem">' + t.num + '</span>';
+    html += prior ? '<span class="' + CLS + 'chip ' + CLS + 'gr" style="font-size:.56rem">' + prior.score + '/' + prior.total + '</span>' : '<span class="' + CLS + 'chip" style="font-size:.56rem">New</span>';
+    html += '</div><h3 style="font-size:.9rem">' + t.icon + ' ' + esc(t.title) + '</h3>';
+    html += '<p style="font-size:.8rem;margin-top:4px">' + getQuiz(t.id).length + ' questions</p></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderGlossary(){
+  var html = '<h1 style="font-family:Orbitron,sans-serif;font-size:1.5rem;margin-bottom:6px">Glossary</h1>';
+  html += '<p style="color:#94a8c2;margin-bottom:14px">' + GLOSSARY.length + ' cybersecurity terms.</p>';
+  html += '<input class="' + CLS + 'input" placeholder="Filter terms…" oninput="' + NS + 'filterGloss(this.value)" style="margin-bottom:14px"/>';
+  html += '<div class="' + CLS + 'grid ' + CLS + 'g-auto" id="' + NS + 'glossGrid">';
+  GLOSSARY.forEach(function(g){
+    html += '<div class="' + CLS + 'card ' + NS + 'gloss-item" data-t="' + esc((g.t + ' ' + g.d + ' ' + g.c).toLowerCase()) + '">';
+    html += '<div style="display:flex;justify-content:space-between;gap:6px;align-items:flex-start;margin-bottom:5px">';
+    html += '<h3 style="font-size:.88rem;margin:0">' + esc(g.t) + '</h3>';
+    html += '<span class="' + CLS + 'chip ' + CLS + 'cy" style="font-size:.54rem">' + esc(g.c) + '</span></div>';
+    html += '<p style="font-size:.8rem">' + esc(g.d) + '</p></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+/* ═════════════════════════════════════════════
+   APP SHELL
+   ═════════════════════════════════════════════ */
+var rootEl = null;
+function ensureRoot(){
+  if (rootEl && document.body.contains(rootEl)) return rootEl;
+  var existing = document.getElementById(OVERLAY_ID);
+  if (existing){ rootEl = existing; return rootEl; }
+  rootEl = document.createElement('div');
+  rootEl.id = OVERLAY_ID;
+  rootEl.className = CLS + 'overlay';
+  rootEl.setAttribute('role','dialog');
+  rootEl.setAttribute('aria-modal','true');
+  rootEl.setAttribute('aria-label','Pareek Cyber Academy');
+  document.body.appendChild(rootEl);
+  return rootEl;
+}
+
+function renderShell(){
+  var root = ensureRoot();
+  var body;
+  if (STATE.route === 'topic' && STATE.topicId){
+    body = renderTopic(STATE.topicId);
+  } else if (STATE.route === 'dashboard'){
+    body = renderDashboard();
+  } else if (STATE.route === 'quiz'){
+    body = renderQuizLanding();
+  } else if (STATE.route === 'glossary'){
+    body = renderGlossary();
+  } else {
+    body = renderHome();
+  }
+  var html = '<div class="' + CLS + 'wrap">';
+  html += '<div class="' + CLS + 'topbar">';
+  html += '<div><div class="' + CLS + 'brand">PAREEK CYBER ACADEMY<small>DEEP LEARNING MODULES</small></div></div>';
+  html += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
+  html += '<button class="' + CLS + 'btn ' + (STATE.route === 'home' ? CLS + 'primary' : '') + '" onclick="' + NS + 'showView(\'home\')">Home</button>';
+  html += '<button class="' + CLS + 'btn ' + (STATE.route === 'dashboard' ? CLS + 'primary' : '') + '" onclick="' + NS + 'showView(\'dashboard\')">Dashboard</button>';
+  html += '<button class="' + CLS + 'btn ' + (STATE.route === 'quiz' ? CLS + 'primary' : '') + '" onclick="' + NS + 'showView(\'quiz\')">Quiz</button>';
+  html += '<button class="' + CLS + 'btn ' + (STATE.route === 'glossary' ? CLS + 'primary' : '') + '" onclick="' + NS + 'showView(\'glossary\')">Glossary</button>';
+  html += '<button class="' + CLS + 'btn" onclick="' + NS + 'resetProgress()">Reset</button>';
+  html += '<button class="' + CLS + 'btn" onclick="' + NS + 'close()">Close ✕</button>';
+  html += '</div></div>';
+  html += body;
+  html += '</div>';
+  root.innerHTML = html;
+
+  // Accordion binding
+  root.querySelectorAll('.' + CLS + 'acc-head').forEach(function(el){
+    el.addEventListener('click', function(){ el.parentElement.classList.toggle(CLS + 'open'); });
+  });
+}
+
+/* ═════════════════════════════════════════════
+   INTERACTIONS
+   ═════════════════════════════════════════════ */
+function showView(route){
+  STATE.route = route; STATE.topicId = null; STATE.sectionId = null;
+  saveState();
+  renderShell();
+  rootEl.scrollTop = 0;
+}
+function openTopic(id, tab){
+  if (!CONTENT[id]){ toast('Module content coming soon', 'err'); return; }
+  STATE.route = 'topic';
+  STATE.topicId = id;
+  STATE.tab = tab || 'overview';
+  STATE.sectionId = null;
+  saveState();
+  renderShell();
+  rootEl.scrollTop = 0;
+}
+function openSection(id, sectionId){
+  STATE.route = 'topic';
+  STATE.topicId = id;
+  STATE.tab = 'study';
+  STATE.sectionId = sectionId;
+  saveState();
+  renderShell();
+  rootEl.scrollTop = 0;
+}
+function setTab(tab){
+  STATE.tab = tab;
+  STATE.sectionId = null;
+  saveState();
+  renderShell();
+  rootEl.scrollTop = 0;
+}
+function toggleDone(topicId, sectionId){
+  var key = topicId + ':' + sectionId;
+  if (STATE.completedSections[key]){
+    delete STATE.completedSections[key];
+    STATE.xp = Math.max(0, STATE.xp - 10);
+    toast('Marked incomplete');
+  } else {
+    STATE.completedSections[key] = true;
+    STATE.xp += 10;
+    toast('+10 XP — section complete', 'ok');
+  }
+  saveState();
+  renderShell();
+}
+function answer(qIdx, optIdx){
+  var id = STATE.topicId;
+  var qs = getQuiz(id);
+  if (!quizState[id]) quizState[id] = {};
+  if (quizState[id][qIdx] != null) return;
+  quizState[id][qIdx] = optIdx;
+  var box = rootEl.querySelector('.' + CLS + 'quiz-q[data-q="' + qIdx + '"]');
+  if (!box) return;
+  var correct = qs[qIdx].a;
+  box.querySelectorAll('.' + CLS + 'quiz-opt').forEach(function(b, j){
+    b.disabled = true;
+    if (j === correct) b.classList.add(CLS + 'correct');
+    else if (j === optIdx) b.classList.add(CLS + 'wrong');
+  });
+  var exp = box.querySelector('.' + NS + 'exp');
+  if (exp){ exp.style.display = 'block'; exp.innerHTML = '<b style="color:#22d3ee">Explanation:</b> ' + esc(qs[qIdx].exp); }
+}
+function submitQuiz(id){
+  var qs = getQuiz(id);
+  var st = quizState[id] || {};
+  var score = 0;
+  qs.forEach(function(q, i){ if (st[i] === q.a) score++; });
+  STATE.quizScores[id] = { score: score, total: qs.length, ts: Date.now() };
+  STATE.xp += score * 5;
+  saveState();
+  toast('Quiz: ' + score + '/' + qs.length + ' — +' + (score * 5) + ' XP', score === qs.length ? 'ok' : '');
+  renderShell();
+}
+function resetQuiz(id){ quizState[id] = {}; renderShell(); }
+function filterGloss(q){
+  var query = q.toLowerCase().trim();
+  rootEl.querySelectorAll('.' + NS + 'gloss-item').forEach(function(el){
+    el.style.display = (!query || el.getAttribute('data-t').indexOf(query) !== -1) ? '' : 'none';
+  });
+}
+function resetProgress(){
+  if (!confirm('Reset all progress in this overlay?')) return;
+  STATE.completedSections = {};
+  STATE.quizScores = {};
+  STATE.xp = 0;
+  saveState();
+  renderShell();
+  toast('Progress reset');
+}
+
+/* ═════════════════════════════════════════════
+   OPEN / CLOSE
+   ═════════════════════════════════════════════ */
+function openApp(){
+  injectStyles();
+  var root = ensureRoot();
+  root.classList.add(CLS + 'open');
+  document.body.style.overflow = 'hidden';
+  renderShell();
+}
+function closeApp(){
+  var root = document.getElementById(OVERLAY_ID);
+  if (root) root.classList.remove(CLS + 'open');
+  document.body.style.overflow = '';
+}
+
+/* ═════════════════════════════════════════════
+   LAUNCHER BUTTON
+   ═════════════════════════════════════════════ */
+function injectLauncher(){
+  injectStyles();
+  if (document.getElementById(LAUNCH_ID)) return;
+  var btn = document.createElement('button');
+  btn.id = LAUNCH_ID;
+  btn.className = CLS + 'launcher';
+  btn.type = 'button';
+  btn.textContent = '⚡ ACADEMY';
+  btn.setAttribute('aria-label', 'Open Pareek Cyber Academy');
+  btn.addEventListener('click', openApp);
+  document.body.appendChild(btn);
+}
+
+/* ═════════════════════════════════════════════
+   KEYBOARD
+   ═════════════════════════════════════════════ */
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape'){
+    var root = document.getElementById(OVERLAY_ID);
+    if (root && root.classList.contains(CLS + 'open')) closeApp();
+  }
+});
+
+/* ═════════════════════════════════════════════
+   PUBLIC API
+   ═════════════════════════════════════════════ */
+window.PareekCyberAcademy = {
+  open: openApp,
+  close: closeApp,
+  init: injectLauncher,
+  showView: showView,
+  openTopic: openTopic,
+  openSection: openSection,
+  setTab: setTab,
+  toggleDone: toggleDone,
+  answer: answer,
+  submitQuiz: submitQuiz,
+  resetQuiz: resetQuiz,
+  filterGloss: filterGloss,
+  resetProgress: resetProgress,
+  getState: function(){ return JSON.parse(JSON.stringify(STATE)); },
+  modules: ROADMAP.map(function(r){ return { id: r.id, title: r.title, level: r.level }; })
+};
+
+/* ═════════════════════════════════════════════
+   AUTO-INIT
+   ═════════════════════════════════════════════ */
+if (document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', injectLauncher);
+} else {
+  injectLauncher();
+}
+
+})();
+</script>
+<!-- ═══ END PAREEK CYBER ACADEMY ADD-ON ═══ -->
 </body>
 </html>
