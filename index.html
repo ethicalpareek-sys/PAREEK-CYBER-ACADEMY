@@ -4949,5 +4949,2269 @@ function initTerminalTyping(){
   // SW-free offline friendliness: everything is inline already.
 })();
 </script>
+ <!-- ============================================================
+     PAREEK CYBER CTF — Original browser-based CTF engine
+     Paste this ENTIRE block immediately BEFORE the closing </body> tag
+     of your existing index.html. It is fully self-contained, namespaced
+     (pca-ctf- / pcaCTF_ / window.PareekCyberCTF), and will not collide
+     with your existing code, CSS, IDs, or routes.
+     ============================================================ -->
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     0. GUARD + CONSTANTS
+     ============================================================ */
+  if (window.PareekCyberCTF) return; // prevent double-injection
+
+  var NS = 'pcaCTF_';
+  var CLS = 'pca-ctf-';
+  var STORAGE_KEY = 'pareek_cyber_ctf_v1';
+  var OVERLAY_ID = 'pareek-cyber-ctf-overlay';
+  var STYLE_ID = 'pareek-cyber-ctf-style';
+  var LAUNCH_ID = 'pareek-cyber-ctf-launcher';
+
+  /* ============================================================
+     1. UTILITIES (all namespaced, no globals leaked)
+     ============================================================ */
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function b64e(s) { try { return btoa(unescape(encodeURIComponent(s))); } catch (e) { return s; } }
+  function b64d(s) { try { return decodeURIComponent(escape(atob(s))); } catch (e) { return s; } }
+  function now() { return Date.now(); }
+  function todayISO() { return new Date().toISOString().slice(0, 10); }
+  function uid(p) { return p + Math.random().toString(36).slice(2, 9); }
+  function qs(root, sel) { return root.querySelector(sel); }
+  function qsa(root, sel) { return Array.prototype.slice.call(root.querySelectorAll(sel)); }
+
+  /* ============================================================
+     2. CHALLENGE DATA (105 original challenges)
+        Compact tuple -> object helper keeps data readable but tight.
+     ============================================================ */
+  function C(id, name, cat, diff, desc, mission, flag, hints, expl, def, tools, labType, labData) {
+    var xpMap = { Easy: 50, Medium: 100, Hard: 200, Insane: 400 };
+    return {
+      id: id, name: name, cat: cat, diff: diff, xp: xpMap[diff] || 50,
+      desc: desc, mission: mission, flagEnc: b64e(flag),
+      hints: hints || [], expl: expl, def: def, tools: tools || [],
+      labType: labType || 'static', labData: labData || {}
+    };
+  }
+
+  var CHALLENGES = [
+
+  /* ---------- CTF FUNDAMENTALS (5) ---------- */
+  C('cf-01','Welcome to the Arena','CTF Fundamentals','Easy',
+    'Every CTF starts with reading the rules and finding the first flag.',
+    'The flag is hidden in plain sight. Look for text between PCA{ and }.',
+    'PCA{welcome_to_pareek_ctf}',
+    ['Flags always look like PCA{something_here}.','Read the mission text carefully.'],
+    'Flags follow a fixed format. Recognition is the first skill.',
+    'Always read a challenge brief fully before acting.',
+    ['eyes'], 'static', { show: 'Welcome recruit. Your flag is PCA{welcome_to_pareek_ctf}. Type it exactly as shown.' }),
+
+  C('cf-02','Flag Format','CTF Fundamentals','Easy',
+    'Learn the flag format used across this academy.',
+    'What three letters prefix every flag in this platform?',
+    'PCA{flags_are_pca_prefixed}',
+    ['Look at the earlier challenges for examples.'],
+    'A consistent flag format prevents accidental false positives.',
+    'Standard formats help automated scoring systems validate submissions.',
+    ['eyes'], 'static', { show: 'Every flag in Pareek Cyber CTF is written as PCA{...}. Submit the exact string.' }),
+
+  C('cf-03','Reading the Mission','CTF Fundamentals','Easy',
+    'The brief contains everything you need.',
+    'Read carefully: the flag is PCA{read_the_brief_first}',
+    'PCA{read_the_brief_first}',
+    ['It is right there in the mission text.'],
+    'In real engagements, the scope document is the single most important artefact.',
+    'Never test without written scope — it defines legal boundaries.',
+    ['eyes'], 'static', {}),
+
+  C('cf-04','Base64 Primer','CTF Fundamentals','Easy',
+    'Base64 is an encoding, not encryption.',
+    'Decode: UENBe2RlY29kZV9tZV9maXJzdH0=',
+    'PCA{decode_me_first}',
+    ['Base64 uses A-Z, a-z, 0-9, +, / and = padding.','Use CyberChef or base64 -d.'],
+    'Base64 encodes binary as ASCII-safe text. It provides zero confidentiality.',
+    'Never treat Base64 as a security control. Secrets in Base64 are still secrets in the clear.',
+    ['base64','CyberChef'], 'static', { show: 'Encoded string: UENBe2RlY29kZV9tZV9maXJzdH0=' }),
+
+  C('cf-05','Hex Primer','CTF Fundamentals','Easy',
+    'Hexadecimal is a base-16 representation.',
+    'Convert to ASCII: 50 43 41 7b 68 65 78 5f 69 73 5f 66 75 6e 7d',
+    'PCA{hex_is_fun}',
+    ['50 = P, 43 = C, 41 = A, 7b = {.'],
+    'Hexadecimal pairs map to bytes. You will see it everywhere in forensics.',
+    'Analysts read hex daily — file headers, packet dumps, memory.',
+    ['xxd','CyberChef'], 'static', { show: 'Hex bytes: 50 43 41 7b 68 65 78 5f 69 73 5f 66 75 6e 7d' }),
+
+  /* ---------- LINUX (10) ---------- */
+  C('lx-01','First Steps','Linux','Easy',
+    'Learn to navigate a Linux filesystem.',
+    'Use ls and cd to explore. Find the flag file in /home/student.',
+    'PCA{ls_is_your_friend}',
+    ['Start with ls.','Try cat on anything that looks like a flag file.'],
+    'ls lists directory contents — the most fundamental Linux command.',
+    'Auditors use ls to inventory exposed files.',
+    ['ls','cd','cat'], 'terminal',
+    { fs: { 'home/student/flag.txt':'PCA{ls_is_your_friend}', 'home/student/readme.txt':'Welcome. Try: ls, cat, cd.' }, home:'/home/student' }),
+
+  C('lx-02','Hidden Files','Linux','Easy',
+    'Dotfiles start with a period and are hidden by default.',
+    'Find the hidden file in /home/student and read it.',
+    'PCA{dotfiles_are_hidden}',
+    ['Try ls -a to show hidden files.'],
+    'Hidden files exist for configuration but attackers use them for persistence.',
+    'Audit dotfiles in home directories and startup scripts.',
+    ['ls -a'], 'terminal',
+    { fs: { 'home/student/.secret_flag':'PCA{dotfiles_are_hidden}', 'home/student/visible.txt':'Nothing here. Try ls -a.' }, home:'/home/student' }),
+
+  C('lx-03','Permission Puzzle','Linux','Easy',
+    'Read the octal permissions and find the answer.',
+    'A file has permissions 644. What is the symbolic notation? Submit as PCA{rw-r--r--}',
+    'PCA{rw-r--r--}',
+    ['6 = rw-','4 = r--'],
+    'Octal notation is compact but symbolic notation is easier to audit.',
+    'Over-permissive files are one of the most common host misconfigurations.',
+    ['chmod','ls -l'], 'static', {}),
+
+  C('lx-04','Find the Needle','Linux','Medium',
+    'Search a filesystem for a specific permission pattern.',
+    'A suspicious SUID binary exists at /usr/local/bin. Identify its name.',
+    'PCA{find_perm_4000}',
+    ['SUID files use permission 4000 in octal.','Try find / -perm -4000.'],
+    'SUID binaries run as their owner — the classic privilege escalation vector.',
+    'Audit SUID binaries regularly and remove unnecessary ones.',
+    ['find'], 'terminal',
+    { fs: { 'usr/local/bin/readflag':'SUID binary — flag is PCA{find_perm_4000}', 'usr/local/bin/normal':'plain tool', 'home/student/readme.txt':'Use find / -perm -4000' }, home:'/home/student' }),
+
+  C('lx-05','Grep Detective','Linux','Easy',
+    'Search inside files for patterns.',
+    'The flag is hidden inside evidence.log. Use grep.',
+    'PCA{grep_the_flag}',
+    ['Try: grep PCA evidence.log'],
+    'grep is the analyst\'s primary text-search tool.',
+    'Log analysis almost always begins with grep.',
+    ['grep'], 'terminal',
+    { fs: { 'home/student/evidence.log':'line1\nline2\nPCA{grep_the_flag}\nline4\nnoise', 'home/student/notes.txt':'use grep' }, home:'/home/student' }),
+
+  C('lx-06','Log Whisperer','Linux','Medium',
+    'Find the suspicious source IP in an auth log.',
+    'In /var/log/auth.log find the IP with the most failed logins. Submit as PCA{ip_without_dots}',
+    'PCA{203_0_113_45}',
+    ['Count occurrences of each IP.','Use grep + sort + uniq -c.'],
+    'Repeated failed logins from one IP strongly suggest brute force.',
+    'Enable account lockout and rate limiting; feed IPs into a block list.',
+    ['grep','sort','uniq'], 'terminal',
+    { fs: { 'var/log/auth.log':'Failed password for admin from 203.0.113.45 port 4021\nFailed password for admin from 203.0.113.45 port 4022\nAccepted password for alice from 10.0.0.5 port 5123\nFailed password for root from 203.0.113.45 port 4025' }, home:'/home/student' }),
+
+  C('lx-07','SUID Hunt','Linux','Medium',
+    'Locate a suspicious world-executable file.',
+    'Find the world-writable file in /tmp and read its contents.',
+    'PCA{suid_binary_found}',
+    ['Try ls -la /tmp.'],
+    'World-writable directories are common privilege-escalation hotspots.',
+    'Mount /tmp with noexec and nosuid. Restrict world-writable paths.',
+    ['ls'], 'terminal',
+    { fs: { 'tmp/backup.sh':'#!/bin/bash\n# flag: PCA{suid_binary_found}', 'tmp/normal.txt':'nothing' }, home:'/home/student' }),
+
+  C('lx-08','Crontab Conspiracy','Linux','Medium',
+    'Scheduled tasks are a classic persistence mechanism.',
+    'Inspect /etc/crontab and identify the suspicious job. Submit its command verbatim.',
+    'PCA{curl_attacker_domain}',
+    ['Read /etc/crontab line by line.'],
+    'Attackers use cron to keep access across reboots.',
+    'Monitor crontab changes and centrally log them.',
+    ['cat'], 'terminal',
+    { fs: { 'etc/crontab':'# m h dom mon dow user command\n*/5 * * * * root /usr/bin/curl_attacker_domain' }, home:'/home/student' }),
+
+  C('lx-09','User Enumeration','Linux','Easy',
+    'Read /etc/passwd and find the non-standard user.',
+    'Which user has UID 1001? Submit as PCA{username}',
+    'PCA{devops}',
+    ['passwd lines are: name:x:uid:gid:...'],
+    'Local user enumeration is the first step in host triage.',
+    'Remove unused accounts and enforce least privilege.',
+    ['cat'], 'terminal',
+    { fs: { 'etc/passwd':'root:x:0:0:root:/root:/bin/bash\ndaemon:x:1:1::/usr/sbin:/usr/sbin/nologin\nalice:x:1000:1000::/home/alice:/bin/bash\ndevops:x:1001:1001::/home/devops:/bin/bash' }, home:'/home/student' }),
+
+  C('lx-10','Process Inspector','Linux','Medium',
+    'Read a ps snapshot and identify the suspicious process.',
+    'Which process is unusual? Submit its name.',
+    'PCA{kworker_malware}',
+    ['Look for processes running from /tmp or with odd names.'],
+    'Fake kernel threads are a common masquerade technique.',
+    'Baseline normal processes; alert on new exec from /tmp or /dev/shm.',
+    ['ps'], 'terminal',
+    { fs: { 'home/student/ps.txt':'root         1  0.0  0.1  init\nroot        10  0.0  0.0  kthreadd\nroot      4242  0.0  0.1  kworker_malware from /tmp/.x' }, home:'/home/student' }),
+
+  /* ---------- NETWORKING (8) ---------- */
+  C('nw-01','Port Basics','Networking','Easy',
+    'Default ports are foundational knowledge.',
+    'Which TCP port does HTTPS use by default? Submit as PCA{443}',
+    'PCA{443}',
+    ['HTTP is 80. HTTPS is the encrypted variant.'],
+    'Default ports speed up triage and detection engineering.',
+    'Block unexpected egress and log unusual destination ports.',
+    ['ss','netstat'], 'static', {}),
+
+  C('nw-02','TCP Handshake','Networking','Easy',
+    'The three-way handshake establishes a TCP connection.',
+    'What is the second packet in the handshake? Submit as PCA{SYN-ACK}',
+    'PCA{SYN-ACK}',
+    ['First is SYN, third is ACK.'],
+    'The handshake establishes state — useful for detecting scanning.',
+    'SYN floods and half-open scans are visible in flow telemetry.',
+    ['Wireshark','tcpdump'], 'static', {}),
+
+  C('nw-03','Subnet Math','Networking','Medium',
+    'Calculate usable hosts in a subnet.',
+    'How many usable host addresses in a /24? Submit as PCA{254}',
+    'PCA{254}',
+    ['Network and broadcast addresses are reserved.'],
+    'Subnetting is essential for segmentation design.',
+    'Good segmentation limits lateral movement.',
+    ['ipcalc'], 'static', {}),
+
+  C('nw-04','DNS Lookup','Networking','Easy',
+    'Identify DNS record types.',
+    'Which record type maps a name to an IPv4 address? Submit as PCA{A}',
+    'PCA{A}',
+    ['It is a single letter.'],
+    'A records are the DNS backbone for IPv4.',
+    'Monitor DNS for DGA patterns and unusual TXT records.',
+    ['dig'], 'static', {}),
+
+  C('nw-05','ARP Explained','Networking','Easy',
+    'ARP maps IP addresses to MAC addresses.',
+    'What protocol family does ARP belong to? Submit as PCA{link_layer}',
+    'PCA{link_layer}',
+    ['It operates at layer 2.'],
+    'ARP is unauthenticated — that is why ARP spoofing works.',
+    'Use DAI (Dynamic ARP Inspection) on switches to prevent spoofing.',
+    ['arp','ip neigh'], 'static', {}),
+
+  C('nw-06','Packet Detective','Networking','Medium',
+    'Identify the suspicious packet in a small capture.',
+    'Which port receives the beacon-like traffic? Submit as PCA{4444}',
+    'PCA{4444}',
+    ['Look for regular-interval outbound traffic to a non-standard port.'],
+    'Beaconing to unusual ports is a classic C2 pattern.',
+    'Block egress to non-standard ports; monitor for beacon timing.',
+    ['Wireshark','tcpdump'], 'packets',
+    { packets: [
+      { s:'10.0.0.5:51234', d:'10.0.0.1:53', p:'DNS', info:'query example.com' },
+      { s:'10.0.0.5:51235', d:'10.0.0.1:80', p:'HTTP', info:'GET /' },
+      { s:'10.0.0.5:51236', d:'203.0.113.9:4444', p:'TCP', info:'PSH-ACK 128 bytes (repeats every 60s)' },
+      { s:'10.0.0.5:51237', d:'10.0.0.1:443', p:'TLS', info:'client hello' }
+    ]}),
+
+  C('nw-07','HTTP vs HTTPS','Networking','Easy',
+    'Compare the two protocols.',
+    'Which TLS version removed RC4? Submit as PCA{TLS1.3}',
+    'PCA{TLS1.3}',
+    ['It is the newest widely deployed TLS version.'],
+    'TLS 1.3 removed legacy ciphers and mandates forward secrecy.',
+    'Disable TLS 1.0 and 1.1. Prefer 1.3 where possible.',
+    ['openssl'], 'static', {}),
+
+  C('nw-08','Firewall Rules','Networking','Medium',
+    'Determine the final action of a rule set.',
+    'If a firewall has a default-deny policy and no matching allow rule, what happens? Submit as PCA{drop}',
+    'PCA{drop}',
+    ['Default policy wins.'],
+    'Default-deny is a fundamental segmentation principle.',
+    'Always end rule sets with an explicit default-deny.',
+    ['iptables'], 'static', {}),
+
+  /* ---------- WEB SECURITY (10) ---------- */
+  C('wb-01','View Source','Web Security','Easy',
+    'Comments often leak more than developers intend.',
+    'Read the page source to find the flag.',
+    'PCA{comments_leak_secrets}',
+    ['HTML comments use <!— —>.'],
+    'Developer comments regularly contain credentials and internal URLs.',
+    'Strip comments from production HTML builds.',
+    ['DevTools'], 'static',
+    { show: 'HTML source:\n<div class="app">\n  <!-- TODO: remove before prod. flag=PCA{comments_leak_secrets} -->\n</div>' }),
+
+  C('wb-02','Cookie Inspector','Web Security','Easy',
+    'Cookie flags control browser-side behaviour.',
+    'Which cookie flag prevents JavaScript from reading it? Submit as PCA{HttpOnly}',
+    'PCA{HttpOnly}',
+    ['It starts with H.'],
+    'HttpOnly blocks XSS-based session theft.',
+    'Always set HttpOnly + Secure + SameSite on session cookies.',
+    ['DevTools'], 'static', {}),
+
+  C('wb-03','Header Hunter','Web Security','Easy',
+    'Security headers add defence in depth.',
+    'Which header restricts where scripts can load from? Submit as PCA{Content-Security-Policy}',
+    'PCA{Content-Security-Policy}',
+    ['It has CSP as acronym.'],
+    'CSP is the strongest client-side mitigation for XSS.',
+    'Deploy CSP in report-only mode first, then enforce.',
+    ['DevTools','curl'], 'static', {}),
+
+  C('wb-04','IDOR Intro','Web Security','Medium',
+    'Insecure Direct Object Reference.',
+    'A URL like /api/user/1042 returns another user\'s data. What is the root cause? Submit as PCA{missing_authorization}',
+    'PCA{missing_authorization}',
+    ['It is not authentication — the user is logged in.'],
+    'Authentication proves who you are; authorisation checks what you may access.',
+    'Enforce object-level authorisation centrally on every request.',
+    ['Burp'], 'static', {}),
+
+  C('wb-05','SQL Injection Concept','Web Security','Medium',
+    'Understand why injection happens.',
+    'Untrusted input concatenated into SQL causes what class of bug? Submit as PCA{injection}',
+    'PCA{injection}',
+    ['It is one of the OWASP Top 10 categories.'],
+    'Injection occurs when data is interpreted as code.',
+    'Use parameterised queries / prepared statements — never string concatenation.',
+    ['sqlmap (lab only)'], 'static', {}),
+
+  C('wb-06','XSS Concept','Web Security','Medium',
+    'Cross-site scripting is output encoding gone wrong.',
+    'Which defence most reliably prevents XSS? Submit as PCA{output_encoding}',
+    'PCA{output_encoding}',
+    ['Encoding happens when data leaves the app, not when it arrives.'],
+    'Encode on output for the specific context (HTML, attribute, JS, URL).',
+    'Combine output encoding with a strict CSP.',
+    ['DevTools'], 'static', {}),
+
+  C('wb-07','Path Traversal','Web Security','Medium',
+    'Manipulating file paths.',
+    'A download endpoint reads files by name. Which sequence escapes the directory? Submit as PCA{dot_dot_slash}',
+    'PCA{dot_dot_slash}',
+    ['It uses ../'],
+    'Path traversal reads arbitrary files on the server.',
+    'Normalise paths and validate against an allowlist of files.',
+    ['curl'], 'static', {}),
+
+  C('wb-08','SSRF Concept','Web Security','Hard',
+    'Server-side request forgery.',
+    'An endpoint fetches URLs supplied by users. What network should be blocked? Submit as PCA{internal_networks}',
+    'PCA{internal_networks}',
+    ['Think about private IP ranges and metadata endpoints.'],
+    'SSRF exposes internal services and cloud metadata.',
+    'Allowlist outbound destinations; block RFC1918 and cloud metadata IPs.',
+    ['Burp'], 'static', {}),
+
+  C('wb-09','CSRF Token','Web Security','Medium',
+    'Cross-site request forgery uses the victim\'s ambient session.',
+    'Which cookie attribute helps prevent CSRF by default? Submit as PCA{SameSite}',
+    'PCA{SameSite}',
+    ['It starts with Same.'],
+    'SameSite=Lax or Strict blocks most cross-site POST requests.',
+    'Combine SameSite with CSRF tokens for defence in depth.',
+    ['DevTools'], 'static', {}),
+
+  C('wb-10','File Upload','Web Security','Hard',
+    'File upload features are dangerous by default.',
+    'What should be used to decide whether an upload is allowed? Submit as PCA{extension_allowlist}',
+    'PCA{extension_allowlist}',
+    ['Allow-list, not deny-list.'],
+    'Deny-lists are bypassed; allow-lists are not.',
+    'Validate content type, magic bytes, extension, and store outside webroot.',
+    ['Burp'], 'static', {}),
+
+  /* ---------- API SECURITY (5) ---------- */
+  C('ap-01','REST Basics','API Security','Easy',
+    'Which HTTP method is idempotent?',
+    'Which method should never change server state? Submit as PCA{GET}',
+    'PCA{GET}',
+    ['It is used for reads.'],
+    'Idempotent methods are safe to retry.',
+    'Do not use GET for state-changing operations.',
+    ['Postman'], 'static', {}),
+
+  C('ap-02','API Key Leak','API Security','Easy',
+    'Where should API keys NEVER appear?',
+    'URLs are logged everywhere. Submit as PCA{never_in_url}',
+    'PCA{never_in_url}',
+    ['Think about logs, proxies and browser history.'],
+    'URLs are recorded in access logs, proxies and referrers.',
+    'Send credentials in headers, never in query strings.',
+    ['DevTools'], 'static', {}),
+
+  C('ap-03','Rate Limiting','API Security','Medium',
+    'Which status code indicates rate limiting?',
+    'Submit as PCA{429}',
+    'PCA{429}',
+    ['It is in the 4xx range.'],
+    'Rate limiting mitigates credential stuffing and enumeration.',
+    'Apply per-user and per-IP limits with exponential backoff.',
+    ['curl'], 'static', {}),
+
+  C('ap-04','Mass Assignment','API Security','Hard',
+    'Mass assignment lets clients set fields they should not.',
+    'Which defence is correct? Submit as PCA{allowlist_fields}',
+    'PCA{allowlist_fields}',
+    ['Only bind fields the API explicitly intends.'],
+    'ORMs that auto-bind request bodies enable privilege escalation.',
+    'Use DTOs / allow-listed bindings; never mass-assign raw input.',
+    ['Burp'], 'static', {}),
+
+  C('ap-05','BOLA','API Security','Medium',
+    'Broken Object Level Authorisation.',
+    'What is the OWASP API #1 risk acronym? Submit as PCA{BOLA}',
+    'PCA{BOLA}',
+    ['It is four letters.'],
+    'BOLA occurs when object IDs are trusted without ownership checks.',
+    'Authorise every object access against the caller\'s identity.',
+    ['Burp'], 'static', {}),
+
+  /* ---------- CRYPTOGRAPHY (8) ---------- */
+  C('cr-01','Caesar Cipher','Cryptography','Easy',
+    'Shift each letter by a fixed amount.',
+    'Shift this text back by 3: SDFD{shift_by_three}',
+    'PCA{shift_by_three}',
+    ['S - 3 = P, D - 3 = A, F - 3 = C.'],
+    'Caesar ciphers are trivially broken by brute force.',
+    'Never use classical ciphers. Use AES-GCM or ChaCha20-Poly1305.',
+    ['CyberChef'], 'static', { show:'Ciphertext: SDFD{shift_by_three}' }),
+
+  C('cr-02','Base64 Decode','Cryptography','Easy',
+    'Base64 is not encryption.',
+    'Decode: UENBe2Jhc2U2NF9pc19lbmNvZGluZ30=',
+    'PCA{base64_is_encoding}',
+    ['Base64 ends with = padding.'],
+    'Base64 hides nothing — it is trivially reversible.',
+    'Never store secrets as Base64. Encrypt them properly.',
+    ['base64'], 'static', { show:'Encoded: UENBe2Jhc2U2NF9pc19lbmNvZGluZ30=' }),
+
+  C('cr-03','Hex to ASCII','Cryptography','Easy',
+    'Hex pairs map to bytes.',
+    'Decode: 50 43 41 7b 68 65 78 5f 74 6f 5f 74 65 78 74 7d',
+    'PCA{hex_to_text}',
+    ['50 = P.'],
+    'Hex is the analyst\'s second language.',
+    'Practice hex reading for forensic file triage.',
+    ['xxd'], 'static', { show:'Hex: 50 43 41 7b 68 65 78 5f 74 6f 5f 74 65 78 74 7d' }),
+
+  C('cr-04','XOR Fun','Cryptography','Medium',
+    'XOR with a repeating key is a classic CTF pattern.',
+    'A string was XORed with 0x2A. Recover it: b n k Z P S Z P E F F @',
+    'PCA{xor_is_reversible}',
+    ['XOR is its own inverse — apply 0x2A again.'],
+    'XOR alone is not encryption; with a fixed key it is obfuscation.',
+    'Use authenticated encryption, not XOR, for real confidentiality.',
+    ['CyberChef'], 'static', { show:'XORed with 0x2A: b n k Z P S Z P E F F @' }),
+
+  C('cr-05','Hash Identification','Cryptography','Easy',
+    'Recognise hash lengths.',
+    'A 64-character hex string is most likely which algorithm? Submit as PCA{sha256}',
+    'PCA{sha256}',
+    ['MD5 is 32 chars. SHA-1 is 40.'],
+    'Hash length identifies the algorithm family.',
+    'Never use MD5 or SHA-1 for security decisions.',
+    ['hashid'], 'static', {}),
+
+  C('cr-06','MD5 Weakness','Cryptography','Medium',
+    'Why is MD5 unsuitable for integrity?',
+    'MD5 is vulnerable to what property? Submit as PCA{collision}',
+    'PCA{collision}',
+    ['Two different inputs can produce the same hash.'],
+    'Collisions break integrity guarantees entirely.',
+    'Replace MD5 with SHA-256 or SHA-3 everywhere.',
+    ['hashcat'], 'static', {}),
+
+  C('cr-07','Password Hashing','Cryptography','Medium',
+    'Password hashing requires slow, memory-hard algorithms.',
+    'Which of these is appropriate: MD5, SHA-1, bcrypt? Submit as PCA{bcrypt}',
+    'PCA{bcrypt}',
+    ['You want deliberate slowness.'],
+    'bcrypt / scrypt / Argon2 make offline cracking expensive.',
+    'Store passwords only as bcrypt (or equivalent) with per-user salt.',
+    ['bcrypt'], 'static', {}),
+
+  C('cr-08','ROT13','Cryptography','Easy',
+    'ROT13 is Caesar with shift 13.',
+    'Decode: CPN{ebg13_svkrf}',
+    'PCA{rot13_fixes}',
+    ['Apply ROT13 twice to get back.'],
+    'ROT13 is not encryption — it is a beginner obfuscation.',
+    'Never use classical ciphers in real systems.',
+    ['CyberChef'], 'static', { show:'Ciphertext: CPN{ebg13_svkrf}' }),
+
+  /* ---------- DIGITAL FORENSICS (5) ---------- */
+  C('df-01','File Metadata','Digital Forensics','Easy',
+    'Files carry hidden metadata.',
+    'A document was leaked. Its metadata reveals the author. Submit as PCA{author_name_leaked}',
+    'PCA{author_name_leaked}',
+    ['Metadata is not visible in the file content.'],
+    'EXIF and document metadata expose authors, GPS, and software versions.',
+    'Strip metadata before publishing documents.',
+    ['exiftool'], 'static',
+    { show:'Metadata:\nAuthor: Author_Name_Leaked\nSoftware: LibreOffice\nCreated: 2024-08-12' }),
+
+  C('df-02','Hash Integrity','Digital Forensics','Easy',
+    'Hashes prove evidence has not been altered.',
+    'What property must a hash have to prove integrity? Submit as PCA{deterministic}',
+    'PCA{deterministic}',
+    ['Same input always produces the same output.'],
+    'Determinism makes hashes useful for verification.',
+    'Record evidence hashes before and after analysis.',
+    ['sha256sum'], 'static', {}),
+
+  C('df-03','Timeline Analysis','Digital Forensics','Medium',
+    'Order events to reconstruct what happened.',
+    'Which event occurred FIRST: login, file download, or privilege escalation? Submit as PCA{login}',
+    'PCA{login}',
+    ['Attacks typically follow access.'],
+    'Timelines are the primary forensic output.',
+    'Centralise logs so timelines can be built reliably.',
+    ['plaso','Autopsy'], 'static',
+    { show:'Timeline:\n12:03:11 - user login from 10.0.0.5\n12:04:22 - file downloaded from intranet\n12:06:50 - privilege escalation attempt blocked' }),
+
+  C('df-04','Browser Artifacts','Digital Forensics','Medium',
+    'Browsers record extensive activity.',
+    'Which browser artefact stores saved form data? Submit as PCA{autofill}',
+    'PCA{autofill}',
+    ['Not history, not cookies.'],
+    'Autofill data often contains sensitive fields.',
+    'Clear form data and use password managers, not autofill.',
+    ['Autopsy'], 'static', {}),
+
+  C('df-05','Memory Artifacts','Digital Forensics','Hard',
+    'Volatile memory contains runtime-only data.',
+    'Which tool is standard for Windows memory analysis? Submit as PCA{volatility}',
+    'PCA{volatility}',
+    ['It is a Python framework.'],
+    'Memory holds processes, network connections and injected code invisible on disk.',
+    'Acquire memory first in incident response — it disappears on reboot.',
+    ['Volatility'], 'static', {}),
+
+  /* ---------- OSINT (4) ---------- */
+  C('os-01','Search Operators','OSINT','Easy',
+    'Search engines support advanced operators.',
+    'Which operator restricts results to a specific site? Submit as PCA{site}',
+    'PCA{site}',
+    ['Example: site:example.com.'],
+    'Operators dramatically refine OSINT searches.',
+    'Always stay within legal and ethical boundaries when researching people.',
+    ['Google'], 'static', {}),
+
+  C('os-02','WHOIS Basics','OSINT','Easy',
+    'WHOIS records are public.',
+    'Which field identifies the company that sold the domain? Submit as PCA{registrar}',
+    'PCA{registrar}',
+    ['It is not the owner — it is the seller.'],
+    'Registrar information helps track domain ownership changes.',
+    'Enable WHOIS privacy if you run a personal domain.',
+    ['whois'], 'static', {}),
+
+  C('os-03','Certificate Transparency','OSINT','Medium',
+    'CT logs reveal every certificate ever issued.',
+    'CT logs let you enumerate what for a domain? Submit as PCA{subdomains}',
+    'PCA{subdomains}',
+    ['Certificates are issued per hostname.'],
+    'CT logs are a goldmine for asset discovery.',
+    'Monitor CT logs for your domains to detect typosquatting.',
+    ['crt.sh'], 'static', {}),
+
+  C('os-04','Metadata Intelligence','OSINT','Medium',
+    'Metadata is a form of passive intelligence.',
+    'A public PDF contains the username of the author. This is what kind of intelligence? Submit as PCA{osint}',
+    'PCA{osint}',
+    ['It is collected from public sources.'],
+    'OSINT uses only publicly available information.',
+    'Educate staff about metadata leaks in shared documents.',
+    ['exiftool'], 'static', {}),
+
+  /* ---------- PYTHON (5) ---------- */
+  C('py-01','Hello Python','Python','Easy',
+    'Python prints with the print() function.',
+    'What does print("hello") output? Submit as PCA{hello}',
+    'PCA{hello}',
+    ['No quotes in the output.'],
+    'Python is the primary language of security tooling.',
+    'Use Python for automation, parsing and small utilities.',
+    ['python'], 'static', {}),
+
+  C('py-02','String Slicing','Python','Easy',
+    'Slicing extracts substrings.',
+    'What is "abcdef"[1:4]? Submit as PCA{bcd}',
+    'PCA{bcd}',
+    ['Start inclusive, end exclusive.'],
+    'Slicing is used constantly when parsing logs.',
+    'Prefer explicit parsing over fragile index slicing.',
+    ['python'], 'static', {}),
+
+  C('py-03','List Comprehension','Python','Easy',
+    'Comprehensions build lists concisely.',
+    'What does [x*2 for x in [1,2,3]] produce? Submit as PCA{2_4_6}',
+    'PCA{2_4_6}',
+    ['Multiply each element by 2.'],
+    'Comprehensions are idiomatic Python.',
+    'Readable comprehensions beat nested loops.',
+    ['python'], 'static', {}),
+
+  C('py-04','Regex Match','Python','Medium',
+    'Regular expressions find patterns in text.',
+    'Which function returns all matches? Submit as PCA{findall}',
+    'PCA{findall}',
+    ['It is re.findall().'],
+    'Regex is essential for log parsing and IOC extraction.',
+    'Use raw strings (r"...") for regex patterns.',
+    ['python'], 'static', {}),
+
+  C('py-05','File Read','Python','Easy',
+    'Open files with the open() function.',
+    'Which mode opens a file for reading only? Submit as PCA{r}',
+    'PCA{r}',
+    ['Single letter.'],
+    'Always close files or use with-statements.',
+    'Use with open(...) as f to guarantee cleanup.',
+    ['python'], 'static', {}),
+
+  /* ---------- BASH (4) ---------- */
+  C('bs-01','Echo Basics','Bash','Easy',
+    'Echo prints text to stdout.',
+    'What does echo hello print? Submit as PCA{hello}',
+    'PCA{hello}',
+    ['Exactly what you passed.'],
+    'echo is used in scripts to output messages and variables.',
+    'Quote variables in scripts to prevent word splitting.',
+    ['bash'], 'static', {}),
+
+  C('bs-02','Pipes','Bash','Easy',
+    'Pipes chain commands.',
+    'In `cat file | grep error` which command receives input? Submit as PCA{grep}',
+    'PCA{grep}',
+    ['The command after the pipe.'],
+    'Pipelines compose small tools into powerful workflows.',
+    'Pipelines are the shell\'s superpower for log analysis.',
+    ['bash'], 'static', {}),
+
+  C('bs-03','Loops','Bash','Medium',
+    'For loops iterate over lists.',
+    'How many times does `for i in 1 2 3; do echo $i; done` iterate? Submit as PCA{3}',
+    'PCA{3}',
+    ['Count the items.'],
+    'Loops automate repetitive tasks.',
+    'Always quote variables inside loops.',
+    ['bash'], 'static', {}),
+
+  C('bs-04','Redirect','Bash','Easy',
+    'Redirection sends output to files.',
+    'Which symbol overwrites a file? Submit as PCA{greater_than}',
+    'PCA{greater_than}',
+    ['It is a single character.'],
+    'Redirection is essential for logging.',
+    'Double >> appends; single > truncates.',
+    ['bash'], 'static', {}),
+
+  /* ---------- SOC (5) ---------- */
+  C('sc-01','Alert Triage','SOC','Easy',
+    'Triage is the SOC\'s first discipline.',
+    'Which should come FIRST when triaging an alert? Submit as PCA{gather_context}',
+    'PCA{gather_context}',
+    ['Do not act before understanding.'],
+    'Context gathering prevents over- and under-reaction.',
+    'Document triage steps in playbooks.',
+    ['SIEM'], 'static', {}),
+
+  C('sc-02','IOC Identification','SOC','Easy',
+    'Identify an indicator of compromise.',
+    'Which is an IOC: a username, a file hash, or a department name? Submit as PCA{file_hash}',
+    'PCA{file_hash}',
+    ['Which is machine-observable and specific?'],
+    'IOCs must be specific and observable.',
+    'Feed IOCs into your SIEM for retrospective search.',
+    ['VirusTotal'], 'static', {}),
+
+  C('sc-03','Severity Scoring','SOC','Medium',
+    'Severity depends on context and impact.',
+    'Ransomware detected on a file server. Severity? Submit as PCA{critical}',
+    'PCA{critical}',
+    ['Consider impact and urgency.'],
+    'Severity frameworks prevent inconsistent triage.',
+    'Define severity criteria in your IR plan.',
+    ['SIEM'], 'static', {}),
+
+  C('sc-04','Escalation Path','SOC','Medium',
+    'Know when to escalate.',
+    'A confirmed breach should be escalated to which tier? Submit as PCA{tier_3}',
+    'PCA{tier_3}',
+    ['Highest tier.'],
+    'Escalation paths prevent analyst bottlenecks.',
+    'Document escalation criteria and contacts.',
+    ['SIEM'], 'static', {}),
+
+  C('sc-05','Playbook Steps','SOC','Easy',
+    'Playbooks standardise response.',
+    'What is the primary benefit of a playbook? Submit as PCA{consistency}',
+    'PCA{consistency}',
+    ['It reduces reliance on individual memory.'],
+    'Consistent response reduces mistakes under pressure.',
+    'Review and update playbooks after every incident.',
+    ['TheHive'], 'static', {}),
+
+  /* ---------- LOG ANALYSIS (5) ---------- */
+  C('la-01','Web Log Basics','Log Analysis','Easy',
+    'Access logs record every request.',
+    'A 404 flood from one IP suggests what? Submit as PCA{enumeration}',
+    'PCA{enumeration}',
+    ['The attacker is looking for something.'],
+    'Directory enumeration produces many 404s in a short window.',
+    'Rate-limit 404s and alert on bursts.',
+    ['grep'], 'logview',
+    { lines: [
+      '203.0.113.45 - - [12/Aug/2024:12:00:01] "GET /admin HTTP/1.1" 404',
+      '203.0.113.45 - - [12/Aug/2024:12:00:02] "GET /backup.zip HTTP/1.1" 404',
+      '203.0.113.45 - - [12/Aug/2024:12:00:03] "GET /config.php.bak HTTP/1.1" 404',
+      '203.0.113.45 - - [12/Aug/2024:12:00:04] "GET /.git/config HTTP/1.1" 404',
+      '10.0.0.5 - - [12/Aug/2024:12:00:05] "GET / HTTP/1.1" 200'
+    ]}),
+
+  C('la-02','Auth Log Scan','Log Analysis','Medium',
+    'Count failed logins per source.',
+    'Which IP is brute-forcing? Submit without dots.',
+    'PCA{198_51_100_7}',
+    ['Count failed logins per IP.'],
+    'Brute force is detectable by count and velocity.',
+    'Enforce account lockout and monitor for distributed attempts.',
+    ['grep','sort'], 'logview',
+    { lines: [
+      'Failed password for root from 198.51.100.7 port 4012',
+      'Failed password for root from 198.51.100.7 port 4013',
+      'Failed password for root from 198.51.100.7 port 4014',
+      'Failed password for admin from 198.51.100.7 port 4015',
+      'Accepted password for alice from 10.0.0.5 port 5234'
+    ]}),
+
+  C('la-03','DNS Log Query','Log Analysis','Medium',
+    'Domain generation algorithms produce random-looking names.',
+    'Which DNS query looks generated? Submit the domain.',
+    'PCA{kj3n2n9x8z7q1w.com}',
+    ['Look for random-looking alphanumeric sequences.'],
+    'DGA domains look random and change frequently.',
+    'Detect via entropy scoring and NXDOMAIN bursts.',
+    ['Zeek'], 'logview',
+    { lines: [
+      '12:00:01 query example.com',
+      '12:00:02 query google.com',
+      '12:00:03 query kj3n2n9x8z7q1w.com',
+      '12:00:04 query microsoft.com',
+      '12:00:05 query m8b4v2c9x1z7p3q.com'
+    ]}),
+
+  C('la-04','Firewall Log','Log Analysis','Medium',
+    'Repeated denies to the same port suggest scanning.',
+    'Which destination port is being scanned? Submit as PCA{22}',
+    'PCA{22}',
+    ['It is the SSH default port.'],
+    'Port scans show repeated denies to sequential ports.',
+    'Alert on scan-like behaviour at the perimeter.',
+    ['iptables'], 'logview',
+    { lines: [
+      'DENY IN=eth0 SRC=203.0.113.45 DST=10.0.0.5 DPT=21',
+      'DENY IN=eth0 SRC=203.0.113.45 DST=10.0.0.5 DPT=22',
+      'DENY IN=eth0 SRC=203.0.113.45 DST=10.0.0.5 DPT=23',
+      'DENY IN=eth0 SRC=203.0.113.45 DST=10.0.0.5 DPT=25'
+    ]}),
+
+  C('la-05','Cloud Log Review','Log Analysis','Hard',
+    'CloudTrail logs record every API call.',
+    'Which API call indicates a policy was widened? Submit the event name.',
+    'PCA{PutBucketAcl}',
+    ['Look for API calls that change access controls.'],
+    'Cloud audit logs are essential for detecting account abuse.',
+    'Alert on ACL/policy changes outside change windows.',
+    ['CloudTrail'], 'logview',
+    { lines: [
+      'eventName=DescribeInstances user=dev-readonly',
+      'eventName=ListBuckets user=dev-readonly',
+      'eventName=PutBucketAcl user=dev-readonly target=prod-backups acl=public-read',
+      'eventName=GetObject user=dev-readonly'
+    ]}),
+
+  /* ---------- THREAT HUNTING (4) ---------- */
+  C('th-01','Hypothesis Driven','Threat Hunting','Medium',
+    'Hunts start with a hypothesis.',
+    'A hunt should begin with what? Submit as PCA{hypothesis}',
+    'PCA{hypothesis}',
+    ['It is a testable statement.'],
+    'Hypotheses keep hunts focused and measurable.',
+    'Document hunts even when nothing is found.',
+    ['ATT&CK'], 'static', {}),
+
+  C('th-02','ATT&CK Mapping','Threat Hunting','Medium',
+    'Map activity to ATT&CK techniques.',
+    'Command-line abuse by a shell maps to which technique ID? Submit as PCA{T1059}',
+    'PCA{T1059}',
+    ['It is an execution technique.'],
+    'ATT&CK IDs are the lingua franca of detection engineering.',
+    'Map every detection rule to at least one ATT&CK technique.',
+    ['ATT&CK'], 'static', {}),
+
+  C('th-03','Anomaly Detection','Threat Hunting','Hard',
+    'Baselines reveal deviations.',
+    'Detecting unusual login times requires what? Submit as PCA{baseline}',
+    'PCA{baseline}',
+    ['You must know what is normal first.'],
+    'You cannot detect anomalies without a baseline.',
+    'Baseline user, host, and network behaviour over time.',
+    ['SIEM'], 'static', {}),
+
+  C('th-04','Beacon Detection','Threat Hunting','Hard',
+    'C2 beacons often have regular timing.',
+    'Which C2 design technique makes timing analysis harder? Submit as PCA{jitter}',
+    'PCA{jitter}',
+    ['It adds randomness to intervals.'],
+    'Jitter obscures the regular intervals that make beacons obvious.',
+    'Detect via entropy analysis of connection intervals.',
+    ['Zeek'], 'static', {}),
+
+  /* ---------- INCIDENT RESPONSE (4) ---------- */
+  C('ir-01','PICERL Lifecycle','Incident Response','Easy',
+    'The IR lifecycle has six phases.',
+    'Which phase comes first? Submit as PCA{preparation}',
+    'PCA{preparation}',
+    ['It happens before any incident occurs.'],
+    'Preparation determines how well you respond.',
+    'Run tabletop exercises to validate preparation.',
+    ['NIST'], 'static', {}),
+
+  C('ir-02','Containment','Incident Response','Medium',
+    'Containment balances isolation with evidence preservation.',
+    'Should you power off a compromised host immediately? Submit as PCA{no}',
+    'PCA{no}',
+    ['Memory is volatile and important evidence.'],
+    'Shutting down destroys memory evidence.',
+    'Isolate network access, but keep the host powered on.',
+    ['Velociraptor'], 'static', {}),
+
+  C('ir-03','Evidence Order','Incident Response','Medium',
+    'Order of volatility guides acquisition.',
+    'Which is more volatile: RAM or disk? Submit as PCA{ram}',
+    'PCA{ram}',
+    ['Which disappears on power loss?'],
+    'Acquire the most volatile evidence first.',
+    'Always capture RAM before imaging disk.',
+    ['Volatility'], 'static', {}),
+
+  C('ir-04','Post Incident','Incident Response','Easy',
+    'Lessons learned turn incidents into improvement.',
+    'What should a post-incident review be? Submit as PCA{blameless}',
+    'PCA{blameless}',
+    ['It is not about punishing people.'],
+    'Blameless reviews surface real systemic issues.',
+    'Publish lessons learned across the organisation.',
+    ['NIST'], 'static', {}),
+
+  /* ---------- MALWARE ANALYSIS THEORY (3) ---------- */
+  C('ma-01','Static vs Dynamic','Malware Analysis','Easy',
+    'Two main analysis approaches.',
+    'Examining a binary without running it is which analysis type? Submit as PCA{static}',
+    'PCA{static}',
+    ['The opposite of dynamic.'],
+    'Static analysis is safe but limited by packing and obfuscation.',
+    'Combine static and dynamic analysis for full understanding.',
+    ['PEStudio'], 'static', {}),
+
+  C('ma-02','PE Header Basics','Malware Analysis','Medium',
+    'PE files have a defined structure.',
+    'What are the main sections of a PE file called? Submit as PCA{sections}',
+    'PCA{sections}',
+    ['.text, .data, .rsrc are examples.'],
+    'Section names and entropy reveal packing.',
+    'Flag binaries with unusually high-entropy sections.',
+    ['PEStudio'], 'static', {}),
+
+  C('ma-03','YARA Rule Thinking','Malware Analysis','Medium',
+    'YARA matches patterns.',
+    'A YARA rule matches what? Submit as PCA{patterns}',
+    'PCA{patterns}',
+    ['Strings and bytes, not behaviour.'],
+    'YARA is pattern matching on files and memory.',
+    'Write precise YARA rules to avoid false positives.',
+    ['YARA'], 'static', {}),
+
+  /* ---------- REVERSE ENGINEERING THEORY (4) ---------- */
+  C('re-01','Assembly Basics','Reverse Engineering','Medium',
+    'Assembly is the human-readable form of machine code.',
+    'Which x86 instruction loads a value into a register? Submit as PCA{mov}',
+    'PCA{mov}',
+    ['It copies data.'],
+    'MOV is the most common instruction you will read.',
+    'Understanding assembly is essential for malware analysis.',
+    ['Ghidra'], 'static', {}),
+
+  C('re-02','Registers','Reverse Engineering','Medium',
+    'x86 has general-purpose registers.',
+    'Which register is the accumulator? Submit as PCA{eax}',
+    'PCA{eax}',
+    ['It is used for arithmetic results.'],
+    'Register roles are stable across calling conventions.',
+    'Memorise the standard register purposes.',
+    ['gdb'], 'static', {}),
+
+  C('re-03','Calling Conventions','Reverse Engineering','Hard',
+    'Calling conventions define parameter passing.',
+    'In cdecl, who cleans the stack? Submit as PCA{caller}',
+    'PCA{caller}',
+    ['It is not stdcall.'],
+    'Wrong convention assumptions produce wrong decompilation.',
+    'Identify calling conventions before deep analysis.',
+    ['Ghidra'], 'static', {}),
+
+  C('re-04','Decompiler Output','Reverse Engineering','Hard',
+    'Decompilers approximate source code.',
+    'A decompiler produces what? Submit as PCA{approximate_source}',
+    'PCA{approximate_source}',
+    ['It is not exact.'],
+    'Decompiler output is inferred, not recovered.',
+    'Corroborate decompiler output with disassembly.',
+    ['Ghidra'], 'static', {}),
+
+  /* ---------- CLOUD SECURITY (5) ---------- */
+  C('cl-01','Shared Responsibility','Cloud Security','Easy',
+    'Security is shared between provider and customer.',
+    'In IaaS, who secures the guest OS? Submit as PCA{customer}',
+    'PCA{customer}',
+    ['The provider secures the hypervisor.'],
+    'Responsibility shifts with service model.',
+    'Document responsibility boundaries for every service.',
+    ['AWS'], 'static', {}),
+
+  C('cl-02','IAM Least Privilege','Cloud Security','Medium',
+    'Grant only what is required.',
+    'A role has Action=*. What is this called? Submit as PCA{wildcard_policy}',
+    'PCA{wildcard_policy}',
+    ['The * character.'],
+    'Wildcard policies grant more than intended.',
+    'Replace wildcards with explicit actions and resources.',
+    ['Prowler'], 'static', {}),
+
+  C('cl-03','Public Bucket','Cloud Security','Easy',
+    'Storage buckets are often exposed by mistake.',
+    'Public buckets are detected by which tool? Submit as PCA{prowler}',
+    'PCA{prowler}',
+    ['It audits cloud accounts.'],
+    'Posture scanning finds public buckets quickly.',
+    'Enable account-level block-public-access.',
+    ['Prowler'], 'static', {}),
+
+  C('cl-04','CloudTrail Logs','Cloud Security','Medium',
+    'Audit logs record API calls.',
+    'AWS API activity is logged by which service? Submit as PCA{CloudTrail}',
+    'PCA{CloudTrail}',
+    ['It is a specific AWS service.'],
+    'CloudTrail is the foundation of cloud detection.',
+    'Enable CloudTrail in all regions and protect the log bucket.',
+    ['CloudTrail'], 'static', {}),
+
+  C('cl-05','Secrets Management','Cloud Security','Medium',
+    'Secrets do not belong in environment variables or code.',
+    'Where should runtime secrets live? Submit as PCA{secrets_manager}',
+    'PCA{secrets_manager}',
+    ['It is a dedicated service.'],
+    'Dedicated secret stores provide rotation and audit.',
+    'Use Secrets Manager / Key Vault / Secret Manager.',
+    ['Vault'], 'static', {}),
+
+  /* ---------- DOCKER SECURITY (4) ---------- */
+  C('dk-01','Image Layers','Docker Security','Easy',
+    'Each Dockerfile line creates a layer.',
+    'Are deleted files in previous layers actually removed? Submit as PCA{no}',
+    'PCA{no}',
+    ['Layers are immutable.'],
+    'Secrets baked into layers remain retrievable.',
+    'Never put secrets in any Dockerfile layer.',
+    ['docker'], 'static', {}),
+
+  C('dk-02','Non-Root User','Docker Security','Medium',
+    'Containers run as root by default.',
+    'Which Dockerfile directive switches to a non-root user? Submit as PCA{USER}',
+    'PCA{USER}',
+    ['It is a four-letter directive.'],
+    'Running as root in a container is a major risk.',
+    'Always set USER to a non-root UID.',
+    ['docker'], 'static', {}),
+
+  C('dk-03','Read-Only RootFS','Docker Security','Medium',
+    'Immutable containers reduce attack surface.',
+    'Which flag makes the container root filesystem read-only? Submit as PCA{read-only}',
+    'PCA{read-only}',
+    ['It is passed to docker run.'],
+    'Read-only rootfs prevents runtime tampering.',
+    'Use --read-only and mount writable paths explicitly.',
+    ['docker'], 'static', {}),
+
+  C('dk-04','Secrets in Build','Docker Security','Medium',
+    'Build secrets leak through layers and caches.',
+    'Where should build-time secrets come from? Submit as PCA{buildkit_secrets}',
+    'PCA{buildkit_secrets}',
+    ['Modern Docker provides a dedicated mechanism.'],
+    'BuildKit secrets avoid baking values into layers.',
+    'Use --mount=type=secret during build.',
+    ['docker'], 'static', {}),
+
+  /* ---------- KUBERNETES SECURITY (4) ---------- */
+  C('k8-01','Pod Basics','Kubernetes Security','Easy',
+    'Pods are the smallest deployable units.',
+    'What is the smallest Kubernetes workload unit? Submit as PCA{pod}',
+    'PCA{pod}',
+    ['It contains one or more containers.'],
+    'Pods share a network namespace.',
+    'Apply Pod Security Standards to all namespaces.',
+    ['kubectl'], 'static', {}),
+
+  C('k8-02','RBAC Scope','Kubernetes Security','Medium',
+    'RBAC controls API access.',
+    'Which binding grants cluster-wide permissions? Submit as PCA{ClusterRoleBinding}',
+    'PCA{ClusterRoleBinding}',
+    ['It is cluster-scoped.'],
+    'ClusterRoleBindings are powerful and must be rare.',
+    'Prefer namespaced Roles over ClusterRoles.',
+    ['kubectl'], 'static', {}),
+
+  C('k8-03','Network Policies','Kubernetes Security','Hard',
+    'NetworkPolicies restrict pod traffic.',
+    'By default, can pods talk to each other? Submit as PCA{yes}',
+    'PCA{yes}',
+    ['Default policy is permissive.'],
+    'Default-allow makes microsegmentation essential.',
+    'Apply default-deny NetworkPolicies in every namespace.',
+    ['kubectl'], 'static', {}),
+
+  C('k8-04','Secrets Encryption','Kubernetes Security','Hard',
+    'Secrets are base64 by default.',
+    'Is base64 encryption? Submit as PCA{no}',
+    'PCA{no}',
+    ['Base64 is an encoding.'],
+    'etcd must be encrypted at rest for secrets to be protected.',
+    'Enable encryption at rest and use external secret stores.',
+    ['kubectl'], 'static', {}),
+
+  /* ---------- ACTIVE DIRECTORY THEORY (3) ---------- */
+  C('ad-01','Domain Structure','Active Directory','Easy',
+    'AD organises resources into forests and domains.',
+    'What is the top-level AD container? Submit as PCA{forest}',
+    'PCA{forest}',
+    ['It contains domains.'],
+    'Forests define the security boundary.',
+    'Understand forest trust implications before design.',
+    ['ADUC'], 'static', {}),
+
+  C('ad-02','Kerberos Flow','Active Directory','Medium',
+    'Kerberos issues tickets.',
+    'What does the KDC issue first? Submit as PCA{TGT}',
+    'PCA{TGT}',
+    ['It is a ticket-granting ticket.'],
+    'TGTs are the foundation of AD authentication.',
+    'Monitor for anomalous TGT requests (Kerberoasting).',
+    ['Kerberos'], 'static', {}),
+
+  C('ad-03','GPO Precedence','Active Directory','Medium',
+    'GPOs apply in a defined order.',
+    'Which order do GPOs apply: LSDOU? Submit as PCA{LSDOU}',
+    'PCA{LSDOU}',
+    ['Local, Site, Domain, OU.'],
+    'Understanding precedence prevents misconfiguration.',
+    'Test GPO changes in a pilot OU first.',
+    ['GPMC'], 'static', {}),
+
+  /* ---------- AUTHENTICATION (4) ---------- */
+  C('au-01','Something You Know','Authentication','Easy',
+    'The three factor categories.',
+    'A password belongs to which factor category? Submit as PCA{knowledge}',
+    'PCA{knowledge}',
+    ['Knowledge, possession, inherence.'],
+    'Two factors must be from different categories.',
+    'Deploy MFA for all privileged access.',
+    ['AuthN'], 'static', {}),
+
+  C('au-02','MFA Factors','Authentication','Easy',
+    'Distinct factor categories.',
+    'How many factor categories exist? Submit as PCA{three}',
+    'PCA{three}',
+    ['It is a small number.'],
+    'MFA strength depends on category diversity.',
+    'Prefer phishing-resistant MFA (FIDO2) over SMS.',
+    ['FIDO2'], 'static', {}),
+
+  C('au-03','Session Fixation','Authentication','Medium',
+    'Sessions must rotate on login.',
+    'What must happen to a session ID at login? Submit as PCA{rotate}',
+    'PCA{rotate}',
+    ['It should not stay the same.'],
+    'Session fixation reuses pre-authentication session IDs.',
+    'Regenerate session IDs on authentication and privilege change.',
+    ['AuthN'], 'static', {}),
+
+  C('au-04','Password Storage','Authentication','Medium',
+    'Passwords are stored as hashes with salt.',
+    'Which must be unique per user? Submit as PCA{salt}',
+    'PCA{salt}',
+    ['It prevents rainbow tables.'],
+    'Per-user salt defeats precomputation.',
+    'Use bcrypt/Argon2 with per-user salt.',
+    ['bcrypt'], 'static', {}),
+
+  /* ---------- ACCESS CONTROL (4) ---------- */
+  C('ac-01','DAC vs MAC','Access Control','Medium',
+    'Two fundamental access-control models.',
+    'In which model does the owner decide access? Submit as PCA{DAC}',
+    'PCA{DAC}',
+    ['Discretionary vs Mandatory.'],
+    'DAC is flexible; MAC is stricter.',
+    'Use MAC (SELinux/AppArmor) for high-assurance systems.',
+    ['SELinux'], 'static', {}),
+
+  C('ac-02','RBAC Model','Access Control','Easy',
+    'Roles bundle permissions.',
+    'Users are assigned to what in RBAC? Submit as PCA{roles}',
+    'PCA{roles}',
+    ['It is a bundle of permissions.'],
+    'RBAC scales better than per-user permissions.',
+    'Review role memberships regularly.',
+    ['IAM'], 'static', {}),
+
+  C('ac-03','ABAC','Access Control','Hard',
+    'Attribute-based access control uses context.',
+    'ABAC decisions depend on what? Submit as PCA{attributes}',
+    'PCA{attributes}',
+    ['Not just role — think context.'],
+    'ABAC enables fine-grained, context-aware policies.',
+    'Use ABAC for dynamic, context-sensitive access.',
+    ['IAM'], 'static', {}),
+
+  C('ac-04','Least Privilege','Access Control','Easy',
+    'Minimum access needed to do the job.',
+    'Grant only what is required. This is called? Submit as PCA{least_privilege}',
+    'PCA{least_privilege}',
+    ['Two words, underscore separated.'],
+    'Least privilege limits blast radius.',
+    'Apply least privilege to users, services and workloads.',
+    ['IAM'], 'static', {}),
+
+  /* ---------- JWT (4) ---------- */
+  C('jw-01','JWT Structure','JWT','Easy',
+    'JWTs have three parts.',
+    'How many parts does a JWT have? Submit as PCA{three}',
+    'PCA{three}',
+    ['Separated by dots.'],
+    'Header.Payload.Signature is the JWT format.',
+    'Validate the signature before trusting any claim.',
+    ['jwt.io'], 'jwt', { token:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMTIzIiwicm9sZSI6InVzZXIifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c' }),
+
+  C('jw-02','alg none','JWT','Medium',
+    'Historic JWT flaw: alg=none.',
+    'If a server accepts alg=none, what is the impact? Submit as PCA{signature_bypass}',
+    'PCA{signature_bypass}',
+    ['Attacker can forge any token.'],
+    'alg=none means no signature check.',
+    'Explicitly reject alg=none and pin algorithms.',
+    ['PyJWT'], 'static', {}),
+
+  C('jw-03','Signature Check','JWT','Medium',
+    'JWT signatures must be verified.',
+    'What must be done BEFORE trusting claims? Submit as PCA{verify_signature}',
+    'PCA{verify_signature}',
+    ['Do not decode and trust blindly.'],
+    'Signature verification proves authenticity.',
+    'Always verify the signature with the correct key.',
+    ['PyJWT'], 'static', {}),
+
+  C('jw-04','Expiry','JWT','Easy',
+    'JWTs can expire.',
+    'Which claim sets the expiration time? Submit as PCA{exp}',
+    'PCA{exp}',
+    ['Three letters.'],
+    'Short expiry limits token misuse after theft.',
+    'Use short-lived access tokens + refresh tokens.',
+    ['jwt.io'], 'jwt', { token:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZSIsImV4cCI6MTcwMDAwMDAwMCwicm9sZSI6ImFkbWluIn0.dummy' }),
+
+  /* ---------- HTTP (5) ---------- */
+  C('ht-01','Methods','HTTP','Easy',
+    'HTTP methods have defined semantics.',
+    'Which method creates a resource? Submit as PCA{POST}',
+    'PCA{POST}',
+    ['Not PUT — think about "create".'],
+    'POST creates; PUT replaces; PATCH updates.',
+    'Use the correct method for the operation.',
+    ['curl'], 'static', {}),
+
+  C('ht-02','Status Codes','HTTP','Easy',
+    'Status codes communicate outcomes.',
+    'What does 404 mean? Submit as PCA{not_found}',
+    'PCA{not_found}',
+    ['Two words, underscore separated.'],
+    '404 is client-visible and often abused for enumeration.',
+    'Return generic errors — never leak server internals.',
+    ['curl'], 'static', {}),
+
+  C('ht-03','Headers','HTTP','Easy',
+    'Headers carry metadata.',
+    'Which header tells the server your preferred content type? Submit as PCA{Accept}',
+    'PCA{Accept}',
+    ['It is a single word.'],
+    'Content negotiation is header-driven.',
+    'Validate and normalise all incoming headers.',
+    ['curl'], 'static', {}),
+
+  C('ht-04','Cookies','HTTP','Medium',
+    'Cookies carry session state.',
+    'Which attribute restricts cookies to HTTPS? Submit as PCA{Secure}',
+    'PCA{Secure}',
+    ['It is a single word.'],
+    'Secure prevents cookie transmission over HTTP.',
+    'Set Secure + HttpOnly + SameSite on all session cookies.',
+    ['DevTools'], 'static', {}),
+
+  C('ht-05','Caching','HTTP','Medium',
+    'Caching controls are security-relevant.',
+    'Which header prevents caching of sensitive responses? Submit as PCA{Cache-Control}',
+    'PCA{Cache-Control}',
+    ['It is hyphenated.'],
+    'Sensitive responses must not be cached by intermediaries.',
+    'Set Cache-Control: no-store on authenticated responses.',
+    ['curl'], 'static', {}),
+
+  /* ---------- DNS (4) ---------- */
+  C('dn-01','Record Types','DNS','Easy',
+    'DNS has many record types.',
+    'Which record directs mail? Submit as PCA{MX}',
+    'PCA{MX}',
+    ['Two letters.'],
+    'MX misconfigurations enable spoofing.',
+    'Configure SPF, DKIM and DMARC correctly.',
+    ['dig'], 'static', {}),
+
+  C('dn-02','Recursion','DNS','Medium',
+    'Recursive resolvers ask up the tree.',
+    'Which resolver iterates from root? Submit as PCA{recursive}',
+    'PCA{recursive}',
+    ['It is not authoritative.'],
+    'Recursive resolvers are the workhorses of DNS.',
+    'Restrict recursion on authoritative servers.',
+    ['dig'], 'static', {}),
+
+  C('dn-03','Zone Transfer','DNS','Hard',
+    'AXFR exposes the entire zone.',
+    'Which record type transfers a full zone? Submit as PCA{AXFR}',
+    'PCA{AXFR}',
+    ['Four letters.'],
+    'Open zone transfers leak internal names.',
+    'Restrict AXFR to authorised secondaries.',
+    ['dig'], 'static', {}),
+
+  C('dn-04','DNSSEC','DNS','Hard',
+    'DNSSEC signs DNS responses.',
+    'DNSSEC provides what? Submit as PCA{authenticity}',
+    'PCA{authenticity}',
+    ['It proves the answer came from the zone owner.'],
+    'DNSSEC prevents cache poisoning but not confidentiality.',
+    'Sign zones and validate on resolvers.',
+    ['dig'], 'static', {}),
+
+  /* ---------- TLS (4) ---------- */
+  C('tl-01','Handshake','TLS','Medium',
+    'TLS begins with a client hello.',
+    'Which message starts a TLS handshake? Submit as PCA{ClientHello}',
+    'PCA{ClientHello}',
+    ['Two words, no space.'],
+    'The handshake negotiates parameters and keys.',
+    'Use TLS 1.3 for reduced round trips and forward secrecy.',
+    ['openssl'], 'static', {}),
+
+  C('tl-02','Certificates','TLS','Easy',
+    'Certificates bind identity to keys.',
+    'Who signs a certificate? Submit as PCA{CA}',
+    'PCA{CA}',
+    ['Two letters.'],
+    'Trust flows from the CA root.',
+    'Monitor certificate expiry and CT logs.',
+    ['openssl'], 'static', {}),
+
+  C('tl-03','SNI','TLS','Medium',
+    'SNI selects the right certificate.',
+    'What does SNI stand for? Submit as PCA{Server_Name_Indication}',
+    'PCA{Server_Name_Indication}',
+    ['It carries the hostname in the ClientHello.'],
+    'SNI is unencrypted in TLS 1.2 — a metadata leak.',
+    'Consider ECH (Encrypted Client Hello) where available.',
+    ['openssl'], 'static', {}),
+
+  C('tl-04','Forward Secrecy','TLS','Hard',
+    'Forward secrecy limits damage from key compromise.',
+    'Which key exchange provides forward secrecy? Submit as PCA{ECDHE}',
+    'PCA{ECDHE}',
+    ['Ephemeral Diffie-Hellman.'],
+    'Ephemeral keys mean past sessions stay secure.',
+    'Prefer ECDHE cipher suites.',
+    ['openssl'], 'static', {}),
+
+  /* ---------- SECURE CODING (4) ---------- */
+  C('se-01','Input Validation','Secure Coding','Easy',
+    'Validate at the boundary.',
+    'Where should validation happen? Submit as PCA{server_side}',
+    'PCA{server_side}',
+    ['Client checks can be bypassed.'],
+    'Client-side validation is UX, not security.',
+    'Always validate on the server.',
+    ['OWASP'], 'static', {}),
+
+  C('se-02','Output Encoding','Secure Coding','Easy',
+    'Encode for the destination context.',
+    'Encoding depends on what? Submit as PCA{context}',
+    'PCA{context}',
+    ['HTML, JS, URL and SQL need different encodings.'],
+    'Wrong-context encoding fails to stop injection.',
+    'Encode on output for the exact context.',
+    ['OWASP'], 'static', {}),
+
+  C('se-03','Parameterised Queries','Secure Coding','Medium',
+    'Parameterisation separates code from data.',
+    'Which technique prevents SQL injection? Submit as PCA{prepared_statements}',
+    'PCA{prepared_statements}',
+    ['The query is compiled before parameters are bound.'],
+    'Parameterisation is the definitive SQLi fix.',
+    'Never build SQL by concatenating strings.',
+    ['OWASP'], 'static', {}),
+
+  C('se-04','Error Handling','Secure Coding','Medium',
+    'Errors can leak sensitive information.',
+    'Should stack traces be shown to end users? Submit as PCA{no}',
+    'PCA{no}',
+    ['Two letters.'],
+    'Stack traces reveal internal paths and library versions.',
+    'Log details server-side; return generic messages to users.',
+    ['OWASP'], 'static', {}),
+
+  /* ---------- AI SECURITY (4) ---------- */
+  C('ai-01','Prompt Injection','AI Security','Medium',
+    'Prompts are untrusted input.',
+    'Prompts should be treated as what? Submit as PCA{untrusted_input}',
+    'PCA{untrusted_input}',
+    ['Two words, underscore separated.'],
+    'Prompt injection manipulates model behaviour via input.',
+    'Sanitise, isolate and constrain model inputs and outputs.',
+    ['OWASP LLM'], 'static', {}),
+
+  C('ai-02','Data Leakage','AI Security','Medium',
+    'Models can leak training or context data.',
+    'Should PII be included in prompts? Submit as PCA{no}',
+    'PCA{no}',
+    ['Two letters.'],
+    'Data in prompts may be logged or exposed.',
+    'Minimise sensitive data in prompts; use redaction.',
+    ['OWASP LLM'], 'static', {}),
+
+  C('ai-03','Model Supply Chain','AI Security','Hard',
+    'Model files are code-like artefacts.',
+    'Should model provenance be verified? Submit as PCA{yes}',
+    'PCA{yes}',
+    ['Three letters.'],
+    'Malicious models can execute code on load.',
+    'Use signed, trusted model sources; sandbox inference.',
+    ['OWASP LLM'], 'static', {}),
+
+  C('ai-04','Guardrails','AI Security','Medium',
+    'Guardrails constrain model behaviour.',
+    'Where should guardrails sit? Submit as PCA{input_and_output}',
+    'PCA{input_and_output}',
+    ['Two places, underscore separated.'],
+    'Single-sided guardrails are easily bypassed.',
+    'Layer input filtering with output filtering and monitoring.',
+    ['OWASP LLM'], 'static', {})
+
+  ];
+
+  /* ============================================================
+     3. LEARNING PATHS & BADGES
+     ============================================================ */
+  var PATHS = [
+    { id: 'p1', name: 'Cybersecurity Foundations', cats: ['CTF Fundamentals','Authentication','Access Control','HTTP'] },
+    { id: 'p2', name: 'Linux', cats: ['Linux','Bash'] },
+    { id: 'p3', name: 'Networking', cats: ['Networking','DNS','TLS'] },
+    { id: 'p4', name: 'Python', cats: ['Python'] },
+    { id: 'p5', name: 'Web Security', cats: ['Web Security','API Security','JWT'] },
+    { id: 'p6', name: 'SOC', cats: ['SOC','Log Analysis','Threat Hunting','Incident Response'] },
+    { id: 'p7', name: 'Digital Forensics', cats: ['Digital Forensics','Malware Analysis','Reverse Engineering'] },
+    { id: 'p8', name: 'Cloud Security', cats: ['Cloud Security'] },
+    { id: 'p9', name: 'DevSecOps', cats: ['Docker Security','Kubernetes Security','Secure Coding'] },
+    { id: 'p10', name: 'Security Engineering', cats: ['Cryptography','AI Security','OSINT'] }
+  ];
+
+  var BADGES = [
+    { id: 'b1', name: 'First Flag', cond: function (s) { return Object.keys(s.completed).length >= 1; } },
+    { id: 'b2', name: 'Linux Explorer', cond: function (s) { return countByCat(s, 'Linux') >= 5; } },
+    { id: 'b3', name: 'Network Analyst', cond: function (s) { return countByCat(s, 'Networking') >= 5; } },
+    { id: 'b4', name: 'Web Hunter', cond: function (s) { return countByCat(s, 'Web Security') >= 5; } },
+    { id: 'b5', name: 'Crypto Solver', cond: function (s) { return countByCat(s, 'Cryptography') >= 5; } },
+    { id: 'b6', name: 'Forensics Investigator', cond: function (s) { return countByCat(s, 'Digital Forensics') >= 4; } },
+    { id: 'b7', name: 'SOC Analyst', cond: function (s) { return countByCat(s, 'SOC') >= 4; } },
+    { id: 'b8', name: 'Security Engineer', cond: function (s) { return countByDiff(s, 'Hard') >= 10; } },
+    { id: 'b9', name: 'CTF Master', cond: function (s) { return Object.keys(s.completed).length >= 60; } },
+    { id: 'b10', name: 'Perfectionist', cond: function (s) { return Object.keys(s.completed).length >= CHALLENGES.length; } }
+  ];
+
+  function countByCat(s, cat) {
+    return CHALLENGES.filter(function (c) { return c.cat === cat && s.completed[c.id]; }).length;
+  }
+  function countByDiff(s, diff) {
+    return CHALLENGES.filter(function (c) { return c.diff === diff && s.completed[c.id]; }).length;
+  }
+
+  /* ============================================================
+     4. STATE MANAGEMENT
+     ============================================================ */
+  function defaultState() {
+    return {
+      completed: {},      // id -> { ts, attempts, hintsUsed }
+      xp: 0,
+      streak: { count: 0, lastDate: null },
+      badges: [],
+      currentCategory: 'All',
+      currentDiff: 'All',
+      search: '',
+      view: 'dashboard',  // 'dashboard' | 'challenge' | 'paths'
+      currentChallengeId: null
+    };
+  }
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return defaultState();
+      return Object.assign(defaultState(), JSON.parse(raw));
+    } catch (e) { return defaultState(); }
+  }
+  function saveState() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); } catch (e) {}
+  }
+
+  var STATE = loadState();
+
+  function touchStreak() {
+    var today = todayISO();
+    if (STATE.streak.lastDate === today) return;
+    if (STATE.streak.lastDate) {
+      var prev = new Date(STATE.streak.lastDate + 'T00:00:00Z').getTime();
+      var cur = new Date(today + 'T00:00:00Z').getTime();
+      var diff = Math.round((cur - prev) / 86400000);
+      STATE.streak.count = diff === 1 ? STATE.streak.count + 1 : (diff > 1 ? 1 : STATE.streak.count);
+    } else {
+      STATE.streak.count = 1;
+    }
+    STATE.streak.lastDate = today;
+    saveState();
+  }
+
+  function getLevel() {
+    // 250 XP per level, capped at 50
+    var lvl = Math.floor(STATE.xp / 250) + 1;
+    return Math.min(50, lvl);
+  }
+  function levelProgress() {
+    var into = STATE.xp % 250;
+    return { into: into, need: 250, pct: Math.round((into / 250) * 100) };
+  }
+
+  function awardBadges() {
+    var unlocked = [];
+    BADGES.forEach(function (b) {
+      if (STATE.badges.indexOf(b.id) === -1 && b.cond(STATE)) {
+        STATE.badges.push(b.id);
+        unlocked.push(b.name);
+      }
+    });
+    if (unlocked.length) saveState();
+    return unlocked;
+  }
+
+  /* ============================================================
+     5. STYLES (injected once, all classes prefixed)
+     ============================================================ */
+  var CSS = [
+    '.pca-ctf-launcher{position:fixed;right:18px;bottom:18px;z-index:2147483000;background:linear-gradient(135deg,#22d3ee,#a855f7);color:#03121a;border:0;border-radius:12px;padding:12px 18px;font-family:Orbitron,system-ui,sans-serif;font-weight:700;letter-spacing:1.2px;font-size:.78rem;cursor:pointer;box-shadow:0 10px 30px -8px rgba(34,211,238,.7);transition:transform .18s;}',
+    '.pca-ctf-launcher:hover{transform:translateY(-2px);}',
+    '.pca-ctf-launcher.pca-ctf-hidden{display:none;}',
+    '.pca-ctf-overlay{position:fixed;inset:0;z-index:2147483600;background:rgba(3,6,12,.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow-y:auto;display:none;color:#dfe9f5;font-family:Rajdhani,system-ui,sans-serif;}',
+    '.pca-ctf-overlay.pca-ctf-open{display:block;}',
+    '.pca-ctf-wrap{max-width:1300px;margin:0 auto;padding:16px 16px 60px;}',
+    '.pca-ctf-topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;background:rgba(12,18,32,.75);border:1px solid rgba(80,140,200,.2);border-radius:14px;margin-bottom:16px;flex-wrap:wrap;}',
+    '.pca-ctf-brand{font-family:Orbitron,sans-serif;font-weight:900;letter-spacing:2px;background:linear-gradient(120deg,#22d3ee,#a855f7);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:1rem;}',
+    '.pca-ctf-brand small{display:block;font-family:JetBrains Mono,monospace;font-weight:500;font-size:.6rem;letter-spacing:3px;color:#8ea3bd;margin-top:4px;-webkit-text-fill-color:#8ea3bd;}',
+    '.pca-ctf-btn{background:rgba(255,255,255,.05);border:1px solid rgba(80,140,200,.25);color:#dfe9f5;border-radius:10px;padding:8px 14px;font-family:inherit;font-weight:700;font-size:.8rem;letter-spacing:.6px;cursor:pointer;transition:.18s;}',
+    '.pca-ctf-btn:hover{border-color:rgba(34,211,238,.5);color:#22d3ee;background:rgba(34,211,238,.08);}',
+    '.pca-ctf-btn.pca-ctf-primary{background:linear-gradient(135deg,#22d3ee,#a855f7);color:#03121a;border:0;}',
+    '.pca-ctf-btn.pca-ctf-sm{padding:6px 10px;font-size:.72rem;}',
+    '.pca-ctf-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:18px;}',
+    '.pca-ctf-stat{background:rgba(12,18,32,.7);border:1px solid rgba(80,140,200,.2);border-radius:12px;padding:14px;text-align:center;}',
+    '.pca-ctf-stat b{display:block;font-family:Orbitron,sans-serif;font-size:1.4rem;color:#22d3ee;line-height:1.1;}',
+    '.pca-ctf-stat span{font-family:JetBrains Mono,monospace;font-size:.6rem;letter-spacing:1.6px;color:#8ea3bd;text-transform:uppercase;}',
+    '.pca-ctf-bar{height:8px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden;}',
+    '.pca-ctf-bar>i{display:block;height:100%;background:linear-gradient(90deg,#22d3ee,#a855f7);transition:width .5s;}',
+    '.pca-ctf-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}',
+    '.pca-ctf-pill{background:rgba(255,255,255,.04);border:1px solid rgba(80,140,200,.2);color:#8ea3bd;font-family:JetBrains Mono,monospace;font-size:.66rem;letter-spacing:.9px;text-transform:uppercase;padding:6px 11px;border-radius:999px;cursor:pointer;transition:.16s;}',
+    '.pca-ctf-pill:hover{color:#dfe9f5;border-color:rgba(34,211,238,.4);}',
+    '.pca-ctf-pill.pca-ctf-active{background:linear-gradient(135deg,rgba(34,211,238,.2),rgba(168,85,247,.2));color:#22d3ee;border-color:rgba(34,211,238,.5);}',
+    '.pca-ctf-input{background:rgba(12,18,32,.75);border:1px solid rgba(80,140,200,.2);border-radius:10px;color:#dfe9f5;font-family:inherit;font-size:.9rem;padding:10px 13px;outline:none;min-width:200px;flex:1;}',
+    '.pca-ctf-input:focus{border-color:rgba(34,211,238,.5);box-shadow:0 0 18px rgba(34,211,238,.2);}',
+    '.pca-ctf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;}',
+    '.pca-ctf-card{background:rgba(12,18,32,.7);border:1px solid rgba(80,140,200,.2);border-radius:14px;padding:16px;cursor:pointer;transition:.2s;position:relative;overflow:hidden;}',
+    '.pca-ctf-card:hover{transform:translateY(-3px);border-color:rgba(34,211,238,.5);box-shadow:0 14px 30px -14px rgba(34,211,238,.4);}',
+    '.pca-ctf-card.pca-ctf-done{border-color:rgba(34,197,94,.5);}',
+    '.pca-ctf-card h3{margin:8px 0 6px;font-family:Orbitron,sans-serif;font-weight:700;font-size:.94rem;color:#dfe9f5;letter-spacing:.4px;}',
+    '.pca-ctf-card p{color:#8ea3bd;font-size:.85rem;line-height:1.5;}',
+    '.pca-ctf-tag{display:inline-flex;align-items:center;font-family:JetBrains Mono,monospace;font-size:.58rem;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid rgba(80,140,200,.3);background:rgba(255,255,255,.035);color:#8ea3bd;}',
+    '.pca-ctf-tag.pca-ctf-easy{color:#22c55e;border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.08);}',
+    '.pca-ctf-tag.pca-ctf-medium{color:#22d3ee;border-color:rgba(34,211,238,.5);background:rgba(34,211,238,.08);}',
+    '.pca-ctf-tag.pca-ctf-hard{color:#f59e0b;border-color:rgba(245,158,11,.5);background:rgba(245,158,11,.08);}',
+    '.pca-ctf-tag.pca-ctf-insane{color:#ef4444;border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.08);}',
+    '.pca-ctf-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}',
+    '.pca-ctf-detail{background:rgba(12,18,32,.75);border:1px solid rgba(80,140,200,.2);border-radius:14px;padding:20px;margin-bottom:16px;}',
+    '.pca-ctf-detail h2{font-family:Orbitron,sans-serif;font-size:1.3rem;margin:8px 0 6px;color:#dfe9f5;}',
+    '.pca-ctf-detail h4{font-family:JetBrains Mono,monospace;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:#22d3ee;margin:18px 0 8px;}',
+    '.pca-ctf-detail p{color:#8ea3bd;font-size:.92rem;line-height:1.6;}',
+    '.pca-ctf-detail ul{list-style:none;padding:0;margin:0;}',
+    '.pca-ctf-detail ul li{position:relative;padding-left:20px;margin-bottom:7px;color:#8ea3bd;font-size:.9rem;}',
+    '.pca-ctf-detail ul li:before{content:"▸";position:absolute;left:2px;color:#22d3ee;}',
+    '.pca-ctf-term{background:#02060e;border:1px solid rgba(80,140,200,.25);border-radius:12px;overflow:hidden;font-family:JetBrains Mono,monospace;font-size:.82rem;line-height:1.7;color:#9fe8ff;}',
+    '.pca-ctf-term-bar{display:flex;gap:6px;align-items:center;padding:9px 12px;border-bottom:1px solid rgba(80,140,200,.2);background:rgba(255,255,255,.03);}',
+    '.pca-ctf-term-bar i{width:11px;height:11px;border-radius:50%;display:block;}',
+    '.pca-ctf-term-bar i:nth-child(1){background:#ff5f57;}.pca-ctf-term-bar i:nth-child(2){background:#febc2e;}.pca-ctf-term-bar i:nth-child(3){background:#28c840;}',
+    '.pca-ctf-term-body{padding:14px;max-height:340px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;}',
+    '.pca-ctf-term-body .pca-ctf-cmd{color:#22d3ee;}.pca-ctf-term-body .pca-ctf-err{color:#f87171;}.pca-ctf-term-body .pca-ctf-ok{color:#4ade80;}.pca-ctf-term-body .pca-ctf-warn{color:#fbbf24;}',
+    '.pca-ctf-term-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(80,140,200,.2);}',
+    '.pca-ctf-term-input-row input{background:transparent;border:0;outline:none;color:#9fe8ff;font-family:inherit;font-size:inherit;flex:1;}',
+    '.pca-ctf-log{background:rgba(2,6,14,.7);border:1px solid rgba(80,140,200,.2);border-radius:12px;max-height:340px;overflow-y:auto;padding:12px;font-family:JetBrains Mono,monospace;font-size:.78rem;line-height:1.7;color:#9fe8ff;}',
+    '.pca-ctf-log div{padding:3px 0;border-bottom:1px solid rgba(80,140,200,.08);}',
+    '.pca-ctf-packet-table{width:100%;border-collapse:collapse;font-family:JetBrains Mono,monospace;font-size:.74rem;}',
+    '.pca-ctf-packet-table th,.pca-ctf-packet-table td{padding:8px 10px;text-align:left;border-bottom:1px solid rgba(80,140,200,.15);}',
+    '.pca-ctf-packet-table th{color:#22d3ee;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-size:.64rem;}',
+    '.pca-ctf-packet-table td{color:#8ea3bd;}',
+    '.pca-ctf-hint{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.35);border-radius:10px;padding:11px 14px;margin:8px 0;color:#8ea3bd;font-size:.88rem;}',
+    '.pca-ctf-flag-box{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px;}',
+    '.pca-ctf-flag-input{flex:1;min-width:200px;background:rgba(2,6,14,.7);border:1px solid rgba(80,140,200,.25);border-radius:10px;color:#22d3ee;font-family:JetBrains Mono,monospace;font-size:.9rem;padding:11px 14px;outline:none;}',
+    '.pca-ctf-flag-input:focus{border-color:rgba(34,211,238,.6);}',
+    '.pca-ctf-success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.4);border-radius:10px;padding:14px;margin-top:14px;}',
+    '.pca-ctf-success h4{color:#22c55e!important;}',
+    '.pca-ctf-badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}',
+    '.pca-ctf-badge{padding:12px 8px;border-radius:12px;text-align:center;font-size:.72rem;font-weight:700;border:1px solid rgba(80,140,200,.2);background:rgba(255,255,255,.03);color:#8ea3bd;}',
+    '.pca-ctf-badge.pca-ctf-on{border-color:rgba(34,211,238,.5);background:linear-gradient(135deg,rgba(34,211,238,.14),rgba(168,85,247,.14));color:#22d3ee;}',
+    '.pca-ctf-badge.pca-ctf-off{opacity:.35;}',
+    '.pca-ctf-section-h{font-family:JetBrains Mono,monospace;font-size:.72rem;letter-spacing:2.4px;text-transform:uppercase;color:#22d3ee;margin:22px 0 10px;}',
+    '.pca-ctf-empty{padding:50px 20px;text-align:center;color:#63758f;}',
+    '.pca-ctf-toast{position:fixed;bottom:80px;right:20px;z-index:2147483700;background:rgba(12,18,32,.95);border:1px solid rgba(34,211,238,.5);border-left:3px solid #22d3ee;border-radius:11px;padding:12px 16px;color:#dfe9f5;font-size:.88rem;font-weight:600;max-width:320px;backdrop-filter:blur(14px);animation:pcaCTFFadeIn .3s;}',
+    '@keyframes pcaCTFFadeIn{from{opacity:0;transform:translateX(30px);}}',
+    '.pca-ctf-viewnav{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}',
+    '@media(max-width:640px){.pca-ctf-wrap{padding:12px 12px 40px;}.pca-ctf-topbar{padding:12px 14px;}.pca-ctf-brand{font-size:.85rem;}.pca-ctf-detail{padding:14px;}.pca-ctf-launcher{right:12px;bottom:12px;padding:10px 14px;font-size:.72rem;}}',
+    '@media (prefers-reduced-motion: reduce){.pca-ctf-card{transition:none!important;}.pca-ctf-card:hover{transform:none!important;}.pca-ctf-toast{animation:none!important;}}'
+  ].join('\n');
+
+  function injectStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+    var s = document.createElement('style');
+    s.id = STYLE_ID;
+    s.type = 'text/css';
+    s.appendChild(document.createTextNode(CSS));
+    (document.head || document.documentElement).appendChild(s);
+  }
+
+  /* ============================================================
+     6. VIRTUAL TERMINAL LAB
+     ============================================================ */
+  function normPath(p, cwd) {
+    if (!p) return cwd;
+    if (p[0] !== '/') p = cwd.replace(/\/$/, '') + '/' + p;
+    var parts = p.split('/'), out = [];
+    for (var i = 0; i < parts.length; i++) {
+      var seg = parts[i];
+      if (seg === '' || seg === '.') continue;
+      if (seg === '..') { out.pop(); continue; }
+      out.push(seg);
+    }
+    return '/' + out.join('/');
+  }
+  function dirChildren(fs, dir) {
+    var prefix = dir === '/' ? '' : dir;
+    var seen = {};
+    var out = [];
+    Object.keys(fs).forEach(function (k) {
+      if (k.indexOf(prefix + '/') !== 0 && !(dir === '/' && k.indexOf('/') === 0)) return;
+      var rest = dir === '/' ? k.slice(1) : k.slice(prefix.length + 1);
+      var head = rest.split('/')[0];
+      if (!head) return;
+      if (seen[head]) return;
+      seen[head] = true;
+      var isFile = fs[prefix + '/' + head] !== undefined || (dir === '/' && fs['/' + head] !== undefined);
+      out.push({ name: head, isFile: isFile });
+    });
+    out.sort(function (a, b) {
+      if (a.isFile !== b.isFile) return a.isFile ? 1 : -1;
+      return a.name.localeCompare(b.name);
+    });
+    return out;
+  }
+
+  var TerminalLab = {
+    render: function (ch, cid) {
+      return '<div class="pca-ctf-detail">' +
+        '<h4>Interactive Lab — Virtual Terminal</h4>' +
+        '<p>Use <code>help</code> for available commands. All commands run on a simulated filesystem only.</p>' +
+        '<div class="pca-ctf-term" id="' + cid + '-term">' +
+        '<div class="pca-ctf-term-bar"><i></i><i></i><i></i><span style="margin-left:8px;font-size:.7rem;color:#63758f">student@pareek-sim</span></div>' +
+        '<div class="pca-ctf-term-body" id="' + cid + '-body"></div>' +
+        '<div class="pca-ctf-term-input-row"><span style="color:#22d3ee">$</span><input id="' + cid + '-input" autocomplete="off" spellcheck="false" aria-label="Terminal input"/></div>' +
+        '</div></div>';
+    },
+    init: function (ch, root, cid) {
+      var term = root.querySelector('#' + cid + '-term');
+      if (!term) return;
+      var body = term.querySelector('#' + cid + '-body');
+      var input = term.querySelector('#' + cid + '-input');
+      var fs = ch.labData.fs || {};
+      var cwd = ch.labData.home || '/home/student';
+
+      function write(line, cls) {
+        var d = document.createElement('div');
+        if (cls) d.className = 'pca-ctf-' + cls;
+        d.textContent = line;
+        body.appendChild(d);
+        body.scrollTop = body.scrollHeight;
+      }
+      function writeHTML(html) {
+        var d = document.createElement('div');
+        d.innerHTML = html;
+        body.appendChild(d);
+        body.scrollTop = body.scrollHeight;
+      }
+
+      write('Pareek Cyber CTF simulated terminal. Type "help" for commands.', 'warn');
+      write('');
+
+      function handle(cmd) {
+        write('$ ' + cmd, 'cmd');
+        var parts = cmd.trim().split(/\s+/);
+        var c = parts[0];
+        var args = parts.slice(1);
+        switch (c) {
+          case '': return;
+          case 'help':
+            write('Commands: help, ls [-a] [path], cd <path>, pwd, cat <file>, head <file>, tail <file>, grep <pat> <file>, find [path], whoami, id, file <f>, strings <f>, sha256sum <f>, echo <text>, clear', 'ok');
+            return;
+          case 'clear':
+            body.innerHTML = ''; return;
+          case 'pwd':
+            write(cwd); return;
+          case 'whoami':
+            write('student'); return;
+          case 'id':
+            write('uid=1000(student) gid=1000(student) groups=1000(student)'); return;
+          case 'ls': {
+            var showAll = args.indexOf('-a') !== -1 || args.indexOf('-la') !== -1;
+            var pathArg = args.filter(function (a) { return a[0] !== '-'; })[0];
+            var target = pathArg ? normPath(pathArg, cwd) : cwd;
+            var kids = dirChildren(fs, target);
+            if (!kids.length && !fs[target]) { write('ls: cannot access \'' + target + '\': No such file or directory', 'err'); return; }
+            kids.forEach(function (k) {
+              if (!showAll && k.name[0] === '.') return;
+              write(k.name + (k.isFile ? '' : '/'));
+            });
+            return;
+          }
+          case 'cd': {
+            if (!args[0] || args[0] === '~') { cwd = '/home/student'; return; }
+            var np = normPath(args[0], cwd);
+            var has = Object.keys(fs).some(function (k) { return k.indexOf(np + '/') === 0 || k === np; });
+            if (!has) { write('cd: ' + args[0] + ': No such file or directory', 'err'); return; }
+            cwd = np; return;
+          }
+          case 'cat': {
+            if (!args[0]) { write('cat: missing operand', 'err'); return; }
+            var p = normPath(args[0], cwd);
+            if (fs[p] === undefined) { write('cat: ' + args[0] + ': No such file or directory', 'err'); return; }
+            write(fs[p]);
+            return;
+          }
+          case 'head': {
+            var p2 = normPath(args[0], cwd);
+            if (fs[p2] === undefined) { write('head: ' + args[0] + ': No such file', 'err'); return; }
+            write(fs[p2].split('\n').slice(0, 5).join('\n')); return;
+          }
+          case 'tail': {
+            var p3 = normPath(args[0], cwd);
+            if (fs[p3] === undefined) { write('tail: ' + args[0] + ': No such file', 'err'); return; }
+            write(fs[p3].split('\n').slice(-5).join('\n')); return;
+          }
+          case 'grep': {
+            if (args.length < 2) { write('usage: grep <pattern> <file>', 'err'); return; }
+            var pat = args[0], fg = normPath(args[1], cwd);
+            if (fs[fg] === undefined) { write('grep: ' + args[1] + ': No such file', 'err'); return; }
+            var lines = fs[fg].split('\n').filter(function (l) { return l.indexOf(pat) !== -1; });
+            if (!lines.length) write('(no matches)'); else lines.forEach(function (l) { write(l); });
+            return;
+          }
+          case 'find': {
+            var start = args[0] ? normPath(args[0], cwd) : cwd;
+            Object.keys(fs).forEach(function (k) { if (k.indexOf(start) === 0) write(k); });
+            return;
+          }
+          case 'file': {
+            var pf = normPath(args[0], cwd);
+            if (fs[pf] === undefined) { write('file: cannot open \'' + args[0] + '\'', 'err'); return; }
+            write(pf + ': ASCII text'); return;
+          }
+          case 'strings': {
+            var ps = normPath(args[0], cwd);
+            if (fs[ps] === undefined) { write('strings: cannot open \'' + args[0] + '\'', 'err'); return; }
+            fs[ps].split(/\s+/).filter(function (s) { return s.length >= 4; }).forEach(function (s) { write(s); });
+            return;
+          }
+          case 'sha256sum': {
+            var ph = normPath(args[0], cwd);
+            if (fs[ph] === undefined) { write('sha256sum: ' + args[0] + ': No such file', 'err'); return; }
+            var content = fs[ph];
+            if (window.crypto && window.crypto.subtle) {
+              window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(content)).then(function (buf) {
+                var hex = Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+                write(hex + '  ' + args[0]);
+              }).catch(function () { write('sha256sum: hashing unavailable in this context', 'err'); });
+            } else {
+              var simple = '';
+              for (var i = 0; i < 64; i++) simple += '0123456789abcdef'[(content.charCodeAt(i % content.length || 1) + i) & 15];
+              write(simple + '  ' + args[0] + '  (simulated)');
+            }
+            return;
+          }
+          case 'echo':
+            write(args.join(' ')); return;
+          default:
+            write(c + ': command not found. Type "help".', 'err');
+        }
+      }
+
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          var v = input.value;
+          input.value = '';
+          handle(v);
+        }
+      });
+      setTimeout(function () { input.focus(); }, 80);
+    }
+  };
+
+  /* ============================================================
+     7. LOG VIEWER LAB
+     ============================================================ */
+  var LogViewLab = {
+    render: function (ch, cid) {
+      var lines = (ch.labData.lines || []);
+      return '<div class="pca-ctf-detail">' +
+        '<h4>Interactive Lab — Log Viewer</h4>' +
+        '<p>Search, filter and analyse the log below. All data is simulated.</p>' +
+        '<div class="pca-ctf-filters"><input class="pca-ctf-input" id="' + cid + '-logsearch" placeholder="Filter log lines…" /></div>' +
+        '<div class="pca-ctf-log" id="' + cid + '-log">' +
+        lines.map(function (l) { return '<div>' + esc(l) + '</div>'; }).join('') +
+        '</div></div>';
+    },
+    init: function (ch, root, cid) {
+      var inp = root.querySelector('#' + cid + '-logsearch');
+      var log = root.querySelector('#' + cid + '-log');
+      if (!inp || !log) return;
+      var lines = ch.labData.lines || [];
+      inp.addEventListener('input', function () {
+        var q = inp.value.toLowerCase();
+        log.innerHTML = lines.filter(function (l) { return !q || l.toLowerCase().indexOf(q) !== -1; })
+          .map(function (l) { return '<div>' + esc(l) + '</div>'; }).join('');
+      });
+    }
+  };
+
+  /* ============================================================
+     8. PACKETS LAB
+     ============================================================ */
+  var PacketsLab = {
+    render: function (ch, cid) {
+      var pkts = ch.labData.packets || [];
+      return '<div class="pca-ctf-detail">' +
+        '<h4>Interactive Lab — Packet Capture</h4>' +
+        '<p>Analyse the simulated packets below and identify the suspicious one.</p>' +
+        '<div style="overflow-x:auto"><table class="pca-ctf-packet-table">' +
+        '<thead><tr><th>#</th><th>Source</th><th>Destination</th><th>Protocol</th><th>Info</th></tr></thead><tbody>' +
+        pkts.map(function (p, i) {
+          return '<tr><td>' + (i + 1) + '</td><td>' + esc(p.s) + '</td><td>' + esc(p.d) + '</td><td>' + esc(p.p) + '</td><td>' + esc(p.info) + '</td></tr>';
+        }).join('') +
+        '</tbody></table></div></div>';
+    },
+    init: function () {}
+  };
+
+  /* ============================================================
+     9. JWT LAB
+     ============================================================ */
+  var JwtLab = {
+    render: function (ch, cid) {
+      var token = (ch.labData.token || '');
+      var parts = token.split('.');
+      function decodePart(p) {
+        try { return JSON.stringify(JSON.parse(b64d(p.replace(/-/g, '+').replace(/_/g, '/'))), null, 2); }
+        catch (e) { return '(unable to decode)'; }
+      }
+      return '<div class="pca-ctf-detail">' +
+        '<h4>Interactive Lab — JWT Inspector</h4>' +
+        '<p>Examine the token below. All processing happens in your browser.</p>' +
+        '<div style="font-family:JetBrains Mono,monospace;font-size:.78rem;color:#22d3ee;word-break:break-all;margin-bottom:12px">' + esc(token) + '</div>' +
+        '<div style="display:grid;gap:10px;grid-template-columns:1fr">' +
+        '<div><div class="pca-ctf-section-h">Header</div><pre style="background:rgba(2,6,14,.7);border:1px solid rgba(80,140,200,.2);border-radius:10px;padding:10px;color:#9fe8ff;font-family:JetBrains Mono,monospace;font-size:.76rem;overflow-x:auto">' + esc(decodePart(parts[0] || '')) + '</pre></div>' +
+        '<div><div class="pca-ctf-section-h">Payload</div><pre style="background:rgba(2,6,14,.7);border:1px solid rgba(80,140,200,.2);border-radius:10px;padding:10px;color:#9fe8ff;font-family:JetBrains Mono,monospace;font-size:.76rem;overflow-x:auto">' + esc(decodePart(parts[1] || '')) + '</pre></div>' +
+        '<div><div class="pca-ctf-section-h">Signature</div><pre style="background:rgba(2,6,14,.7);border:1px solid rgba(80,140,200,.2);border-radius:10px;padding:10px;color:#9fe8ff;font-family:JetBrains Mono,monospace;font-size:.76rem;overflow-x:auto">' + esc(parts[2] || '(empty)') + '</pre></div>' +
+        '</div></div>';
+    },
+    init: function () {}
+  };
+
+  /* ============================================================
+     10. STATIC LAB (mission display only)
+     ============================================================ */
+  var StaticLab = {
+    render: function (ch, cid) {
+      if (!ch.labData.show) return '';
+      return '<div class="pca-ctf-detail">' +
+        '<h4>Lab Material</h4>' +
+        '<pre style="background:rgba(2,6,14,.7);border:1px solid rgba(80,140,200,.2);border-radius:10px;padding:14px;color:#9fe8ff;font-family:JetBrains Mono,monospace;font-size:.8rem;line-height:1.7;white-space:pre-wrap;word-break:break-word;overflow-x:auto">' + esc(ch.labData.show) + '</pre>' +
+        '</div>';
+    },
+    init: function () {}
+  };
+
+  var LABS = { terminal: TerminalLab, logview: LogViewLab, packets: PacketsLab, jwt: JwtLab, static: StaticLab };
+
+  /* ============================================================
+     11. RENDER — Dashboard
+     ============================================================ */
+  function renderDashboard() {
+    var total = CHALLENGES.length;
+    var done = Object.keys(STATE.completed).length;
+    var remaining = total - done;
+    var lvl = getLevel();
+    var lp = levelProgress();
+    var cats = ['All'].concat(unique(CATEGORIES_ALL()));
+    var diffs = ['All', 'Easy', 'Medium', 'Hard', 'Insane'];
+    var filtered = CHALLENGES.filter(function (c) {
+      if (STATE.currentCategory !== 'All' && c.cat !== STATE.currentCategory) return false;
+      if (STATE.currentDiff !== 'All' && c.diff !== STATE.currentDiff) return false;
+      if (STATE.search) {
+        var q = STATE.search.toLowerCase();
+        if (c.name.toLowerCase().indexOf(q) === -1 && c.desc.toLowerCase().indexOf(q) === -1 && c.cat.toLowerCase().indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+
+    var html = '';
+    html += '<div class="pca-ctf-stats">';
+    html += '<div class="pca-ctf-stat"><b>' + lvl + '</b><span>Cyber Level</span></div>';
+    html += '<div class="pca-ctf-stat"><b>' + STATE.xp + '</b><span>Total XP</span></div>';
+    html += '<div class="pca-ctf-stat"><b>' + done + '</b><span>Completed</span></div>';
+    html += '<div class="pca-ctf-stat"><b>' + remaining + '</b><span>Remaining</span></div>';
+    html += '<div class="pca-ctf-stat"><b>' + STATE.streak.count + '</b><span>Day Streak</span></div>';
+    html += '<div class="pca-ctf-stat"><b>' + STATE.badges.length + '</b><span>Badges</span></div>';
+    html += '</div>';
+
+    html += '<div class="pca-ctf-detail"><div class="pca-ctf-section-h">Level Progress — ' + lp.into + ' / ' + lp.need + ' XP</div>';
+    html += '<div class="pca-ctf-bar"><i style="width:' + lp.pct + '%"></i></div></div>';
+
+    html += '<div class="pca-ctf-detail"><div class="pca-ctf-section-h">Overall Completion — ' + Math.round((done / total) * 100) + '%</div>';
+    html += '<div class="pca-ctf-bar"><i style="width:' + Math.round((done / total) * 100) + '%"></i></div></div>';
+
+    // Category progress
+    html += '<div class="pca-ctf-detail"><div class="pca-ctf-section-h">Category Progress</div>';
+    var byCat = {};
+    CHALLENGES.forEach(function (c) {
+      if (!byCat[c.cat]) byCat[c.cat] = { total: 0, done: 0 };
+      byCat[c.cat].total++;
+      if (STATE.completed[c.id]) byCat[c.cat].done++;
+    });
+    Object.keys(byCat).sort().forEach(function (k) {
+      var p = Math.round((byCat[k].done / byCat[k].total) * 100);
+      html += '<div style="margin-bottom:8px">' +
+        '<div style="display:flex;justify-content:space-between;font-family:JetBrains Mono,monospace;font-size:.68rem;color:#8ea3bd;margin-bottom:4px">' +
+        '<span>' + esc(k) + '</span><span>' + byCat[k].done + '/' + byCat[k].total + '</span></div>' +
+        '<div class="pca-ctf-bar"><i style="width:' + p + '%"></i></div></div>';
+    });
+    html += '</div>';
+
+    // Badges
+    html += '<div class="pca-ctf-detail"><div class="pca-ctf-section-h">Badges</div><div class="pca-ctf-badges">';
+    BADGES.forEach(function (b) {
+      var on = STATE.badges.indexOf(b.id) !== -1;
+      html += '<div class="pca-ctf-badge ' + (on ? 'pca-ctf-on' : 'pca-ctf-off') + '">' + esc(b.name) + '</div>';
+    });
+    html += '</div></div>';
+
+    // Filters
+    html += '<div class="pca-ctf-filters">';
+    html += '<input class="pca-ctf-input" id="pcaCTF_search" placeholder="Search challenges…" value="' + esc(STATE.search) + '" />';
+    html += '</div>';
+    html += '<div class="pca-ctf-filters" data-group="cat">';
+    cats.forEach(function (cat) {
+      html += '<button class="pca-ctf-pill ' + (STATE.currentCategory === cat ? 'pca-ctf-active' : '') + '" data-cat="' + esc(cat) + '">' + esc(cat) + '</button>';
+    });
+    html += '</div>';
+    html += '<div class="pca-ctf-filters" data-group="diff">';
+    diffs.forEach(function (d) {
+      html += '<button class="pca-ctf-pill ' + (STATE.currentDiff === d ? 'pca-ctf-active' : '') + '" data-diff="' + esc(d) + '">' + esc(d) + '</button>';
+    });
+    html += '</div>';
+
+    html += '<div class="pca-ctf-section-h">Challenges — ' + filtered.length + ' shown</div>';
+    if (!filtered.length) {
+      html += '<div class="pca-ctf-empty">No challenges match your filters.</div>';
+    } else {
+      html += '<div class="pca-ctf-grid">';
+      filtered.forEach(function (c) {
+        var completed = !!STATE.completed[c.id];
+        html += '<div class="pca-ctf-card ' + (completed ? 'pca-ctf-done' : '') + '" data-open="' + c.id + '">' +
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">' +
+          '<span class="pca-ctf-tag pca-ctf-' + c.diff.toLowerCase() + '">' + esc(c.diff) + '</span>' +
+          (completed ? '<span style="color:#22c55e;font-weight:700">✓</span>' : '<span class="pca-ctf-tag">+' + c.xp + ' XP</span>') +
+          '</div>' +
+          '<h3>' + esc(c.name) + '</h3>' +
+          '<p>' + esc(c.desc.length > 120 ? c.desc.slice(0, 120) + '…' : c.desc) + '</p>' +
+          '<div class="pca-ctf-chips"><span class="pca-ctf-tag">' + esc(c.cat) + '</span></div>' +
+          '</div>';
+      });
+      html += '</div>';
+    }
+
+    return html;
+  }
+  function unique(arr) { var seen = {}, out = []; arr.forEach(function (x) { if (!seen[x]) { seen[x] = 1; out.push(x); } }); return out; }
+  function CATEGORIES_ALL() { return CHALLENGES.map(function (c) { return c.cat; }); }
+
+  /* ============================================================
+     12. RENDER — Challenge detail
+     ============================================================ */
+  function renderChallenge(id) {
+    var ch = CHALLENGES.find(function (c) { return c.id === id; });
+    if (!ch) return '<div class="pca-ctf-empty">Challenge not found.</div>';
+    var completed = !!STATE.completed[ch.id];
+    var cid = 'pcaCTF_lab_' + ch.id.replace(/[^a-z0-9]/gi, '_');
+
+    var html = '';
+    html += '<div style="margin-bottom:12px"><button class="pca-ctf-btn" data-back>← Back to Dashboard</button></div>';
+
+    html += '<div class="pca-ctf-detail">' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">' +
+      '<span class="pca-ctf-tag pca-ctf-' + ch.diff.toLowerCase() + '">' + esc(ch.diff) + '</span>' +
+      '<span class="pca-ctf-tag">' + esc(ch.cat) + '</span>' +
+      '<span class="pca-ctf-tag">+' + ch.xp + ' XP</span>' +
+      (completed ? '<span class="pca-ctf-tag pca-ctf-easy">Completed</span>' : '') +
+      '</div>' +
+      '<h2>' + esc(ch.name) + '</h2>' +
+      '<p>' + esc(ch.desc) + '</p>' +
+      '<h4>Mission</h4>' +
+      '<p>' + esc(ch.mission) + '</p>' +
+      (ch.tools.length ? '<h4>Tools</h4><div class="pca-ctf-chips">' + ch.tools.map(function (t) { return '<span class="pca-ctf-tag">' + esc(t) + '</span>'; }).join('') + '</div>' : '') +
+      '</div>';
+
+    // Lab
+    var lab = LABS[ch.labType] || StaticLab;
+    html += lab.render(ch, cid);
+
+    // Hints
+    if (ch.hints && ch.hints.length) {
+      html += '<div class="pca-ctf-detail"><h4>Hints</h4>';
+      ch.hints.forEach(function (h, i) {
+        html += '<div class="pca-ctf-hint"><b>Hint ' + (i + 1) + ':</b> ' + esc(h) + '</div>';
+      });
+      html += '</div>';
+    }
+
+    // Flag submission
+    html += '<div class="pca-ctf-detail"><h4>Submit Flag</h4>' +
+      '<p>Format: <code>PCA{...}</code> — case-insensitive.</p>' +
+      '<div class="pca-ctf-flag-box">' +
+      '<input class="pca-ctf-flag-input" id="pcaCTF_flag_' + ch.id + '" placeholder="PCA{...}" autocomplete="off" spellcheck="false" />' +
+      '<button class="pca-ctf-btn pca-ctf-primary" data-submit="' + ch.id + '">Submit</button>' +
+      '</div>';
+    if (completed) {
+      html += '<div class="pca-ctf-success">' +
+        '<h4>Solved — Explanation</h4>' +
+        '<p>' + esc(ch.expl) + '</p>' +
+        '<h4 style="margin-top:14px">Defensive Lesson</h4>' +
+        '<p>' + esc(ch.def) + '</p>' +
+        '</div>';
+    }
+    html += '</div>';
+
+    return html;
+  }
+
+  /* ============================================================
+     13. RENDER — Paths
+     ============================================================ */
+  function renderPaths() {
+    var html = '<div class="pca-ctf-section-h">Learning Paths</div>';
+    PATHS.forEach(function (p) {
+      var total = CHALLENGES.filter(function (c) { return p.cats.indexOf(c.cat) !== -1; }).length;
+      var done = CHALLENGES.filter(function (c) { return p.cats.indexOf(c.cat) !== -1 && STATE.completed[c.id]; }).length;
+      var pct = total ? Math.round((done / total) * 100) : 0;
+      html += '<div class="pca-ctf-detail">' +
+        '<h2 style="margin-top:0">' + esc(p.name) + '</h2>' +
+        '<p>Categories: ' + p.cats.map(esc).join(', ') + '</p>' +
+        '<div style="margin-top:10px;display:flex;justify-content:space-between;font-family:JetBrains Mono,monospace;font-size:.68rem;color:#8ea3bd;margin-bottom:5px"><span>' + done + '/' + total + '</span><span>' + pct + '%</span></div>' +
+        '<div class="pca-ctf-bar"><i style="width:' + pct + '%"></i></div></div>';
+    });
+    return html;
+  }
+
+  /* ============================================================
+     14. APP SHELL
+     ============================================================ */
+  var rootEl = null;
+
+  function ensureRoot() {
+    if (rootEl && document.body.contains(rootEl)) return rootEl;
+    var existing = document.getElementById(OVERLAY_ID);
+    if (existing) { rootEl = existing; return rootEl; }
+    rootEl = document.createElement('div');
+    rootEl.id = OVERLAY_ID;
+    rootEl.className = CLS + 'overlay';
+    rootEl.setAttribute('role', 'dialog');
+    rootEl.setAttribute('aria-modal', 'true');
+    rootEl.setAttribute('aria-label', 'Pareek Cyber CTF');
+    document.body.appendChild(rootEl);
+    return rootEl;
+  }
+
+  function renderShell() {
+    var root = ensureRoot();
+    var bodyContent;
+    if (STATE.view === 'challenge' && STATE.currentChallengeId) {
+      bodyContent = renderChallenge(STATE.currentChallengeId);
+    } else if (STATE.view === 'paths') {
+      bodyContent = renderPaths();
+    } else {
+      bodyContent = renderDashboard();
+    }
+
+    var html = '<div class="pca-ctf-wrap">' +
+      '<div class="pca-ctf-topbar">' +
+      '<div><div class="pca-ctf-brand">PAREEK CYBER CTF<small>ORIGINAL SIMULATED CTF ENGINE</small></div></div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+      '<button class="pca-ctf-btn ' + (STATE.view === 'dashboard' ? 'pca-ctf-primary' : '') + '" data-view="dashboard">Dashboard</button>' +
+      '<button class="pca-ctf-btn ' + (STATE.view === 'paths' ? 'pca-ctf-primary' : '') + '" data-view="paths">Paths</button>' +
+      '<button class="pca-ctf-btn" data-reset>Reset</button>' +
+      '<button class="pca-ctf-btn" data-close>Close ✕</button>' +
+      '</div>' +
+      '</div>' +
+      bodyContent +
+      '</div>';
+
+    root.innerHTML = html;
+    bindShell();
+  }
+
+  function bindShell() {
+    var root = rootEl;
+    if (!root) return;
+
+    qsa(root, '[data-close]').forEach(function (b) { b.addEventListener('click', closeApp); });
+    qsa(root, '[data-view]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        STATE.view = b.getAttribute('data-view');
+        STATE.currentChallengeId = null;
+        saveState();
+        renderShell();
+      });
+    });
+    qsa(root, '[data-reset]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (confirm('Reset all CTF progress?')) { resetProgress(); renderShell(); }
+      });
+    });
+    qsa(root, '[data-back]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        STATE.view = 'dashboard';
+        STATE.currentChallengeId = null;
+        saveState();
+        renderShell();
+      });
+    });
+    qsa(root, '[data-cat]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        STATE.currentCategory = b.getAttribute('data-cat');
+        saveState(); renderShell();
+      });
+    });
+    qsa(root, '[data-diff]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        STATE.currentDiff = b.getAttribute('data-diff');
+        saveState(); renderShell();
+      });
+    });
+    qsa(root, '[data-open]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        STATE.view = 'challenge';
+        STATE.currentChallengeId = b.getAttribute('data-open');
+        saveState();
+        renderShell();
+      });
+    });
+    qsa(root, '[data-submit]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        submitFlag(b.getAttribute('data-submit'));
+      });
+    });
+
+    var searchBox = root.querySelector('#pcaCTF_search');
+    if (searchBox) {
+      searchBox.addEventListener('input', function () {
+        STATE.search = searchBox.value;
+        var pos = searchBox.selectionStart;
+        saveState();
+        renderShell();
+        var nb = root.querySelector('#pcaCTF_search');
+        if (nb) { nb.focus(); try { nb.setSelectionRange(pos, pos); } catch (e) {} }
+      });
+    }
+
+    // Init lab if on challenge view
+    if (STATE.view === 'challenge' && STATE.currentChallengeId) {
+      var ch = CHALLENGES.find(function (c) { return c.id === STATE.currentChallengeId; });
+      if (ch) {
+        var lab = LABS[ch.labType] || StaticLab;
+        var cid = 'pcaCTF_lab_' + ch.id.replace(/[^a-z0-9]/gi, '_');
+        if (lab.init) lab.init(ch, root, cid);
+      }
+    }
+  }
+
+  function submitFlag(id) {
+    var ch = CHALLENGES.find(function (c) { return c.id === id; });
+    if (!ch) return;
+    var input = document.getElementById('pcaCTF_flag_' + id);
+    if (!input) return;
+    var val = (input.value || '').trim();
+    if (!val) { toast('Enter a flag first'); return; }
+    var correct = b64d(ch.flagEnc);
+    if (val.toLowerCase() === correct.toLowerCase()) {
+      if (!STATE.completed[id]) {
+        STATE.completed[id] = { ts: now(), attempts: 1, hintsUsed: 0 };
+        STATE.xp += ch.xp;
+        saveState();
+        touchStreak();
+        var unlocked = awardBadges();
+        toast('Correct! +' + ch.xp + ' XP', 'ok');
+        unlocked.forEach(function (b) { setTimeout(function () { toast('Badge unlocked: ' + b, 'ok'); }, 400); });
+      } else {
+        toast('Already solved');
+      }
+      renderShell();
+      if (STATE.currentChallengeId === id) {
+        setTimeout(function () {
+          var el = document.getElementById('pcaCTF_flag_' + id);
+          if (el) el.value = '';
+        }, 50);
+      }
+    } else {
+      STATE.completed = STATE.completed; // no state change
+      saveState();
+      toast('Incorrect flag. Try again.', 'err');
+      input.value = '';
+    }
+  }
+
+  function toast(msg, kind) {
+    var t = document.createElement('div');
+    t.className = CLS + 'toast';
+    if (kind === 'ok') t.style.borderLeftColor = '#22c55e';
+    if (kind === 'err') t.style.borderLeftColor = '#ef4444';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(function () {
+      t.style.transition = 'opacity .3s, transform .3s';
+      t.style.opacity = '0';
+      t.style.transform = 'translateX(30px)';
+      setTimeout(function () { t.remove(); }, 320);
+    }, 2600);
+  }
+
+  function openApp() {
+    injectStyles();
+    var root = ensureRoot();
+    root.classList.add(CLS + 'open');
+    document.body.style.overflow = 'hidden';
+    renderShell();
+  }
+  function closeApp() {
+    var root = document.getElementById(OVERLAY_ID);
+    if (root) root.classList.remove(CLS + 'open');
+    document.body.style.overflow = '';
+  }
+  function resetProgress() {
+    STATE = defaultState();
+    saveState();
+    toast('CTF progress reset');
+  }
+
+  /* ============================================================
+     15. LAUNCHER BUTTON
+     ============================================================ */
+  function injectLauncher() {
+    injectStyles();
+    if (document.getElementById(LAUNCH_ID)) return;
+    var btn = document.createElement('button');
+    btn.id = LAUNCH_ID;
+    btn.className = CLS + 'launcher';
+    btn.type = 'button';
+    btn.textContent = '⚡ LAUNCH CTF';
+    btn.setAttribute('aria-label', 'Launch Pareek Cyber CTF');
+    btn.addEventListener('click', openApp);
+    document.body.appendChild(btn);
+  }
+
+  /* ============================================================
+     16. KEYBOARD — Escape closes overlay
+     ============================================================ */
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      var root = document.getElementById(OVERLAY_ID);
+      if (root && root.classList.contains(CLS + 'open')) closeApp();
+    }
+  });
+
+  /* ============================================================
+     17. PUBLIC API
+     ============================================================ */
+  window.PareekCyberCTF = {
+    open: openApp,
+    close: closeApp,
+    init: injectLauncher,
+    resetProgress: function () { resetProgress(); renderShell(); },
+    getState: function () { return JSON.parse(JSON.stringify(STATE)); },
+    challenges: CHALLENGES.map(function (c) { return { id: c.id, name: c.name, cat: c.cat, diff: c.diff, xp: c.xp }; })
+  };
+
+  /* ============================================================
+     18. AUTO-INIT
+     ============================================================ */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectLauncher);
+  } else {
+    injectLauncher();
+  }
+
+  touchStreak();
+  awardBadges();
+
+})();
+</script>
+<!-- ============================================================
+     END PAREEK CYBER CTF ENGINE
+     ============================================================ -->  
 </body>
 </html>
