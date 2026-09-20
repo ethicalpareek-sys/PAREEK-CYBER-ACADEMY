@@ -8223,33 +8223,21 @@ if (document.readyState === 'loading'){
   document.addEventListener('DOMContentLoaded', injectLauncher);
 } else {
   injectLauncher();
-}
+window.pcaAC_openTopic     = openTopic;
+window.pcaAC_showView      = showView;
+window.pcaAC_openSection   = openSection;
+window.pcaAC_setTab        = setTab;
+window.pcaAC_toggleDone    = toggleDone;
+window.pcaAC_answer        = answer;
+window.pcaAC_submitQuiz    = submitQuiz;
+window.pcaAC_resetQuiz     = resetQuiz;
+window.pcaAC_filterGloss   = filterGloss;
+window.pcaAC_resetProgress = resetProgress;
+window.pcaAC_close         = closeApp;
+window.pcaAC_open          = openApp;
+window.pcaAC_init          = injectLauncher;
 
-})();
-8229  </script>
-8230  <!-- ═══ END PAREEK CYBER ACADEMY ADD-ON ═══ -->
 
-      <!-- ══════ GLOBAL FUNCTION EXPOSURE PATCH ══════ -->
-      <script>
-      (function(){
-        function expose(){
-          if (!window.PareekCyberAcademy) return setTimeout(expose, 60);
-          var API = window.PareekCyberAcademy;
-          window.pcaAC_openTopic     = API.openTopic;
-          window.pcaAC_showView      = API.showView;
-          window.pcaAC_openSection   = API.openSection;
-          window.pcaAC_setTab        = API.setTab;
-          window.pcaAC_toggleDone    = API.toggleDone;
-          window.pcaAC_answer        = API.answer;
-          window.pcaAC_submitQuiz    = API.submitQuiz;
-          window.pcaAC_resetQuiz     = API.resetQuiz;
-          window.pcaAC_filterGloss   = API.filterGloss;
-          window.pcaAC_resetProgress = API.resetProgress;
-          window.pcaAC_close         = API.close;
-          window.pcaAC_open          = API.open;
-          window.pcaAC_init          = API.init;
-        }
-        expose();
       })();
       </script>
       <!-- ══════ END PATCH ══════ -->
