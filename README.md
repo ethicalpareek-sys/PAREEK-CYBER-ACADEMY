@@ -1,21 +1,4 @@
-<div align="center">
 
-<img src="banner.svg" alt="Pareek Cyber Academy" width="100%" />
-
-# ◈ PAREEK CYBER ACADEMY ◈
-
-### **LEARN • BUILD • DEFEND**
-
-*Learn the technology. Understand the threat. Build the defense.*
-
-🌐 **[Visit Live Website →](https://pareek.github.io/PAREEK-CYBER-ACADEMY/)**
-
-[![🚀 Live](https://img.shields.io/badge/🚀_LIVE_SITE-00ffd1?style=for-the-badge&labelColor=0a1218)](https://pareek.github.io/PAREEK-CYBER-ACADEMY/)
-[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
-[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
-
-</div>
 
 ---
 <!-- ══════════════════════════════════════════════════
