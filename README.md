@@ -1,288 +1,368 @@
-<!-- ═══════════════════════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════════════════════════════
      PAREEK CYBER ACADEMY — README.md
-     Learn the technology. Understand the threat. Build the defense.
-     GitHub-Native · Single File · 3D-Inspired Visual Identity
-     ═══════════════════════════════════════════════════════════════════════ -->
-
-<pre>
-    ╔══════════════════════════════════════════════════════════════════════╗
-    ║                                                                      ║
-    ║   ░▒▓█  B O O T   S E Q U E N C E   I N I T I A T E D  █▓▒░          ║
-    ║                                                                      ║
-    ║   [ 0.001s ]  ▸ KERNEL CHECK ...................  [ ONLINE ]         ║
-    ║   [ 0.014s ]  ▸ CYBER CORE MESH ................  [ ONLINE ]         ║
-    ║   [ 0.097s ]  ▸ LEARNING ENGINE · 128 MODULES ...  [ ONLINE ]        ║
-    ║   [ 0.212s ]  ▸ CTF ENGINE · 60+ CHALLENGES ....  [ ONLINE ]         ║
-    ║   [ 0.348s ]  ▸ AI ASSISTANT NEURAL LINK .......  [ ONLINE ]         ║
-    ║   [ 0.512s ]  ▸ SANDBOX RUNTIME ................  [ ISOLATED ]       ║
-    ║   [ 0.771s ]  ▸ OPERATOR AUTHENTICATED .........  [ WELCOME ]        ║
-    ║                                                                      ║
-    ║   ░▒▓█  PAREEK CYBER ACADEMY  ·  ALL SYSTEMS NOMINAL  █▓▒░          ║
-    ║                                                                      ║
-    ╚══════════════════════════════════════════════════════════════════════╝
-</pre>
+     Modern · Cyber-tech · Unique visual identity
+     ══════════════════════════════════════════════════════════════ -->
 
 <div align="center">
 
-# ◈ PAREEK CYBER ACADEMY ◈
+<img src="https://capsule-render.vercel.app/api?type=rect&color=0:0a1628,50:0891b2,100:a855f7&height=180&section=header&text=PAREEK&fontSize=80&fontColor=22d3ee&fontAlignY=45&animation=twinkling&stroke=22d3ee&strokeWidth=2" width="100%" />
 
-### **LEARN • BUILD • DEFEND**
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=800&size=42&duration=3000&pause=800&color=A855F7&center=true&vCenter=true&width=900&height=70&lines=CYBER+ACADEMY;LEARN+%E2%80%A2+BUILD+%E2%80%A2+BREAK+%E2%80%A2+DEFEND" alt="Cyber Academy" />
 
-**Learn the technology. Understand the threat. Build the defense.**
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=500&size=15&duration=2500&pause=500&color=22D3EE&center=true&vCenter=true&width=800&height=40&lines=%3E+SYSTEM+INITIALIZING...;%3E+CYBER+LEARNING+ENVIRONMENT+ONLINE;%3E+33+LEVELS+%C2%B7+250%2B+TOPICS+%C2%B7+100%2B+CTF+CHALLENGES;%3E+WELCOME%2C+RECRUIT." alt="Boot Sequence" />
 
-<p>
-A futuristic, browser-native cybersecurity learning platform.<br>
-Structured roadmaps · Isolated labs · Original CTF simulations · AI-assisted learning ·<br>
-Full-spectrum offensive & defensive security education.
-</p>
+<br/><br/>
 
-[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
-[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
-[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
-[![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-222222?style=for-the-badge&logo=github&logoColor=white)](https://pages.github.com/)
+<img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="100%" height="3" />
 
-[![Cybersecurity](https://img.shields.io/badge/DOMAIN-CYBERSECURITY-00ffd1?style=for-the-badge&labelColor=0a1218)](https://github.com/)
-[![Education](https://img.shields.io/badge/TYPE-EDUCATIONAL-4d7cff?style=for-the-badge&labelColor=0a1218)](https://github.com/)
-[![CTF](https://img.shields.io/badge/CTF-ORIGINAL_SIMULATIONS-ffb454?style=for-the-badge&labelColor=0a1218)](https://github.com/)
-[![Open Source](https://img.shields.io/badge/OPEN_SOURCE-EDUCATIONAL-3fe0c8?style=for-the-badge&labelColor=0a1218)](https://github.com/)
+<br/><br/>
 
-[![Ethics](https://img.shields.io/badge/⚠️_AUTHORIZED_LABS_ONLY-red?style=for-the-badge&labelColor=0a1218)](#️-ethical--legal-use)
+<table>
+<tr>
+<td align="center" width="25%">
+
+### 🎨
+**3D INTERFACE**
+Futuristic cyber UI
+
+</td>
+<td align="center" width="25%">
+
+### 🧭
+**33 LEVELS**
+Ordered roadmap
+
+</td>
+<td align="center" width="25%">
+
+### 🧪
+**32 LABS**
+Hands-on practice
+
+</td>
+<td align="center" width="25%">
+
+### ⚡
+**100+ CTF**
+Original challenges
+
+</td>
+</tr>
+</table>
+
+<br/>
+
+<img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="100%" height="3" />
+
+<br/><br/>
+
+[![ENTER ACADEMY](https://img.shields.io/badge/⚡_ENTER_THE_ACADEMY-22d3ee?style=for-the-badge&labelColor=0a1628&logo=shield&logoColor=22d3ee)](https://github.com)
+[![ROADMAP](https://img.shields.io/badge/🧭_EXPLORE_ROADMAP-a855f7?style=for-the-badge&labelColor=0a1628&logo=map&logoColor=a855f7)](#-the-roadmap)
+[![CTF](https://img.shields.io/badge/🚩_CTF_ARENA-ec4899?style=for-the-badge&labelColor=0a1628&logo=flag&logoColor=ec4899)](#-ctf-arena)
+
+<br/>
+
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![Canvas](https://img.shields.io/badge/Canvas_2D-22d3ee?style=flat-square&logo=html5&logoColor=white)
+![localStorage](https://img.shields.io/badge/localStorage-22c55e?style=flat-square&logo=databricks&logoColor=white)
+![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-181717?style=flat-square&logo=github&logoColor=white)
+![MIT](https://img.shields.io/badge/License-MIT-a855f7?style=flat-square&logo=opensourceinitiative&logoColor=white)
+![Status](https://img.shields.io/badge/Status-ACTIVE-22d3ee?style=flat-square&logo=statuspage&logoColor=white)
+
+<br/>
+
+<img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="100%" height="3" />
+
+</div>
+
+<br/>
+
+## ⚡ `> what_is_this`
+
+
+$ cat about.txt
+
+  A browser-native cybersecurity academy — one HTML file.
+  No backend. No database. No build step. No tracking.
+
+  3D cyber interface · 33-level roadmap · 250+ topics
+  32 hands-on labs · 100+ CTF challenges · terminal simulator
+  network simulator · SOC console · forensics labs · AI security
+
+  Runs entirely inside the learner's browser.
+
+🎯 Built for Beginners · Students · Career switchers · Educators · CTF newcomers
+🧭 Structure 33 sequential levels with prerequisites and completion criteria
+🧪 Practice Labs, simulators, and 100+ original CTF challenges
+🎮 Progress XP · 50 levels · badges · streaks — saved in your browser
+🛡️ Ethics Authorized labs only · no real attacks · no telemetry
+
+┌────┬──────────────────────────────────┬────┬──────────────────────────┐
+│ 00 │ Computer Fundamentals            │ 17 │ Incident Response        │
+│ 01 │ Linux                            │ 18 │ Digital Forensics        │
+│ 02 │ Networking                       │ 19 │ Malware Analysis         │
+│ 03 │ Python for Security              │ 20 │ Reverse Engineering      │
+│ 04 │ Web Technologies                 │ 21 │ Mobile Security          │
+│ 05 │ Cybersecurity Fundamentals       │ 22 │ Wireless Security        │
+│ 06 │ Cryptography                     │ 23 │ Container Security       │
+│ 07 │ Web Security                     │ 24 │ Kubernetes Security      │
+│ 08 │ API Security                     │ 25 │ AI Security              │
+│ 09 │ OS Security                      │ 26 │ Red Team                 │
+│ 10 │ Active Directory                 │ 27 │ Blue Team                │
+│ 11 │ Cloud Computing                  │ 28 │ Purple Team              │
+│ 12 │ Cloud Security                   │ 29 │ Security Engineering     │
+│ 13 │ DevSecOps                        │ 30 │ Security Architecture    │
+│ 14 │ SOC Operations                   │ 31 │ GRC                      │
+│ 15 │ SIEM & Detection                 │ 32 │ CISO Track               │
+│ 16 │ Threat Intelligence              │    │                          │
+└────┴──────────────────────────────────┴────┴──────────────────────────┘
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0a1628,50:0891b2,100:a855f7&height=200&section=header&text=PAREEK%20CYBER%20ACADEMY&fontSize=42&fontColor=22d3ee&fontAlignY=38&desc=LEARN%20%C2%B7%20BUILD%20%C2%B7%20BREAK%20%C2%B7%20DEFEND&descAlignY=60&descSize=15&descColor=a855f7&animation=fadeIn" width="100%"/>
+
+<div align="center">
+
+**A browser-native cybersecurity academy — futuristic cyber interface, 33-level roadmap, 250+ topics, interactive labs, and an original in-browser CTF engine.**
+
+**One file. No backend. No build step. No tracking.**
+
+<br/>
+
+[![ENTER ACADEMY](https://img.shields.io/badge/⚡_ENTER_THE_ACADEMY-22d3ee?style=for-the-badge&labelColor=0a1628)](https://github.com)
+[![EXPLORE ROADMAP](https://img.shields.io/badge/🧭_EXPLORE_ROADMAP-a855f7?style=for-the-badge&labelColor=0a1628)](#-roadmap)
+[![CTF ARENA](https://img.shields.io/badge/🚩_CTF_ARENA-ec4899?style=for-the-badge&labelColor=0a1628)](#-ctf-arena)
+
+<br/>
+
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+
+![localStorage](https://img.shields.io/badge/localStorage-22c55e?style=for-the-badge)
+![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-181717?style=for-the-badge&logo=github&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-a855f7?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-ACTIVE-22d3ee?style=for-the-badge)
+
+<br/>
+
+> ⚠️ **Ethical Use Only** — Test only systems you own or have **explicit written authorization** to test.
 
 </div>
 
 ---
 
-<pre>
-  ┌───────────────────────────────────────────────────────────────────────────┐
-  │                                                                           │
-  │                    ╔═════════════════════════════════════════╗            │
-  │                    ║   P A R E E K   C Y B E R   A C A D E M Y  ║         │
-  │                    ║        L E A R N  •  B U I L D  •  D E F E N D        ║
-  │                    ╚═════════════════════════════════════════╝            │
-  │                                    ║                                      │
-  │        ┌───────────────┬───────────┼───────────┬───────────────┐          │
-  │        │               │           │           │               │          │
-  │        ▼               ▼           ▼           ▼               ▼          │
-  │   ┌─────────┐    ┌─────────┐  ┌─────────┐  ┌─────────┐    ┌─────────┐     │
-  │   │  LABS   │    │   CTF   │  │ ROADMAP │  │  TOOLS  │    │ AI/LLM  │     │
-  │   └────┬────┘    └────┬────┘  └────┬────┘  └────┬────┘    └────┬────┘     │
-  │        │              │            │            │              │          │
-  │        └──────────────┴────────────┴────────────┴──────────────┘          │
-  │                                    │                                      │
-  │                                    ▼                                      │
-  │                    ╔═════════════════════════════════════════╗            │
-  │                    ║   L E A R N I N G   E N G I N E         ║            │
-  │                    ║   XP · LEVELS · BADGES · STREAKS        ║            │
-  │                    ╚═════════════════════════════════════════╝            │
-  │                                                                           │
-  │   ◈ FIREWALL ◈ IDS/IPS ◈ SIEM ◈ EDR ◈ SOAR ◈ XDR ◈ NETWORK ◈ CLOUD ◈     │
-  │   ◈ CONTAINER ◈ KUBERNETES ◈ AI SECURITY ◈ FORENSICS ◈ THREAT INTEL ◈     │
-  │                                                                           │
-  └───────────────────────────────────────────────────────────────────────────┘
-</pre>
+## ⚡ What Is This?
+
+**PAREEK CYBER ACADEMY** is a complete cybersecurity learning platform shipped as a **single self-contained `index.html` file**. Everything — the 3D interface, roadmap, topics, labs, and CTF engine — runs in the learner's browser with **zero dependencies on any server**.
+
+**Built for:** Beginners · Students · Career switchers · Educators · CTF newcomers
 
 ---
 
-<pre>
-              ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-              ░                                                       ░
-              ░   ┌─────────────────────────────────────────────┐     ░
-              ░   │                                             │     ░
-              ░   │    ◈  C Y B E R   C O R E   O N L I N E  ◈  │     ░
-              ░   │                                             │     ░
-              ░   │         ███████████████████████████         │     ░
-              ░   │       ██░░░░░░░░░░░░░░░░░░░░░░░░░██         │     ░
-              ░   │     ██░░░░░┌─────────────────┐░░░░░██       │     ░
-              ░   │    ██░░░░░│  ┌───────────┐  │░░░░░██       │     ░
-              ░   │   ██░░░░░░│  │  LEARN    │  │░░░░░░██      │     ░
-              ░   │   ██░░░░░░│  ├───────────┤  │░░░░░░██      │     ░
-              ░   │   ██░░░░░░│  │  BUILD    │  │░░░░░░██      │     ░
-              ░   │   ██░░░░░░│  ├───────────┤  │░░░░░░██      │     ░
-              ░   │   ██░░░░░░│  │  DEFEND   │  │░░░░░░██      │     ░
-              ░   │   ██░░░░░░│  └───────────┘  │░░░░░░██      │     ░
-              ░   │    ██░░░░░└─────────────────┘░░░░░██       │     ░
-              ░   │     ██░░░░░░░░░░░░░░░░░░░░░░░░░░██         │     ░
-              ░   │       ███████████████████████████           │     ░
-              ░   │                                             │     ░
-              ░   │   ▓▓▓  S E C U R I T Y   S H I E L D  ▓▓▓   │     ░
-              ░   │                                             │     ░
-              ░   └─────────────────────────────────────────────┘     ░
-              ░                                                       ░
-              ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+## 🧭 Roadmap — 33 Levels
 
-        ╔═══════════════════════════════════════════════════════════════╗
-        ║  ◈  PAREEK CYBER ACADEMY  ◈   LEARN • BUILD • DEFEND         ║
-        ║  ◈  Authorized Labs · Original CTF · AI-Assisted Learning   ║
-        ╚═══════════════════════════════════════════════════════════════╝
-</pre>
+**From "what is a CPU" to "how a CISO defends an enterprise."**
+
+| # | Level | # | Level |
+|:---:|:---|:---:|:---|
+| **00** | Computer Fundamentals | **17** | Incident Response |
+| **01** | Linux | **18** | Digital Forensics |
+| **02** | Networking | **19** | Malware Analysis |
+| **03** | Python for Security | **20** | Reverse Engineering |
+| **04** | Web Technologies | **21** | Mobile Security |
+| **05** | Cyber Fundamentals | **22** | Wireless Security |
+| **06** | Cryptography | **23** | Container Security |
+| **07** | Web Security | **24** | Kubernetes Security |
+| **08** | API Security | **25** | AI Security |
+| **09** | OS Security | **26** | Red Team |
+| **10** | Active Directory | **27** | Blue Team |
+| **11** | Cloud Computing | **28** | Purple Team |
+| **12** | Cloud Security | **29** | Security Engineering |
+| **13** | DevSecOps | **30** | Security Architecture |
+| **14** | SOC Operations | **31** | GRC |
+| **15** | SIEM & Detection | **32** | CISO Track |
+| **16** | Threat Intelligence | | |
 
 ---
 
-## 📑 Navigation
+## 🚩 CTF Arena
 
-<details open>
-<summary><b>▸ Click to expand full table of contents</b></summary>
+An **original browser-based CTF engine** — every flag, hint, and dataset is built from scratch.
 
-- [🛰️ Project Overview](#️-project-overview)
-- [🎯 Who Is This For?](#-who-is-this-for)
-- [✨ Core Features](#-core-features)
-- [🧠 Learning Architecture](#-learning-architecture)
-- [🗺️ Cybersecurity Roadmap](#️-cybersecurity-roadmap)
-- [🔄 Learning Flow](#-learning-flow)
-- [⚡ Cyber CTF Arena](#-cyber-ctf-arena)
-- [🧪 Lab Architecture](#-lab-architecture)
-- [🖥️ Terminal Simulator](#️-terminal-simulator)
-- [📚 Security Learning Domains](#-security-learning-domains)
-- [🧰 Cyber Toolbox](#-cyber-toolbox)
-- [🛡️ SOC & Blue Team Operations](#️-soc--blue-team-operations)
-- [☁️ Cloud Security & DevSecOps](#️-cloud-security--devsecops)
-- [🤖 AI Security](#-ai-security)
-- [📁 Project Library](#-project-library)
-- [💼 Career Paths](#-career-paths)
-- [🎓 Certification Learning Map](#-certification-learning-map)
-- [📈 Progress System](#-progress-system)
-- [🛠️ Tech Stack](#️-tech-stack)
-- [📂 Repository Structure](#-repository-structure)
-- [🚀 GitHub Pages Deployment](#-github-pages-deployment)
-- [⚖️ Ethical & Legal Use](#️-ethical--legal-use)
-- [📚 Resource Center](#-resource-center)
-- [⚡ Quick Start](#-quick-start)
-- [📊 Feature Matrix](#-feature-matrix)
-- [🔮 Future Roadmap](#-future-roadmap)
-- [🤝 Contributing](#-contributing)
-- [📜 License & Disclaimer](#-license--disclaimer)
+| Difficulty | XP | Skill Level |
+|:---:|:---:|:---|
+| 🟢 **Easy** | 50 | Reading · encoding · foundational |
+| 🔵 **Medium** | 100 | Multi-step reasoning |
+| 🟠 **Hard** | 200 | Tools · defence reasoning |
+| 🔴 **Insane** | 400 | Architecture · detection · trade-offs |
+
+**Flag format:** `PCA{...}`
+
+**Categories:** Linux · Bash · Networking · DNS · TLS · Web · API · JWT · HTTP · Auth · Access Control · Secure Coding · Cryptography · Forensics · OSINT · SOC · Threat Hunting · IR · Cloud · Docker · Kubernetes · AI Security · CTF Fundamentals
+
+> **Fair-play note:** Browser-only simulator. For server-validated competition CTFs, use platforms like picoCTF, TryHackMe, or Hack The Box.
+
+---
+
+## ✨ Features
+
+### 🧠 Learn
+- 3D cyber interface
+- 33-level roadmap
+- 250+ topics
+- 10 learning paths
+- 60+ tools documented
+- 70+ command reference
+- Glossary
+
+### 🧪 Practice
+- 32 hands-on labs
+- 100+ CTF challenges
+- Terminal simulator
+- Network simulator
+- SOC console
+- Web / API labs
+- Crypto & forensics
+
+### 🎮 Track
+- XP & 50 levels
+- 14 badges
+- Daily streak
+- Bookmarks
+- Notes
+- Recent history
+- localStorage only
+
+### 🚀 Platform
+- Dark / light theme
+- Global search (Ctrl+K)
+- Mobile-first
+- Offline capable
+- Zero tracking
+- Reduced-motion support
+- Single HTML file
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|:---|:---|
+| **Markup** | HTML5 |
+| **Styling** | CSS3 · custom properties · glassmorphism |
+| **Logic** | Vanilla JavaScript · ES5-safe |
+| **Cyber Background** | Canvas 2D · manual perspective projection |
+| **Progress Storage** | `localStorage` · zero backend |
+| **Fonts** | Google Fonts · Orbitron · Rajdhani · JetBrains Mono |
+| **Hosting** | GitHub Pages · static |
+
+**Not used:** React · TypeScript · Vite · Webpack · Three.js · backend · database · npm · build step.
+
+**Why:** the entire academy is **one HTML file**. Double-click it. Email it. USB it. Host it anywhere static.
+
+---
+
+## 📁 Repository
+
+---
+
+## 🚀 Deploy
+
+1. Open your GitHub repository
+2. Upload `index.html` · `README.md` · `LICENSE` at the root
+3. Commit with a message like `Deploy PAREEK CYBER ACADEMY`
+4. **Settings → Pages → Deploy from a branch**
+5. Select branch `main` · folder `/ (root)` · **Save**
+6. Wait ~60 seconds → open your generated GitHub Pages URL
+
+**Custom domain:** Settings → Pages → Custom domain → add the required DNS record at your registrar → enable HTTPS.
+
+**Why no backend?** Progress lives in `localStorage`. All simulations run in-browser. GitHub Pages is a perfect host.
+
+---
+
+## 🧭 Quick Start
+
+
+$ pca start --path roadmap --ethics enforced
+
+  1. Open the academy in any modern browser
+  2. Start with Computer Fundamentals — no skipped prerequisites
+  3. Follow the roadmap level by level, in order
+  4. Read every topic · complete the paired labs
+  5. Solve CTF challenges to test understanding
+  6. Build one project per level
+  7. Track progress · return daily for your streak
+
+     Domain Link
+Application Security OWASP · Top 10 · API Top 10
+Frameworks MITRE ATT&CK · CWE · NIST CSF
+Government CISA · NVD
+Hardening CIS Benchmarks
+Programming MDN · Python Docs
+Cloud Native Docker Docs · Kubernetes Docs
+Cloud Providers AWS · Microsoft Learn · GCP
+Detection SigmaHQ · YARA
+
+
+
+**Guidelines:** Keep contributions **legal · ethical · original · educational · accurate · accessible · lightweight**. No new dependencies without a strong reason.
+
+---
+
+## 🗺️ Roadmap — Future / Planned
+
+<details>
+<summary><b>▸ Coming Soon</b></summary>
+
+**Content**
+- More CTF challenges across all difficulty tiers
+- Richer SOC scenarios and log datasets
+- Additional forensic case datasets (fictional, safe)
+- Expanded cloud and AI security labs
+- More professional-tier project briefs
+
+**Experience**
+- Enhanced cyber visualization
+- Keyboard-first navigation mode
+- Voice-over narration (accessibility)
+- Progress export / import as JSON
+- Optional offline service worker
+
+**Engineering**
+- Reduced initial paint
+- Lazy-loaded curriculum modules
+- Automated link-integrity checks in CI
+- Accessibility audit pipeline
 
 </details>
 
 ---
 
-## 🛰️ Project Overview
+## 📜 License
 
-**PAREEK CYBER ACADEMY** is a **futuristic, browser-native cybersecurity learning platform** built around one core philosophy:
+**MIT License** — see [LICENSE](LICENSE) for full text.
 
-> ### **Learn the technology. Understand the threat. Build the defense.**
-
-It is not a tutorial site — it is a **cybersecurity command center experience**. The platform organizes learning from absolute fundamentals all the way to advanced security engineering, incident response, cloud defence, AI security, and red / blue / purple team operations.
-
-The experience is delivered through a **modern, immersive, dark-first interface** featuring a 3D-inspired visual identity — animated terminal elements, holographic panels, glowing network connections, and rotating digital rings — all running natively in the browser.
-
-<pre>
-   ┌───────────────────────────────────────────────────────────────────────┐
-   │                                                                       │
-   │   THEORY  ───►  ROADMAPS  ───►  TOOLS  ───►  COMMANDS  ───►  PROJECTS │
-   │                                                                       │
-   │   LABS    ───►  CTF       ───►  SIMULATIONS  ───►  CAREER PATHS       │
-   │                                                                       │
-   │   TRACKING  ───►  XP  ───►  LEVELS  ───►  BADGES  ───►  STREAKS       │
-   │                                                                       │
-   └───────────────────────────────────────────────────────────────────────┘
-</pre>
+**Disclaimer:** PAREEK CYBER ACADEMY is an educational project. Its simulations are intended for **authorized learning environments only**. The project does not authorize users to attack systems they do not own or have permission to test. The authors accept no liability for misuse.
 
 ---
 
-## 🎯 Who Is This For?
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:ec4899,50:a855f7,100:22d3ee&height=140&section=footer&text=PAREEK%20CYBER%20ACADEMY&fontSize=26&fontColor=ffffff&fontAlignY=70&animation=fadeIn" width="100%"/>
 
-| 👤 Audience | 🎯 Purpose |
-|-------------|-----------|
-| **Absolute Beginners** | Start from zero with structured, guided fundamentals |
-| **Students** | Supplement academic learning with practical, hands-on labs |
-| **Self-Learners** | Follow a curated, self-paced cybersecurity roadmap |
-| **Cybersecurity Learners** | Explore offensive, defensive and hybrid security topics |
-| **Developers** | Learn secure coding, DevSecOps and cloud security |
-| **Blue Team Learners** | Focus on SOC, SIEM, detection engineering and IR |
-| **Security Engineers** | Build security tooling, architecture and automation |
-| **CTF Enthusiasts** | Solve original, educational capture-the-flag challenges |
-| **Security Researchers** | Use as a sandbox and reference for experimentation |
+<div align="center">
 
----
+### `LEARN · BUILD · BREAK · DEFEND`
 
-## ✨ Core Features
+**Built with vanilla HTML, CSS, JS.**
 
-<details open>
-<summary><b>🖥️ Interface & Experience</b></summary>
+**No framework · No backend · No tracking**
 
-| Feature | Description |
-|---------|-------------|
-| **3D-Style Cyber Interface** | Immersive dashboard with layered depth, holographic panels and depth effects |
-| **Cyber Command Dashboard** | Central view of modules, stats, progress and quick actions |
-| **Animated Terminal Elements** | Simulated boot sequences, live terminal feed and command prompts |
-| **Rotating Digital Rings** | Futuristic UI accents inspired by SOC and command-center interfaces |
-| **Glowing Network Connections** | Animated node-and-link visualisations of the cyber learning graph |
-| **Floating Typography** | Moving cybersecurity terms (Cybersecurity, Pentesting, OSINT, etc.) |
-| **Responsive Layout** | Optimised for desktop, tablet and mobile viewing |
+**One file · Millions of possibilities**
 
-</details>
+<br/>
 
-<details open>
-<summary><b>📚 Learning & Roadmaps</b></summary>
+**⭐ If this helps you learn, consider starring the repo.**
 
-| Feature | Description |
-|---------|-------------|
-| **A–Z Roadmap** | Complete path from fundamentals to CISO-level topics |
-| **Learning Paths** | Curated sequences for Red, Blue, Purple, Cloud and DevSecOps |
-| **Topic Explorer** | Deep-dive pages for every cybersecurity subject |
-| **Security Concepts Library** | Centralised reference for terminology and core ideas |
-| **Certifications & Career Paths** | Guidance on credentials, roles and skill mapping |
+**Questions · Ideas · Contributions — open an issue.**
 
-</details>
-
-<details open>
-<summary><b>🧪 Labs, Simulations & CTF</b></summary>
-
-| Feature | Description |
-|---------|-------------|
-| **Isolated Labs** | Breakable, snapshot-able sandbox environments |
-| **CTF Simulator** | Original, educational capture-the-flag challenges |
-| **Terminal Simulator** | Safe sandboxed shell for practising commands |
-| **Network Simulator** | Visualise packets, protocols and flows in a controlled model |
-| **Web Security Simulator** | Interactive OWASP Top 10 and secure coding labs |
-| **API Security Simulator** | Authentication, authorization, JWT and API flaw labs |
-| **Cryptography Labs** | Hands-on hashing, encryption and PKI exercises |
-| **Digital Forensics Labs** | Analyse simulated artefacts and build timelines |
-| **SOC Simulator** | Triage, investigate and report on simulated incidents |
-| **Threat Hunting Labs** | Hypothesis-driven hunts across simulated telemetry |
-
-</details>
-
-<details open>
-<summary><b>📈 Progress & Gamification</b></summary>
-
-| Feature | Description |
-|---------|-------------|
-| **XP & Levels** | Earn experience for completing labs, lessons and challenges |
-| **Badges & Achievements** | Milestone-based rewards |
-| **Learning Streaks** | Track daily learning consistency |
-| **Bookmarks & Notes** | Save and annotate topics |
-| **Recently Viewed** | Quick access to recent material |
-| **Search** | Fast search across topics, tools, commands and challenges |
-
-</details>
-
----
-
-## 🧠 Learning Architecture
-
-```mermaid
-flowchart TB
-    A[👤 Learner] --> B[🛡️ PAREEK CYBER ACADEMY]
-    B --> C[🗺️ Learning Path]
-    C --> D[📖 Topic]
-    D --> E[🧪 Lab]
-    E --> F[🎮 Simulation]
-    F --> G[🚩 Challenge]
-    G --> H[🏁 Flag]
-    H --> I[📝 Explanation]
-    I --> J[🛡️ Defensive Lesson]
-    J --> C
-
-    style A fill:#0a1218,stroke:#3fe0c8,color:#e2edf5
-    style B fill:#0a1218,stroke:#3fe0c8,color:#e2edf5
-    style C fill:#0a1218,stroke:#5b8cff,color:#e2edf5
-    style D fill:#0a1218,stroke:#5b8cff,color:#e2edf5
-    style E fill:#0a1218,stroke:#ffb454,color:#e2edf5
-    style F fill:#0a1218,stroke:#ffb454,color:#e2edf5
-    style G fill:#0a1218,stroke:#ff6b6b,color:#e2edf5
-    style H fill:#0a1218,stroke:#ff6b6b,color:#e2edf5
-    style I fill:#0a1218,stroke:#3fe0c8,color:#e2edf5
-    style J fill:#0a1218,stroke:#3fe0c8,color:#e2edf5
+</div>
