@@ -91,3 +91,95 @@ An **original browser-based CTF engine** — built from scratch. Every flag, hin
 
 <div align="center">
 
+
+</div>
+
+**Categories:** Linux · Bash · Networking · DNS · TLS · Web · API · JWT · HTTP · Auth · Access Control · Secure Coding · Cryptography · Forensics · OSINT · SOC · Threat Hunting · IR · Cloud · Docker · Kubernetes · AI Security · CTF Fundamentals
+
+> **Fair-play note:** Browser-only simulator. Flags are client-side, as required for offline validation. For server-validated competition CTFs, use independent platforms like picoCTF, TryHackMe, or Hack The Box.
+
+---
+
+## ✨ Features
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 🧠 Learn
+- 3D cyber interface
+- 33-level roadmap
+- 250+ topics
+- 10 learning paths
+- 60+ tools documented
+- 70+ command reference
+- Glossary
+
+</td>
+<td width="50%" valign="top">
+
+### 🧪 Practice
+- 32 hands-on labs
+- 100+ CTF challenges
+- Terminal simulator
+- Network simulator
+- SOC console
+- Web / API labs
+- Crypto & forensics
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 🎮 Track
+- XP & 50 levels
+- 14 badges
+- Daily streak
+- Bookmarks
+- Notes
+- Recent history
+- localStorage only
+
+</td>
+<td width="50%" valign="top">
+
+### 🚀 Platform
+- Dark / light theme
+- Global search (Ctrl+K)
+- Mobile-first
+- Offline capable
+- Zero tracking
+- Reduced-motion support
+- Single HTML file
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🛠️ Tech Stack
+
+<div align="center">
+
+| Layer | Tech |
+|:---|:---|
+| **Markup** | HTML5 |
+| **Styling** | CSS3 (custom properties, embedded) |
+| **Logic** | Vanilla JavaScript (ES5-safe) |
+| **Cyber Background** | Canvas 2D (manual perspective projection) |
+| **Progress Storage** | Browser `localStorage` API |
+| **Fonts** | Google Fonts — Orbitron · Rajdhani · JetBrains Mono |
+| **Hosting** | GitHub Pages (static) |
+
+</div>
+
+**Deliberately NOT used:** React · TypeScript · Vite · Webpack · Three.js · backend · database · auth server · npm · Node.js · build step.
+
+**Why:** the entire academy is **one HTML file**. Double-click it. Email it. USB it. Host it anywhere static.
+
+---
+
+## 📁 Repository Structure
+
