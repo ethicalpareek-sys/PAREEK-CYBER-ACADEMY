@@ -183,3 +183,156 @@ An **original browser-based CTF engine** — built from scratch. Every flag, hin
 
 ## 📁 Repository Structure
 
+
+---
+
+## 🚀 Deploy
+
+<div align="center">
+
+| Step | Action |
+|:---:|:---|
+| **①** | Open your GitHub repository |
+| **②** | Upload `index.html` · `README.md` · `LICENSE` at the root |
+| **③** | Commit with a message like `Deploy PAREEK CYBER ACADEMY` |
+| **④** | Go to **Settings → Pages → Deploy from a branch** |
+| **⑤** | Select branch **`main`** · folder **`/ (root)`** · **Save** |
+| **⑥** | Wait ~60 seconds · open your generated GitHub Pages URL |
+
+</div>
+
+**Custom domain:** Settings → Pages → Custom domain → add the required DNS record at your registrar → enable HTTPS once the certificate is provisioned.
+
+**Why no backend?** Progress lives in `localStorage`. All simulations run in-browser. GitHub Pages is a perfect host — zero server cost, zero maintenance.
+
+---
+
+## 🧭 Quick Start
+
+
+> **Tip:** Press `Ctrl + K` (or `⌘ + K` on macOS) for instant global search.
+
+---
+
+## ⚠️ Ethical & Legal Use
+
+<div align="center">
+
+
+</div>
+
+**Every simulation runs entirely in your browser.** No attacks reach any external system. No credentials are harvested. No malware exists in this repository.
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### ✔ Always
+- Test only systems you **own**
+- Or systems with **written authorization**
+- Use CTFs and intentionally vulnerable labs
+- Follow the law in your jurisdiction
+- Report vulnerabilities responsibly
+- Minimize and protect any data you encounter
+
+</td>
+<td width="50%" valign="top">
+
+### ✘ Never
+- Scan or access systems without authorization
+- Steal credentials or personal data
+- Deploy malware or destructive payloads
+- Establish persistence on systems you don't own
+- Disrupt, degrade, or deny service
+- Stalk, harass, dox, or surveil
+
+</td>
+</tr>
+</table>
+
+> Unauthorized access to computer systems is a criminal offense in virtually every jurisdiction. If unsure whether you are authorized — **you are not**.
+
+**Safe practice platforms:** [TryHackMe](https://tryhackme.com) · [Hack The Box](https://www.hackthebox.com) · [picoCTF](https://picoctf.org) · [OverTheWire](https://overthewire.org) · [PortSwigger Academy](https://portswigger.net/web-security)
+
+---
+
+## 📚 Resources
+
+| Domain | Link |
+|:---|:---|
+| **Application Security** | [OWASP](https://owasp.org) · [Top 10](https://owasp.org/Top10/) · [API Top 10](https://owasp.org/API-Security/) |
+| **Frameworks** | [MITRE ATT&CK](https://attack.mitre.org) · [CWE](https://cwe.mitre.org) · [NIST CSF](https://www.nist.gov/cyberframework) |
+| **Government** | [CISA](https://www.cisa.gov) · [NVD](https://nvd.nist.gov) |
+| **Hardening** | [CIS Benchmarks](https://www.cisecurity.org/cis-benchmarks) |
+| **Programming** | [MDN](https://developer.mozilla.org) · [Python Docs](https://docs.python.org/3/) |
+| **Cloud Native** | [Docker Docs](https://docs.docker.com) · [Kubernetes Docs](https://kubernetes.io/docs/) |
+| **Cloud Providers** | [AWS](https://docs.aws.amazon.com) · [Microsoft Learn](https://learn.microsoft.com) · [GCP](https://cloud.google.com/docs) |
+| **Detection** | [SigmaHQ](https://sigmahq.io/) · [YARA](https://virustotal.github.io/yara/) · [Atomic Red Team](https://github.com/redcanaryco/atomic-red-team) |
+
+---
+
+## 🤝 Contributing
+
+
+**Guidelines:** Keep contributions **legal · ethical · original · educational · accurate · accessible · lightweight**. No new dependencies without a strong reason.
+
+---
+
+## 🗺️ Roadmap — Future / Planned
+
+<details>
+<summary><b>▸ Coming Soon</b></summary>
+
+**Content**
+- More CTF challenges across all difficulty tiers
+- Richer SOC scenarios and log datasets
+- Additional forensic case datasets (fictional, safe)
+- Expanded cloud and AI security labs
+- More professional-tier project briefs
+
+**Experience**
+- Enhanced cyber visualization
+- Keyboard-first navigation mode
+- Voice-over narration (accessibility)
+- Progress export / import as JSON
+- Optional offline service worker
+
+**Engineering**
+- Reduced initial paint
+- Lazy-loaded curriculum modules
+- Automated link-integrity checks in CI
+- Accessibility audit pipeline
+
+</details>
+
+---
+
+## 📜 License
+
+**MIT License** — see [LICENSE](LICENSE) for full text.
+
+**Disclaimer:** PAREEK CYBER ACADEMY is an educational project. Its simulations are intended for **authorized learning environments only**. The project does not authorize users to attack systems they do not own or have permission to test. The authors accept no liability for misuse.
+
+---
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:ec4899,50:a855f7,100:22d3ee&height=140&section=footer&text=PAREEK%20CYBER%20ACADEMY&fontSize=26&fontColor=ffffff&fontAlignY=70&animation=fadeIn" width="100%"/>
+
+<div align="center">
+
+### `LEARN · BUILD · BREAK · DEFEND`
+
+**Built with vanilla HTML, CSS, JS.**
+
+**No framework · No backend · No tracking**
+
+**One file · Millions of possibilities**
+
+<br/>
+
+**⭐ If this helps you learn, consider starring the repo.**
+
+**Questions · Ideas · Contributions — open an issue.**
+
+</div>
+
+
